@@ -59,15 +59,6 @@ Desenvolvido como **Projeto Final de Curso (PFC)** da **Universidade de Mogi das
 
 **Qualidade:** ESLint, Jest, testes unitários e de integração
 
-## Estrutura do repositório
-
-```text
-CyberEduca/
-|-- assets/       # Imagens usadas neste README
-|-- frontend/     # Interface React (Vite, Bootstrap, React Router, Axios)
-`-- backend/      # API REST (NestJS, Prisma, autenticação JWT)
-```
-
 ## Arquitetura
 
 ![Arquitetura do CyberEduca+](./assets/arquitetura.png)
