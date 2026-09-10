@@ -8,6 +8,7 @@
 ![Licença](https://img.shields.io/badge/licença-acadêmica-lightgrey)
 ![React](https://img.shields.io/badge/React-61dafb?logo=react&logoColor=black)
 ![Vite](https://img.shields.io/badge/Vite-646cff?logo=vite&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-f7df1e?logo=javascript&logoColor=black)
 ![NestJS](https://img.shields.io/badge/NestJS-e0234e?logo=nestjs&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178c6?logo=typescript&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?logo=postgresql&logoColor=white)
@@ -48,7 +49,7 @@ Desenvolvido como **Projeto Final de Curso (PFC)** da **Universidade de Mogi das
 
 ## Tecnologias
 
-**Front-end:** React.js, Vite, Bootstrap 5, React Router, Axios
+**Front-end:** React.js, Vite, JavaScript, Bootstrap 5, React Router, Axios
 
 **Back-end:** Node.js, NestJS, TypeScript, JWT (autenticação), validação de DTOs
 
