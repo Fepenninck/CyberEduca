@@ -4,13 +4,13 @@ import { useState } from 'react'
 import Link from 'next/link'
 import './footer.css'
 import './home-hero.css'
-import { BookOpen, BrainCircuit, ChartNoAxesCombined, Menu, ShieldCheck, X } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 
 const navigation = ['Início', 'Plataforma', 'Trilhas', 'Recursos', 'Sobre']
 const panels = [
-  { title: 'Aprenda a se proteger', heading: 'Conheça as ameaças. Proteja sua vida digital.', description: 'Explore trilhas e aulas sobre segurança digital. Entenda os riscos, conheça boas práticas e desenvolva hábitos para proteger suas informações.', action: 'Explorar trilhas', href: '/trilhas', Icon: ShieldCheck },
-  { title: 'Desenvolva seu conhecimento', heading: 'Um novo aprendizado a cada aula.', description: 'Comece pelos fundamentos da cibersegurança e avance pelos conteúdos no seu ritmo. Acesse módulos, descubra novos assuntos e revise o que aprendeu.', action: 'Conhecer a primeira aula', href: '/aulas/o-que-e-cybersecurity', Icon: BrainCircuit },
-  { title: 'Acompanhe sua evolução', heading: 'Visualize sua jornada de aprendizagem.', description: 'Conheça o painel de progresso do CyberEduca+ e navegue pelas suas trilhas. Os indicadores ajudam você a manter o ritmo e celebrar cada conquista.', action: 'Ver meu progresso', href: '/progresso', Icon: ChartNoAxesCombined },
+  { title: 'Aprenda a se proteger', heading: 'Conheça as ameaças. Proteja sua vida digital.', description: 'Explore trilhas e aulas sobre segurança digital. Entenda os riscos, conheça boas práticas e desenvolva hábitos para proteger suas informações.', features: [['Reconheça ameaças digitais', 'Aprenda a identificar golpes, fraudes e comportamentos suspeitos.'], ['Proteja suas informações', 'Adote práticas simples para manter contas e dados pessoais seguros.'], ['Navegue com mais segurança', 'Tome decisões mais conscientes em sua rotina digital.']] },
+  { title: 'Desenvolva seu conhecimento', heading: 'Um novo aprendizado a cada aula.', description: 'Comece pelos fundamentos da cibersegurança e avance pelos conteúdos no seu ritmo. Acesse módulos, descubra novos assuntos e revise o que aprendeu.', features: [['Conteúdo direto e acessível', 'Conceitos importantes explicados de maneira clara e objetiva.'], ['Trilhas organizadas', 'Evolua dos fundamentos até temas mais avançados.'], ['Aprendizado no seu ritmo', 'Estude quando quiser e retome exatamente de onde parou.']] },
+  { title: 'Acompanhe sua evolução', heading: 'Visualize sua jornada de aprendizagem.', description: 'Conheça o painel de progresso do CyberEduca+ e navegue pelas suas trilhas. Os indicadores ajudam você a manter o ritmo e celebrar cada conquista.', features: [['Progresso por trilha', 'Veja rapidamente o quanto você já avançou em cada tema.'], ['Histórico de aprendizagem', 'Acompanhe aulas, módulos e conteúdos concluídos.'], ['Próximos passos', 'Descubra o que estudar em seguida para continuar evoluindo.']] },
 ]
 
 export default function Page() {
@@ -34,7 +34,7 @@ export default function Page() {
       <div className="home-intro-inner">
         <div className="home-intro-copy"><h1>Aprenda a se proteger<br className="home-title-break" /> no mundo digital</h1><p>Desenvolva conhecimentos e boas práticas de segurança digital com trilhas e aulas que ajudam você a reconhecer ameaças e proteger suas informações.</p><div className="home-intro-actions"><Link href="/trilhas" className="home-intro-primary">Explorar trilhas</Link><Link href="/progresso" className="home-intro-secondary">Meu progresso</Link></div></div>
         <div className="home-intro-tabs" aria-label="Conheça a aprendizagem">{panels.map((item, index) => <button key={item.title} onClick={() => setActivePanel(index)} aria-pressed={activePanel === index} aria-controls="home-intro-panel">{item.title}</button>)}</div>
-        <article id="home-intro-panel" className="home-intro-panel"><div className="home-intro-panel-copy"><h2>{panel.heading}</h2><p>{panel.description}</p><Link href={panel.href}>{panel.action}<span aria-hidden="true">→</span></Link></div><div className="home-intro-art" aria-hidden="true"><div className="art-orbit art-orbit-one" /><div className="art-orbit art-orbit-two" /><panel.Icon size={112} strokeWidth={1.25} /><BookOpen className="art-book" size={34} strokeWidth={1.5} /><span>APRENDA. PRATIQUE. PROTEJA-SE.</span></div></article>
+        <article id="home-intro-panel" className="home-intro-panel"><div className="home-intro-panel-copy"><h2>{panel.heading}</h2><p>{panel.description}</p><div className="home-intro-features">{panel.features.map(([title, description]) => <div className="home-intro-feature" key={title}><strong>{title}</strong><span>{description}</span></div>)}</div></div><div className="home-intro-art" aria-label="Espaço reservado para ilustração"><div className="image-placeholder"><span>Imagem em breve</span><small>Ilustração desta seção</small></div></div></article>
       </div>
     </section>
 
