@@ -20,8 +20,21 @@
 
 :root { color-scheme: dark; --background: #080d18; --foreground: #f4f7fb; --card: #101a29; --card-foreground: #f4f7fb; --primary: #b2ff00; --primary-foreground: #132000; --muted-foreground: #a8b5c9; --border: #324055; }
 * { @apply border-border; }
-html { scroll-behavior: smooth; background: var(--background); }
-body { @apply bg-background text-foreground; font-family: Arial, sans-serif; }
+html { overflow-y: scroll; scroll-behavior: smooth; background: var(--background); }
+html, body { scrollbar-width: none; }
+html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
+.site-scrollbar { position:fixed; top:0; right:0; z-index:300; width:8px; height:100vh; background:#3b3b3b; cursor:pointer; }
+.site-scrollbar i { display:block; width:8px; background:#b0b0b0; }
+.cookie-consent { position:fixed; right:0; bottom:0; left:0; z-index:200; display:flex; height:150px; box-sizing:border-box; align-items:flex-start; justify-content:space-between; gap:36px; border-top:1px solid #34445a; border-radius:0; background:#111b2a; box-shadow:0 -10px 28px #0007; padding:16px 20px; color:#eaf0f7; font-family:Arial,sans-serif; }
+.cookie-consent-copy { width:min(100%,900px); }.cookie-consent-title { display:flex; align-items:center; gap:150px; }.cookie-consent-copy strong { display:block; font-size:13px; font-weight:700; }.cookie-consent-title span { color:#8292a7; font-size:10px; }.cookie-consent-copy p { margin:10px 0 6px; color:#b5c2d2; font-size:12px; line-height:1.3; }.cookie-consent-notice { min-height:32px; border:1px solid #3b4c63; border-radius:2px; padding:6px 8px; color:#8392a7; font-size:10px; line-height:1.25; }.cookie-consent-links { display:flex; gap:9px; margin-top:8px; color:#8292a7; font-size:10px; }.cookie-consent-links a { color:#d3dce7; font-weight:600; text-decoration:underline; text-underline-offset:2px; }
+.cookie-consent-actions { display:flex; flex:none; align-self:center; align-items:center; gap:12px; margin-right:70px; padding-bottom:0; }.cookie-consent-actions button { min-width:88px; height:36px; border:1px solid #52647b; border-radius:2px; padding:0 15px; color:#eaf0f7; font-family:inherit; font-size:12px; }.cookie-customize { border-color:transparent !important; color:#b8c5d5 !important; text-decoration:underline; text-underline-offset:3px; }.cookie-reject { background:#1b2a3e; }.cookie-accept { border-color:#9fef00 !important; background:#9fef00; color:#101821 !important; font-weight:600; }
+@media (max-width: 700px) { .cookie-consent { right:0; bottom:0; left:0; height:auto; min-height:0; align-items:stretch; flex-direction:column; gap:16px; padding:17px; }.cookie-consent-actions { justify-content:flex-end; gap:8px; margin-right:0; }.cookie-consent-actions button { min-width:auto; flex:1; padding-inline:8px; } }
+body { @apply bg-background text-foreground; font-family: 'neue-haas-unica', Arial, sans-serif; }
+
+/* Tipografia única em toda a interface, alinhada à referência Hack The Box. */
+button, input, textarea, select, .ce-footer, .cookie-consent, .mega-label,
+.mega-card strong, .mega-card small, .mega-explore > a, .desktop-nav a,
+.mobile-nav a { font-family: 'neue-haas-unica', Arial, sans-serif; }
 a, button { cursor: pointer; }
 .nav-item { @apply flex items-center gap-1 text-[15px] font-semibold text-[#aebbd0] transition-colors hover:text-white; }
 .header-cta, .hero-cta-primary { @apply inline-flex items-center justify-center bg-[#b2ff00] px-7 py-3.5 font-bold text-[#132000] transition-all hover:bg-[#c5ff45]; }
@@ -35,7 +48,7 @@ a, button { cursor: pointer; }
 .hero-line-top { top: 28px; right: 5%; }
 .hero-line-bottom { bottom: 40px; left: -75px; }
 .hero-cta-secondary { @apply inline-flex items-center justify-center bg-[#26354a] px-7 py-3.5 font-bold text-white transition-colors hover:bg-[#34465f]; }
-.reference-header { position: relative; z-index: 30; height: 86px; background: #1e2939; }
+.reference-header { position: fixed; top: 0; right: 0; left: 0; z-index: 30; height: 86px; border-bottom: 1px solid #2b384c; background: #1e2939; }
 .reference-header-inner { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0; width: min(calc(100% - 48px), 1424px); height: 86px; margin: 0 auto; align-items: center; }
 .reference-brand { display: flex; width: 206px; height: 43px; overflow: hidden; align-items: center; flex-shrink: 0; }
 .reference-logo { display: block; width: 212px; max-width: none; height: auto; flex-shrink: 0; margin-left: -3px; transform: translateY(-1px); mix-blend-mode: screen; }
@@ -47,6 +60,10 @@ a, button { cursor: pointer; }
 .reference-cta { display: inline-flex; align-items: center; justify-content: center; min-width: 132px; height: 44px; border-radius: 3px; background: #9fef00; color: #111927; font-family: 'Neue Haas Unica', 'neue-haas-unica', Arial, sans-serif; font-size: 16px; line-height: 24px; font-weight:400; padding: 10px 24px; text-decoration: none; white-space: nowrap; }
 .reference-cta:hover { background: #baff3a; }
 .reference-mobile-button, .reference-mobile-nav { display: none; }
+.blank-page { display:grid; min-height:calc(100vh - 86px); place-items:center; background:#080e18; }
+.blank-page-content { display:flex; flex-direction:column; align-items:center; gap:4px; padding:40px 24px; }
+.blank-page-content img { display:block; width:min(360px,72vw); height:auto; }
+.blank-page h1 { margin:-8px 0 0; color:#aebbd0; font-family:'Neue Haas Unica','neue-haas-unica',Arial,sans-serif; font-size:20px; font-weight:400; letter-spacing:.02em; }
 .mega-menu { position: absolute; top: 100%; right: 0; left: 0; min-height: 462px; border-top: 1px solid #2d3b50; background: #1e2939; box-shadow: 0 28px 34px rgba(0,0,0,.3); }
 .mega-menu-inner { display: grid; width: min(100% - 64px, 1400px); grid-template-columns: 1fr 1fr .95fr; gap: 28px; margin: 0 auto; padding: 31px 0; }
 .mega-menu-inner>section { padding: 0 14px; }.mega-menu-inner>section+section { border-left: 1px solid #2c394d; }
@@ -60,8 +77,8 @@ a, button { cursor: pointer; }
 @media (max-width: 900px) { .hero-photo { inset: 0; opacity: .28; } }
 
 /* CyberEduca+ learning experience */
-.app-shell { min-height: 100vh; background: #080d18; color: #f4f7fb; }
-.site-header { position: relative; z-index: 20; background: #202c3e; }
+.app-shell { min-height: 100vh; padding-top: 86px; background: #080d18; color: #f4f7fb; }
+.site-header { position: fixed; top: 0; right: 0; left: 0; z-index: 30; background: #202c3e; }
 .site-header-inner { display: flex; height: 72px; max-width: 1760px; margin: 0 auto; align-items: center; justify-content: space-between; padding: 0 36px; }
 .brand { display: flex; align-items: center; }
 .brand-logo { display: block; width: 220px; height: 64px; object-fit: contain; mix-blend-mode: screen; }
