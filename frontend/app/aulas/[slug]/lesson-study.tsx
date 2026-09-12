@@ -1,13 +1,14 @@
 'use client'
 
+import ReactMarkdown from 'react-markdown'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { ArrowLeft, ArrowRight, Check, Clock3 } from 'lucide-react'
 import { CyberHeader } from '@/components/cyber-header'
+import { API_URL } from '@/lib/api'
 
 type NavigationLesson = { id: string; titulo: string; ordem: number } | null
 type Lesson = { id: string; titulo: string; conteudo: string; ordem: number; concluida: boolean; trilha: { id: string; titulo: string }; anterior: NavigationLesson; proxima: NavigationLesson }
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000'
 
 export function LessonStudy({ lessonId }: { lessonId: string }) {
   const [lesson, setLesson] = useState<Lesson | null>(null)
