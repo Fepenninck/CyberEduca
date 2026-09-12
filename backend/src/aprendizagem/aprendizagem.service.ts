@@ -71,7 +71,31 @@ export class AprendizagemService {
       },
     });
 
-    return { ...aula, concluida: !!progresso };
+    // A navegação é calculada pela ordem dentro da mesma trilha. Assim uma
+    // aula nunca leva o aluno, por acidente, para outra trilha.
+    const [anterior, proxima] = await Promise.all([
+      this.prisma.aula.findFirst({
+        where: { trilhaId: aula.trilhaId, ordem: { lt: aula.ordem } },
+        orderBy: { ordem: 'desc' },
+        select: { id: true, titulo: true, ordem: true },
+      }),
+      this.prisma.aula.findFirst({
+        where: { trilhaId: aula.trilhaId, ordem: { gt: aula.ordem } },
+        orderBy: { ordem: 'asc' },
+        select: { id: true, titulo: true, ordem: true },
+      }),
+    ]);
+
+    return {
+      id: aula.id,
+      titulo: aula.titulo,
+      conteudo: aula.conteudo,
+      ordem: aula.ordem,
+      trilha: aula.trilha,
+      concluida: progresso?.concluida ?? false,
+      anterior,
+      proxima,
+    };
   }
 
   async concluirAula(aulaId: string) {

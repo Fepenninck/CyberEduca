@@ -108,7 +108,7 @@ Desenvolvimento em **Scrum**, com gestão de tarefas via Monday e comunicação 
 
 ## Licença e uso de dados
 
-O uso de bibliotecas, APIs, ferramentas de IA e demais recursos de terceiros é identificado e documentado no projeto. O tratamento de dados pessoais, quando existente, observa os princípios e requisitos legais e institucionais aplicáveis.
+O uso de bibliotecas, APIs e demais recursos de terceiros é identificado e documentado no projeto. O tratamento de dados pessoais, quando existente, observa os princípios e requisitos legais e institucionais aplicáveis.
 
 ## Instituição
 
