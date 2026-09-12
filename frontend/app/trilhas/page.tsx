@@ -1,13 +1,3 @@
-'use client'
+import { BlankPage } from '@/components/blank-page'
 
-import Link from 'next/link'
-import { useMemo, useState } from 'react'
-import { ArrowRight, Clock3, Layers3, Play, Search, SlidersHorizontal } from 'lucide-react'
-import { CyberHeader } from '@/components/cyber-header'
-import { tracks } from '@/lib/learning-data'
-
-export default function TrilhasPage() {
-  const [query, setQuery] = useState(''); const [level, setLevel] = useState('Todas')
-  const filtered = useMemo(() => tracks.filter((track) => (level === 'Todas' || track.difficulty === level) && `${track.title} ${track.description}`.toLowerCase().includes(query.toLowerCase())), [query, level])
-  return <main className="app-shell"><CyberHeader /><section className="page-hero"><div className="eyebrow">Academia CyberEduca+</div><h1>Trilhas de <span>aprendizagem</span></h1><p>Aprenda cybersecurity na prática, no seu ritmo, com caminhos estruturados para cada etapa da sua evolução.</p><div className="hero-meta"><span><strong>{tracks.length}</strong> trilhas disponíveis</span><span><strong>94h</strong> de conteúdo prático</span><span><strong>4.9</strong> avaliação média</span></div></section><section className="content-wrap"><div className="toolbar"><label className="search-field"><Search size={18} /><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar trilha..." aria-label="Buscar trilha" /></label><div className="filter-row"><SlidersHorizontal size={17} /><span>Filtrar por:</span>{['Todas', 'Iniciante', 'Intermediário', 'Avançado'].map((item) => <button key={item} onClick={() => setLevel(item)} className={level === item ? 'filter-active' : ''}>{item}</button>)}</div></div><div className="results-line"><span>{filtered.length} trilhas encontradas</span><button className="sort-button">Mais relevantes <SlidersHorizontal size={15} /></button></div><div className="track-grid">{filtered.map((track) => <article className="track-card" key={track.slug}><div className="track-card-top" style={{ '--track-color': track.color } as React.CSSProperties}><span className="track-category">{track.category}</span><span className="track-level">{track.difficulty}</span><div className="track-mark">{track.title.slice(0, 1)}</div></div><div className="track-card-body"><h2>{track.title}</h2><p>{track.description}</p><div className="track-details"><span><Layers3 size={15} /> {track.modules} módulos</span><span><Play size={15} /> {track.lessons} aulas</span><span><Clock3 size={15} /> {track.duration}</span></div><div className="progress-label"><span>Seu progresso</span><strong>{track.progress}%</strong></div><div className="progress-track"><span style={{ width: `${track.progress}%`, background: track.color }} /></div><Link href={`/trilhas/${track.slug}`} className="track-link">{track.progress === 0 ? 'Começar trilha' : track.progress === 100 ? 'Revisar trilha' : 'Continuar aprendendo'} <ArrowRight size={17} /></Link></div></article>)}</div></section></main>
-}
+export default function TrilhasPage() { return <BlankPage /> }
