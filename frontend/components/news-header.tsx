@@ -11,7 +11,7 @@ const navigation = [
   { label: 'Sobre', href: '/em-breve' },
 ]
 
-export function CyberHeader() {
+export function NewsHeader() {
   return <header className="reference-header">
     <div className="reference-header-inner">
       <Link href="/" className="reference-brand" aria-label="CyberEduca+ início"><img className="reference-logo" src="/cybereduca-logo.png" alt="CyberEduca+" /></Link>
