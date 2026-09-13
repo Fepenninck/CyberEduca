@@ -8,6 +8,56 @@ const USUARIO_DEMO_ID = '11111111-1111-1111-1111-111111111111';
 export class AprendizagemService {
   constructor(private prisma: PrismaService) {}
 
+async criarTrilha(dados: {
+  titulo: string;
+  descricao: string;
+  ordem: number;
+}) {
+  return this.prisma.trilha.create({
+    data: dados,
+  });
+}
+
+async editarTrilha(
+  id: string,
+  dados: {
+    titulo?: string;
+    descricao?: string;
+    ordem?: number;
+  },
+) {
+  return this.prisma.trilha.update({
+    where: { id },
+    data: dados,
+  });
+}
+
+async criarAula(dados: {
+  titulo: string;
+  conteudo: string;
+  ordem: number;
+  trilhaId: string;
+}) {
+  return this.prisma.aula.create({
+    data: dados,
+  });
+}
+
+async editarAula(
+  id: string,
+  dados: {
+    titulo?: string;
+    conteudo?: string;
+    ordem?: number;
+    trilhaId?: string;
+  },
+) {
+  return this.prisma.aula.update({
+    where: { id },
+    data: dados,
+  });
+}
+
   async listarTrilhas() {
     const trilhas = await this.prisma.trilha.findMany({
       orderBy: { ordem: 'asc' },

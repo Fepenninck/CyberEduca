@@ -30,7 +30,7 @@ model Aula {
   titulo     String
   // Conteúdo em Markdown. Comece vazio e preencha quando criar cada aula.
   // O Markdown suporta títulos, texto, listas, links e imagens.
-  conteudo   String          @default(\"\")
+  conteudo   String          @default("")
   ordem      Int
   trilhaId   String
   trilha     Trilha          @relation(fields: [trilhaId], references: [id], onDelete: Cascade)
