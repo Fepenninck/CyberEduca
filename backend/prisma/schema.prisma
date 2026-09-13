@@ -21,8 +21,16 @@ model Trilha {
   id        String @id @default(uuid())
   titulo    String
   descricao String
+  nivel     NivelTrilha @default(BASICO)
+  bloqueada Boolean      @default(false)
   ordem     Int
   aulas     Aula[]
+}
+
+enum NivelTrilha {
+  BASICO
+  INTERMEDIARIO
+  AVANCADO
 }
 
 model Aula {

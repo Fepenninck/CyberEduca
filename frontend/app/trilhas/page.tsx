@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { ArrowRight, BookOpen, Clock3, Search } from 'lucide-react'
+import { ArrowRight, BookOpen, Clock3, LockKeyhole, Search } from 'lucide-react'
 import { CyberHeader } from '@/components/cyber-header'
 import { API_URL, TrackSummary } from '@/lib/api'
 
@@ -49,14 +49,14 @@ export default function TrilhasPage() {
             ) : (
               <div className="track-grid">
                 {visibleTracks.map((track, index) => (
-                  <article className="track-card" key={track.id} style={{ '--track-color': index % 2 ? '#57b8ff' : '#b2ff00' } as React.CSSProperties}>
-                    <div className="track-card-top"><span className="track-category">Trilha {String(index + 1).padStart(2, '0')}</span><span className="track-level">Disponível</span><strong className="track-mark">0{index + 1}</strong></div>
+                  <article className={`track-card ${track.bloqueada ? 'is-locked opacity-60 bg-gray-800/50 border-gray-700' : ''}`} key={track.id} style={{ '--track-color': track.bloqueada ? '#94a3b8' : index % 2 ? '#57b8ff' : '#b2ff00' } as React.CSSProperties}>
+                    <div className="track-card-top"><span className="track-category">Trilha {String(index + 1).padStart(2, '0')}</span><span className="track-level">{track.bloqueada ? <><LockKeyhole size={12} /> Bloqueada</> : 'Disponível'}</span><strong className="track-mark">0{index + 1}</strong></div>
                     <div className="track-card-body">
                       <h2>{track.titulo}</h2><p>{track.descricao}</p>
                       <div className="track-details"><span><BookOpen size={15} /> {track.totalAulas} aula{track.totalAulas === 1 ? '' : 's'}</span><span><Clock3 size={15} /> No seu ritmo</span></div>
                       <div className="progress-label"><span>Progresso</span><strong>{track.percentual}%</strong></div>
                       <div className="progress-track"><span style={{ width: `${track.percentual}%`, background: index % 2 ? '#57b8ff' : '#b2ff00' }} /></div>
-                      <Link className="track-link" href={`/trilhas/${track.id}`}>{track.percentual > 0 ? 'Continuar trilha' : 'Ver trilha'} <ArrowRight size={16} /></Link>
+                      {track.bloqueada ? <span className="track-link track-link-locked"><LockKeyhole size={15} /> Conclua a trilha anterior</span> : <Link className="track-link" href={`/trilhas/${track.id}`}>{track.percentual > 0 ? 'Continuar trilha' : 'Ver trilha'} <ArrowRight size={16} /></Link>}
                     </div>
                   </article>
                 ))}

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 
 // TODO: substituir por req.user.id quando a autenticacao estiver pronta
@@ -11,6 +11,7 @@ export class AprendizagemService {
 async criarTrilha(dados: {
   titulo: string;
   descricao: string;
+  bloqueada?: boolean;
   ordem: number;
 }) {
   return this.prisma.trilha.create({
@@ -23,6 +24,7 @@ async editarTrilha(
   dados: {
     titulo?: string;
     descricao?: string;
+    bloqueada?: boolean;
     ordem?: number;
   },
 ) {
@@ -69,6 +71,8 @@ async editarAula(
         id: t.id,
         titulo: t.titulo,
         descricao: t.descricao,
+        nivel: t.nivel,
+        bloqueada: await this.estaBloqueada(t),
         totalAulas: t._count.aulas,
         percentual: await this.calcularPercentual(t.id),
       })),
@@ -84,6 +88,9 @@ async editarAula(
     if (!trilha) {
       throw new NotFoundException('Trilha nao encontrada');
     }
+    if (await this.estaBloqueada(trilha)) {
+      throw new ForbiddenException('Conclua as trilhas anteriores para desbloquear este conteúdo.');
+    }
 
     const concluidas = await this.prisma.progressoAula.findMany({
       where: { usuarioId: USUARIO_DEMO_ID, aula: { trilhaId: id } },
@@ -95,6 +102,8 @@ async editarAula(
       id: trilha.id,
       titulo: trilha.titulo,
       descricao: trilha.descricao,
+      nivel: trilha.nivel,
+      bloqueada: false,
       percentual: await this.calcularPercentual(id),
       aulas: trilha.aulas.map((a) => ({
         id: a.id,
@@ -108,11 +117,14 @@ async editarAula(
   async buscarAula(id: string) {
     const aula = await this.prisma.aula.findUnique({
       where: { id },
-      include: { trilha: { select: { id: true, titulo: true } } },
+      include: { trilha: { select: { id: true, titulo: true, nivel: true, bloqueada: true, ordem: true } } },
     });
 
     if (!aula) {
       throw new NotFoundException('Aula nao encontrada');
+    }
+    if (await this.estaBloqueada(aula.trilha)) {
+      throw new ForbiddenException('Conclua as trilhas anteriores para desbloquear este conteúdo.');
     }
 
     const progresso = await this.prisma.progressoAula.findUnique({
@@ -141,7 +153,7 @@ async editarAula(
       titulo: aula.titulo,
       conteudo: aula.conteudo,
       ordem: aula.ordem,
-      trilha: aula.trilha,
+      trilha: { id: aula.trilha.id, titulo: aula.trilha.titulo, nivel: aula.trilha.nivel },
       concluida: progresso?.concluida ?? false,
       anterior,
       proxima,
@@ -183,5 +195,19 @@ async editarAula(
     });
 
     return Math.round((feitas / total) * 100);
+  }
+
+  private async estaBloqueada(trilha: { bloqueada: boolean; ordem: number }): Promise<boolean> {
+    if (!trilha.bloqueada) return false;
+
+    const anteriores = await this.prisma.trilha.findMany({
+      where: { ordem: { lt: trilha.ordem } },
+      select: { id: true },
+    });
+
+    if (anteriores.length === 0) return false;
+
+    const percentuais = await Promise.all(anteriores.map((anterior) => this.calcularPercentual(anterior.id)));
+    return percentuais.some((percentual) => percentual < 100);
   }
 }

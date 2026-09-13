@@ -10,6 +10,18 @@ import { API_URL } from '@/lib/api'
 type NavigationLesson = { id: string; titulo: string; ordem: number } | null
 type Lesson = { id: string; titulo: string; conteudo: string; ordem: number; concluida: boolean; trilha: { id: string; titulo: string }; anterior: NavigationLesson; proxima: NavigationLesson }
 
+const YOUTUBE_IFRAME_PATTERN = /<iframe\b[^>]*\bsrc=["'](https:\/\/(?:www\.)?youtube(?:-nocookie)?\.com\/embed\/[\w-]+(?:\?[^"']*)?)["'][^>]*><\/iframe>\s*/gi
+
+function extractYoutubeEmbeds(conteudo: string) {
+  const videos: string[] = []
+  const markdown = conteudo.replace(YOUTUBE_IFRAME_PATTERN, (_, src: string) => {
+    videos.push(src)
+    return ''
+  })
+
+  return { markdown, videos }
+}
+
 export function LessonStudy({ lessonId }: { lessonId: string }) {
   const [lesson, setLesson] = useState<Lesson | null>(null)
   const [loading, setLoading] = useState(true)
@@ -49,6 +61,7 @@ export function LessonStudy({ lessonId }: { lessonId: string }) {
 
   if (loading) return <main className="app-shell"><CyberHeader /><p className="content-wrap">Carregando aula...</p></main>
   if (error || !lesson) return <main className="app-shell"><CyberHeader /><p className="content-wrap">{error || 'Aula não encontrada.'}</p></main>
+  const { markdown, videos } = extractYoutubeEmbeds(lesson.conteudo)
 
   return (
     <main className="app-shell">
@@ -61,8 +74,9 @@ export function LessonStudy({ lessonId }: { lessonId: string }) {
         <div className="lesson-meta"><span><Clock3 size={16} /> Duração a definir</span></div>
         <div className="lesson-divider" />
         <section className="prose-content">
+          {videos.map((src) => <div key={src} className="my-8 overflow-hidden rounded-md border border-[#29384d]" style={{ aspectRatio: '16 / 9' }}><iframe src={src} title={`Vídeo da aula: ${lesson.titulo}`} className="block h-full w-full" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen referrerPolicy="strict-origin-when-cross-origin" /></div>)}
           <ReactMarkdown components={{ img: ({ src, alt }) => <img src={src} alt={alt ?? ''} className="my-8 w-full rounded-md border border-[#29384d]" /> }}>
-            {lesson.conteudo || 'Este conteúdo ainda está em branco. Escreva a sua aula no banco de dados.'}
+            {markdown || 'Este conteúdo ainda está em branco. Escreva a sua aula no banco de dados.'}
           </ReactMarkdown>
         </section>
         <div className="lesson-actions">

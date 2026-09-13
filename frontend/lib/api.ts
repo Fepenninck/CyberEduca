@@ -4,6 +4,8 @@ export type TrackSummary = {
   id: string
   titulo: string
   descricao: string
+  nivel: 'BASICO' | 'INTERMEDIARIO' | 'AVANCADO'
+  bloqueada: boolean
   totalAulas: number
   percentual: number
 }
