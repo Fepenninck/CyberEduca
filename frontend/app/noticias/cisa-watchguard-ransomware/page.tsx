@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { NewsHeader } from '@/components/news-header'
+import { SiteFooter } from '@/components/site-footer'
 import '../../article.css'
+import '../../footer.css'
 
 export default function CisaWatchGuardNewsPage() {
   return <main className="article-page"><NewsHeader /><article className="article-content">
@@ -31,5 +33,5 @@ export default function CisaWatchGuardNewsPage() {
     <p>Organizações que utilizam equipamentos WatchGuard Firebox afetados devem verificar a versão instalada do <strong>Fireware OS</strong> e aplicar as correções de segurança disponibilizadas pela fabricante.</p>
     <p>A WatchGuard também disponibilizou <strong>indicadores de comprometimento (IoCs)</strong> que podem ser utilizados para verificar sinais de exploração nos dispositivos. A confirmação do uso da vulnerabilidade por grupos de ransomware torna especialmente importante a atualização de equipamentos que ainda estejam executando versões vulneráveis.</p>
     <p className="article-source"><strong>Fonte:</strong> BleepingComputer<br /><strong>Matéria original:</strong> <em>CISA: WatchGuard RCE flaw now exploited in ransomware attacks</em><br /><strong>Autor:</strong> Sergiu Gatlan<br /><strong>Publicação:</strong> 10 de setembro de 2026.</p>
-  </article></main>
+  </article><SiteFooter /></main>
 }

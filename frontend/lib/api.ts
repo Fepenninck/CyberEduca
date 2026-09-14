@@ -1,4 +1,8 @@
-export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3002'
+const browserApiUrl = typeof window === 'undefined'
+  ? 'http://localhost:3002'
+  : `${window.location.protocol}//${window.location.hostname}:3002`
+
+export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? browserApiUrl
 
 export type TrackSummary = {
   id: string

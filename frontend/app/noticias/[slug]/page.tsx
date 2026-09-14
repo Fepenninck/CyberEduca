@@ -1,7 +1,9 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { NewsHeader } from '@/components/news-header'
+import { SiteFooter } from '@/components/site-footer'
 import '../../article.css'
+import '../../footer.css'
 
 const articles = {
   'phishing-passkeys-microsoft-365': {
@@ -43,5 +45,6 @@ export default async function NewsArticlePage({ params }: { params: Promise<{ sl
       <section className="article-learning" aria-labelledby="learning-title"><p>O que você aprendeu?</p><h2 id="learning-title">{article.lesson}</h2><p>Informação e hábitos seguros são parte essencial da proteção no mundo digital.</p></section>
       <p className="article-source"><Link href="/#noticias">← Voltar para as notícias</Link></p>
     </article>
+    <SiteFooter />
   </main>
 }

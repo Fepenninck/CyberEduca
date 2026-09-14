@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { NewsHeader } from '@/components/news-header'
+import { SiteFooter } from '@/components/site-footer'
 import '../../article.css'
+import '../../footer.css'
 
 export default function ChromeZeroDayNewsPage() {
   return <main className="article-page">
@@ -42,5 +44,6 @@ export default function ChromeZeroDayNewsPage() {
 
       <p className="article-source"><strong>Fonte:</strong> BleepingComputer<br /><strong>Matéria original:</strong> <em>Google warns of new Chrome zero-day bug exploited in attacks</em><br /><strong>Autor:</strong> Sergiu Gatlan<br /><strong>Publicação:</strong> 9 de setembro de 2026.</p>
     </article>
+    <SiteFooter />
   </main>
 }

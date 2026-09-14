@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { NewsHeader } from '@/components/news-header'
+import { SiteFooter } from '@/components/site-footer'
 import '../../article.css'
+import '../../footer.css'
 
 export default function RevolutExposureNewsPage() {
   return <main className="article-page"><NewsHeader /><article className="article-content">
@@ -33,5 +35,5 @@ export default function RevolutExposureNewsPage() {
     <p>Após detectar a divulgação não autorizada, a Revolut informou ter comunicado o ocorrido às autoridades responsáveis. Além da agência governamental relacionada ao endereço utilizado nas solicitações fraudulentas, foram alertados <strong>órgãos policiais, autoridades de proteção de dados e reguladores financeiros</strong>.</p>
     <p>Até a publicação da matéria, a empresa não havia divulgado publicamente quantos clientes tiveram informações comprometidas.</p>
     <p className="article-source"><strong>Fonte:</strong> Reuters<br /><strong>Matéria original:</strong> <em>Revolut confirms sensitive customer data breach, falling for fake government requests</em><br /><strong>Reportagem:</strong> Sumedha Mukherjee<br /><strong>Edição:</strong> Philippa Fletcher<br /><strong>Publicação:</strong> 12 de setembro de 2026.</p>
-  </article></main>
+  </article><SiteFooter /></main>
 }
