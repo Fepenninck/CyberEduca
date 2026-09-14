@@ -129,9 +129,9 @@ a, button { cursor: pointer; }
 .track-pagination { display: flex; justify-content: center; align-items: center; gap: 10px; margin: 38px 0 4px; }.track-pagination button, .track-pagination span { display: grid; width: 36px; height: 36px; place-items: center; border: 1px solid #33465d; background: #101a29; color: #dce7f2; }.track-pagination span { border-color: #b2ff00; color: #b2ff00; font-weight: 800; }.track-pagination button:hover:not(:disabled) { border-color: #b2ff00; color: #b2ff00; }.track-pagination button:disabled { opacity: .35; cursor: not-allowed; }
 .sort-button { display: flex; align-items: center; gap: 8px; }
 .track-grid { position: relative; z-index: 0; display: grid; width: min(100%, 1100px); box-sizing: border-box; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin: 0 auto; padding: 52px; }
-.track-grid::before { position: absolute; z-index: -1; inset: -110px -130px; content: ''; pointer-events: none; background: url('/trilhas-cards-pattern-v3.png') center / 138% auto no-repeat; }
+.track-grid::before { position: absolute; z-index: -1; inset: -110px -130px; content: ''; pointer-events: none; background: url('/trilhas-cards-pattern-v3.png') center / 138% auto no-repeat; opacity: .38; }
 @media (min-width: 901px) { .track-grid { width: min(100%, 1240px); gap: 20px; padding: 44px 28px; } }
-@media (min-width: 901px) { .track-grid::before { background-position: center calc(50% - 36px); background-size: 126% auto; } }
+@media (min-width: 901px) { .track-grid::before { background-position: center calc(50% - 46px); background-size: 126% auto; } }
 .track-card { position: relative; isolation: isolate; min-height: 0; overflow: hidden; border: 1px solid #30445d; background: #091522; transition: transform .2s, border-color .2s; }
 .tracks-grid-video { min-height: 100%; overflow: hidden; border: 1px solid #30445d; background: #091522; }
 .tracks-grid-video video { display: block; width: 100%; height: 100%; min-height: 100%; object-fit: cover; }
@@ -201,7 +201,7 @@ a, button { cursor: pointer; }
   .track-link-locked { min-height: 40px; font-size: 13px; }
 }
 @media (max-width: 560px) {
-  .track-grid::before { inset: -112px -72px auto; height: 640px; background-image: url('/trilhas-cards-pattern-v3.png'); background-position: center 36px; background-size: 240% auto; background-repeat: no-repeat; }
+  .track-grid::before { inset: -112px -72px auto; height: 640px; background-image: url('/trilhas-cards-pattern-v3.png'); background-position: center 26px; background-size: 240% auto; background-repeat: no-repeat; }
 }
 @media (max-width: 1100px) { .reference-header-inner { display: flex; justify-content: space-between; width: calc(100% - 40px); }.reference-nav, .reference-actions { display: none; }.reference-mobile-button { display: block; border: 1px solid #60718a; background: transparent; color: #fff; padding: 8px; }.reference-mobile-nav { display: flex; flex-direction: column; gap: 18px; border-top: 1px solid #304056; background: #1e2939; padding: 20px; }.reference-mobile-nav .reference-cta { text-align: center; }.reference-header .mega-menu { display: none; } }
 @media (max-width: 560px) { .site-header-inner { height: 64px; }.brand-logo { width: 165px; height: 48px; }.page-hero { padding-top: 54px; }.page-hero h1 { font-size: 3.4rem; }.hero-meta { gap: 20px; }.content-wrap { padding-top: 28px; }.filter-row { align-items: flex-start; }.results-line { margin-top: 20px; }.track-card h2 { font-size: 22px; }.detail-stats { gap: 15px; }.lesson-actions { align-items: flex-start; flex-direction: column; }.lesson-nav-buttons { width: 100%; justify-content: space-between; }.not-found h1 { font-size: 32px; }.not-found > div:last-child { flex-direction: column; } }
