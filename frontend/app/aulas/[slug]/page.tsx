@@ -1,3 +1,6 @@
-import { BlankPage } from '@/components/blank-page'
+import { LessonStudy } from './lesson-study-markdown'
 
-export default function AulaPage() { return <BlankPage /> }
+export default async function LessonPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  return <LessonStudy lessonId={slug} />
+}

@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id         String          @id @default(uuid())
+  nome       String
+  email      String          @unique
+  senhaHash  String
+  papel      String          @default("USUARIO")
+  criadoEm   DateTime        @default(now())
+  progressos ProgressoAula[]
+}
+
+model Trilha {
+  id        String @id @default(uuid())
+  titulo    String
+  descricao String
+  nivel     NivelTrilha @default(BASICO)
+  bloqueada Boolean      @default(false)
+  ordem     Int
+  aulas     Aula[]
+}
+
+enum NivelTrilha {
+  BASICO
+  INTERMEDIARIO
+  AVANCADO
+}
+
+model Aula {
+  id         String          @id @default(uuid())
+  titulo     String
+  // Conteúdo em Markdown. Comece vazio e preencha quando criar cada aula.
+  // O Markdown suporta títulos, texto, listas, links e imagens.
+  conteudo   String          @default("")
+  ordem      Int
+  trilhaId   String
+  trilha     Trilha          @relation(fields: [trilhaId], references: [id], onDelete: Cascade)
+  progressos ProgressoAula[]
+
+  @@unique([trilhaId, ordem])
+}
+
+model ProgressoAula {
+  id            String   @id @default(uuid())
+  usuarioId     String
+  aulaId        String
+  concluida     Boolean  @default(true)
+  dataConclusao DateTime @default(now())
+  usuario       Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  aula          Aula     @relation(fields: [aulaId], references: [id], onDelete: Cascade)
+
+  @@unique([usuarioId, aulaId])
+}
