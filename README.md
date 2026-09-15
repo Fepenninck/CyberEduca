@@ -40,12 +40,12 @@ Oferecer uma ferramenta prática e acessível de capacitação em ciberseguranç
 
 **Orientador(a):** Alessandro Aparecido da Silva Horas
 
-## 👥 Atores do Sistema
+## Atores do Sistema
 
 - **Administrador:** gerencia trilhas, aulas, quizzes, cenários de phishing e usuários da plataforma pelo painel administrativo.
 - **Usuário:** realiza trilhas e aulas, responde quizzes, pratica no simulador de phishing e acompanha sua evolução e histórico de desempenho.
 
-## ⚙️ Funcionalidades
+## Funcionalidades
 
 - Trilhas de aprendizagem, aulas e conteúdos
 - Acompanhamento de progresso por trilha
@@ -57,7 +57,7 @@ Oferecer uma ferramenta prática e acessível de capacitação em ciberseguranç
 - Navegação entre as áreas do sistema
 - Painel administrativo (dashboard, gerenciamento de trilhas, quizzes, phishing e usuários)
 
-## 🏗️ Arquitetura
+## Arquitetura
 
 ![Arquitetura do CyberEduca+](./assets/arquitetura.png)
 
@@ -65,7 +65,7 @@ O front-end (**Next.js**) consome a API REST do back-end (**NestJS**) via HTTPS,
 
 **Fluxo de comunicação:** Usuário (navegador) → Frontend (Next.js) → Requisição REST (Backend NestJS) → Consulta via Prisma → Banco de Dados (PostgreSQL + Neon) → Infraestrutura (Deploy e CI/CD).
 
-## 🛠️ Stack Tecnológica
+## Stack Tecnológica
 
 | Camada | Tecnologias |
 |---|---|
@@ -126,7 +126,7 @@ Modelo de segurança planejado para o MVP (parte ainda em implementação — ve
 - Auditoria e logs
 - Tratamento de dados pessoais conforme a LGPD (Lei nº 13.709/2018)
 
-## 📌 Status do Projeto
+## Status do Projeto
 
 Projeto em desenvolvimento ativo, seguindo o cronograma do PFC (2026).
 
@@ -144,6 +144,6 @@ Projeto em desenvolvimento ativo, seguindo o cronograma do PFC (2026).
 
 O uso de bibliotecas, APIs e demais recursos de terceiros é identificado e documentado no projeto. O tratamento de dados pessoais, quando existente, observa os princípios e requisitos legais e institucionais aplicáveis.
 
-## 🎓 Instituição
+## Instituição
 
 Projeto desenvolvido para a **Universidade de Mogi das Cruzes - UMC** · Mogi das Cruzes - SP, 2026.
