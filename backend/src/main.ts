@@ -11,8 +11,10 @@ async function bootstrap() {
     ],
   });
 
-  await app.listen(process.env.PORT || 3002);
-  console.log(`API rodando na porta ${process.env.PORT || 3002}`);
+  const port = process.env.PORT || 3002;
+  await app.listen(port, '0.0.0.0');
+
+  console.log(`API rodando na porta ${port}`);
 }
 
 bootstrap();
