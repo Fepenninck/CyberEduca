@@ -42,7 +42,7 @@ export default function TrilhasPage() {
         </video>
         <div className="page-hero-video-overlay" aria-hidden="true" />
         <div className="page-hero-content">
-          <h1 className="tracks-hero-title">Supere lacunas em cibersegurança.<br />Prepare-se para os desafios.</h1>
+          <h1 className="tracks-hero-title"><span>Supere lacunas em cibersegurança.</span><span>Prepare-se para os desafios.</span></h1>
           <p className="tracks-hero-subtitle">Desenvolva e acompanhe sua evolução digital em uma única plataforma<br />de aprendizado.</p>
           <Link className="tracks-hero-cta" href="/login">Iniciar Jornada</Link>
         </div>
