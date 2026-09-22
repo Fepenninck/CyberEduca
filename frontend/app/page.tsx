@@ -33,7 +33,7 @@ export default function Page() {
       <div className="reference-header-inner">
         <a href="#top" className="reference-brand" aria-label="CyberEduca+ início"><img className="reference-logo" src="/cybereduca-logo.png" alt="CyberEduca+" /></a>
         <nav className="reference-nav" aria-label="Navegação principal">{navigation.map((item) => <a key={item.label} href={item.href} className="nav-item">{item.label}</a>)}</nav>
-        <div className="reference-actions"><a href="/progresso" className="nav-item">Progresso</a><a href="/em-breve" className="nav-item">Entrar</a><a href="/trilhas" className="reference-cta">Começar</a></div>
+        <div className="reference-actions"><a href="/progresso" className="nav-item">Progresso</a><a href="/login" className="reference-cta">Entrar</a></div>
         <details className="reference-mobile-menu"><summary className="reference-mobile-button" aria-label="Abrir menu"><Menu className="mobile-menu-icon" preserveAspectRatio="none" /></summary><nav className="reference-mobile-nav">{navigation.map((item) => <a key={item.label} href={item.href} className="nav-item">{item.label}</a>)}<a href="/trilhas" className="reference-cta">Começar agora</a></nav></details>
       </div>
     </header>
@@ -98,10 +98,10 @@ export default function Page() {
             </nav>
             <nav aria-label="Privacidade e segurança">
               <h2>Privacidade</h2>
-              <Link href="/em-breve">Política de privacidade</Link>
-              <Link href="/em-breve">Política de cookies</Link>
-              <Link href="/em-breve">Termos de uso</Link>
-              <Link href="/em-breve">LGPD e seus direitos</Link>
+              <Link href="/politicas#politica-de-privacidade">Política de privacidade</Link>
+              <Link href="/politicas#cookies">Política de cookies</Link>
+              <Link href="/politicas#termos-de-uso">Termos de uso</Link>
+              <Link href="/politicas#direitos">LGPD e seus direitos</Link>
             </nav>
             <nav aria-label="Canais oficiais">
               <h2>Conecte-se</h2>
@@ -113,7 +113,7 @@ export default function Page() {
         </div>
         <div className="ce-footer-bottom">
           <span>© 2026 CyberEduca+. Todos os direitos reservados.</span>
-          <div><Link href="/em-breve">Privacidade</Link><Link href="/em-breve">Cookies</Link><Link href="/em-breve">Termos de uso</Link></div>
+          <div><Link href="/politicas#politica-de-privacidade">Privacidade</Link><Link href="/politicas#cookies">Cookies</Link><Link href="/politicas#termos-de-uso">Termos de uso</Link></div>
         </div>
       </div>
     </footer>
