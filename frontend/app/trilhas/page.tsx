@@ -42,8 +42,9 @@ export default function TrilhasPage() {
         </video>
         <div className="page-hero-video-overlay" aria-hidden="true" />
         <div className="page-hero-content">
-          <img className="page-hero-title-image" src="/trilhas-titulo.png" alt="Trilhas para evoluir com segurança" />
-          <img className="page-hero-subtitle-image" src="/trilhas-subtitulo.png" alt="Escolha uma trilha, avance pelos módulos e aprenda no seu ritmo." />
+          <h1 className="tracks-hero-title">Supere lacunas em cibersegurança.<br />Prepare-se para os desafios.</h1>
+          <p className="tracks-hero-subtitle">Desenvolva e acompanhe sua evolução digital em uma única plataforma<br />de aprendizado.</p>
+          <Link className="tracks-hero-cta" href="/login">Iniciar Jornada</Link>
         </div>
       </section>
       <section className="content-wrap tracks-content">
