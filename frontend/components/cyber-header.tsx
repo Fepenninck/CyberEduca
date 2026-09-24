@@ -16,7 +16,7 @@ export function CyberHeader() {
     <div className="reference-header-inner">
       <Link href="/" className="reference-brand" aria-label="CyberEduca+ início"><img className="reference-logo" src="/cybereduca-logo.png" alt="CyberEduca+" /></Link>
       <nav className="reference-nav" aria-label="Navegação principal">{navigation.map((item) => <Link key={item.label} href={item.href} className="nav-item">{item.label}</Link>)}</nav>
-      <div className="reference-actions"><Link href="/progresso" className="nav-item">Progresso</Link><Link href="/login" className="reference-cta">Entrar</Link></div>
+      <div className="reference-actions"><Link href="/dashboard" className="nav-item">Dashboard</Link><Link href="/login" className="reference-cta">Entrar</Link></div>
       <details className="reference-mobile-menu"><summary className="reference-mobile-button" aria-label="Abrir menu"><Menu className="mobile-menu-icon" preserveAspectRatio="none" /></summary><nav className="reference-mobile-nav">{navigation.map((item) => <Link key={item.label} href={item.href} className="nav-item">{item.label}</Link>)}<Link href="/trilhas" className="reference-cta">Começar agora</Link></nav></details>
     </div>
   </header>
