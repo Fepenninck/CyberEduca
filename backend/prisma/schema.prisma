@@ -37,8 +37,6 @@ enum NivelTrilha {
 model Aula {
   id         String          @id @default(uuid())
   titulo     String
-  // Conteúdo em Markdown. Comece vazio e preencha quando criar cada aula.
-  // O Markdown suporta títulos, texto, listas, links e imagens.
   conteudo   String          @default("")
   ordem      Int
   trilhaId   String

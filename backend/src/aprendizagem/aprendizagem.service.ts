@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 
-// TODO: substituir por req.user.id quando a autenticacao estiver pronta
+// substituir por req.user.id quando a autenticacao estiver pronta
 const USUARIO_DEMO_ID = '11111111-1111-1111-1111-111111111111';
 
 @Injectable()
