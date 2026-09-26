@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { ArrowLeft, ArrowRight, Check, Clock3 } from 'lucide-react'
-import { CyberHeader } from '@/components/cyber-header'
+import { DashboardNavigation } from '@/components/dashboard-navigation'
 import { API_URL } from '@/lib/api'
 
 type NavigationLesson = { id: string; titulo: string; ordem: number } | null
@@ -22,7 +22,7 @@ function extractYoutubeEmbeds(conteudo: string) {
   return { markdown, videos }
 }
 
-export function LessonStudy({ lessonId }: { lessonId: string }) {
+export function LessonStudy({ lessonId, moduleId }: { lessonId: string; moduleId?: string }) {
   const [lesson, setLesson] = useState<Lesson | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -59,15 +59,15 @@ export function LessonStudy({ lessonId }: { lessonId: string }) {
     }
   }
 
-  if (loading) return <main className="app-shell"><CyberHeader /><p className="content-wrap">Carregando aula...</p></main>
-  if (error || !lesson) return <main className="app-shell"><CyberHeader /><p className="content-wrap">{error || 'Aula não encontrada.'}</p></main>
+  if (loading) return <main className="app-shell dashboard-page"><DashboardNavigation active="aulas" /><p className="content-wrap">Carregando aula...</p></main>
+  if (error || !lesson) return <main className="app-shell dashboard-page"><DashboardNavigation active="aulas" /><p className="content-wrap">{error || 'Aula não encontrada.'}</p></main>
   const { markdown, videos } = extractYoutubeEmbeds(lesson.conteudo)
 
   return (
-    <main className="app-shell">
-      <CyberHeader />
+    <main className="app-shell dashboard-page">
+      <DashboardNavigation active="aulas" />
       <article className="lesson-content mx-auto">
-        <Link href="/trilhas" className="back-link"><ArrowLeft size={16} /> Voltar para trilhas</Link>
+        <Link href={moduleId ? `/aulas/modulo/${moduleId}` : '/aulas'} className="back-link"><ArrowLeft size={16} /> Voltar para aulas</Link>
         <div className="lesson-topline"><span>{lesson.trilha.titulo}</span><span>Aula {String(lesson.ordem).padStart(2, '0')}</span></div>
         <div className="eyebrow">Aula</div>
         <h1>{lesson.titulo}</h1>
@@ -84,8 +84,8 @@ export function LessonStudy({ lessonId }: { lessonId: string }) {
             {lesson.concluida ? <><Check size={18} /> Aula concluída</> : saving ? 'Salvando...' : 'Marcar como concluída'}
           </button>
           <nav className="lesson-nav-buttons" aria-label="Navegação entre aulas">
-            {lesson.anterior && <Link href={'/aulas/' + lesson.anterior.id}><ArrowLeft size={16} /> Anterior</Link>}
-            {lesson.proxima && <Link href={'/aulas/' + lesson.proxima.id}>Próxima aula <ArrowRight size={16} /></Link>}
+            {lesson.anterior && <Link href={moduleId ? `/aulas/modulo/${moduleId}/aula/${lesson.anterior.id}` : '/aulas/' + lesson.anterior.id}><ArrowLeft size={16} /> Anterior</Link>}
+            {lesson.proxima && <Link href={moduleId ? `/aulas/modulo/${moduleId}/aula/${lesson.proxima.id}` : '/aulas/' + lesson.proxima.id}>Próxima aula <ArrowRight size={16} /></Link>}
           </nav>
         </div>
       </article>

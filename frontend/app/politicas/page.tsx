@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 import { CyberHeader } from '@/components/cyber-header'
+import { DashboardNavigation } from '@/components/dashboard-navigation'
 import { SiteFooter } from '@/components/site-footer'
 import './politicas.css'
 import '../footer.css'
@@ -43,13 +44,17 @@ function LegalCards({ items }: { items: (string | ReactNode)[][] }) {
   return <div className="legal-cards">{items.map(([id, title, content], index) => <article className="legal-card" id={String(id)} key={String(id)}><h2><span>{String(index + 1).padStart(2, '0')}</span>{title}</h2><div className="legal-copy">{content}</div></article>)}</div>
 }
 
-export default function PoliticasPage() {
-  return <><CyberHeader /><main className="legal-page">
+export function LegalPolicyContent({ loggedIn = false }: { loggedIn?: boolean }) {
+  return <>{loggedIn ? <DashboardNavigation /> : <CyberHeader />}<main className={`legal-page${loggedIn ? ' legal-page-internal' : ''}`}>
     <aside className="legal-index"><p>Nesta página</p><nav><h2>Termos de Uso</h2>{termIndexItems.map(([id, label, number]) => <a href={`#${id}`} key={id}><span>{String(number).padStart(2, '0')}</span>{label}</a>)}<h2>Privacidade e LGPD</h2>{privacyIndexItems.map(([id, label, number]) => <a href={`#${id}`} key={id}><span>{String(number).padStart(2, '0')}</span>{label}</a>)}</nav></aside>
     <div className="legal-content">
       <section className="legal-section" id="termos-de-uso"><span className="legal-eyebrow">Termos de Uso</span><h1>Condições claras para uma experiência de aprendizagem segura</h1><p className="legal-lead">Estas regras explicam como utilizar o CyberEduca+ de forma responsável, segura e compatível com sua finalidade educacional.</p><LegalCards items={terms} /></section>
       <section className="legal-section legal-privacy" id="politica-de-privacidade"><span className="legal-eyebrow">Política de Privacidade e LGPD</span><h1>Transparência e controle sobre seus dados pessoais</h1><p className="legal-lead">Esta política descreve quais dados são tratados, por que são necessários, como são protegidos e como você pode exercer seus direitos.</p><LegalCards items={privacy} /></section>
       <footer className="legal-footer"><span>Última atualização: 22 de setembro de 2026</span></footer>
     </div>
-  </main><SiteFooter /></>
+  </main>{!loggedIn && <SiteFooter />}</>
+}
+
+export default function PoliticasPage() {
+  return <LegalPolicyContent />
 }
