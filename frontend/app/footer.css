@@ -1,5 +1,8 @@
 .ce-footer { position:relative; isolation:isolate; overflow:hidden; background:#0f1623; color:#f3f5f8; padding:72px 0 0; }
 .tracks-footer { background:#080d18; }
+.article-footer.tracks-footer { background:#080d18; }
+.trilhas-page { display:flex; flex-direction:column; min-height:100vh; }
+.trilhas-page .page-hero { flex:1; }
 .article-footer { background:#0f1623; }
 .ce-footer:before { position:absolute; z-index:-1; right:5%; bottom:-315px; width:590px; height:590px; background:url('/footer-lock-icon.png') center/contain no-repeat; content:''; opacity:.055; pointer-events:none; }
 .ce-footer .ce-container { position:relative; z-index:1; width:min(100% - 64px,1180px); margin-inline:auto; }

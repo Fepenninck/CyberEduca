@@ -5,13 +5,12 @@ import Link from 'next/link'
 import './footer.css'
 import './home-hero.css'
 import { Menu } from 'lucide-react'
+import { PlatformMegaMenu } from '@/components/platform-mega-menu'
+import { SiteFooter } from '@/components/site-footer'
 
 const navigation = [
   { label: 'Início', href: '/' },
-  { label: 'Plataforma', href: '/em-breve' },
   { label: 'Trilhas', href: '/trilhas' },
-  { label: 'Recursos', href: '/em-breve' },
-  { label: 'Sobre', href: '/em-breve' },
 ]
 const panels = [
   { title: 'Aprenda a se proteger', heading: 'Conheça as ameaças. Proteja sua vida digital.', description: 'Explore trilhas e aulas sobre segurança digital. Entenda os riscos, conheça boas práticas e desenvolva hábitos para proteger suas informações.', features: [['Reconheça ameaças digitais', 'Aprenda a identificar golpes, fraudes e comportamentos suspeitos.'], ['Proteja suas informações', 'Adote práticas simples para manter contas e dados pessoais seguros.'], ['Navegue com mais segurança', 'Tome decisões mais conscientes em sua rotina digital.']] },
@@ -20,7 +19,8 @@ const panels = [
 ]
 
 export default function Page() {
-  const [activePanel, setActivePanel] = useState<number | null>(null)
+  const [activePanel, setActivePanel] = useState<number | null>(0)
+  const [platformOpen, setPlatformOpen] = useState(false)
   const panel = panels[activePanel ?? 0]
   const togglePanel = (index: number) => {
     const closing = activePanel === index
@@ -28,20 +28,21 @@ export default function Page() {
     if (!closing && window.matchMedia('(max-width: 600px)').matches) window.setTimeout(() => document.getElementById('home-intro-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0)
   }
 
-  return <main className="home-page">
-    <header className="reference-header">
+  return <main className={`home-page${platformOpen ? ' is-platform-open' : ''}`}>
+    <header className="reference-header" onMouseLeave={() => setPlatformOpen(false)}>
       <div className="reference-header-inner">
         <a href="#top" className="reference-brand" aria-label="CyberEduca+ início"><img className="reference-logo" src="/cybereduca-logo.png" alt="CyberEduca+" /></a>
-        <nav className="reference-nav" aria-label="Navegação principal">{navigation.map((item) => <a key={item.label} href={item.href} className="nav-item">{item.label}</a>)}</nav>
-        <div className="reference-actions"><a href="/dashboard" className="nav-item">Dashboard</a><a href="/login" className="reference-cta">Entrar</a></div>
+        <nav className="reference-nav" aria-label="Navegação principal"><a href="#top" className="nav-item">Início</a><button type="button" className={`nav-item platform-menu-toggle ${platformOpen ? 'active' : ''}`} onMouseEnter={() => setPlatformOpen(true)} onFocus={() => setPlatformOpen(true)} aria-expanded={platformOpen}>Plataforma</button>{navigation.slice(1).map((item) => <a key={item.label} href={item.href} className="nav-item">{item.label}</a>)}<Link href="/ajuda" className="nav-item">Ajuda</Link></nav>
+        <div className="reference-actions"><a href="/em-breve" className="nav-item">Sobre</a><a href="/login" className="reference-cta">Acessar</a></div>
         <details className="reference-mobile-menu"><summary className="reference-mobile-button" aria-label="Abrir menu"><Menu className="mobile-menu-icon" preserveAspectRatio="none" /></summary><nav className="reference-mobile-nav">{navigation.map((item) => <a key={item.label} href={item.href} className="nav-item">{item.label}</a>)}<a href="/trilhas" className="reference-cta">Começar agora</a></nav></details>
       </div>
+      {platformOpen && <PlatformMegaMenu />}
     </header>
 
     <section id="top" className="home-intro">
       <div className="home-intro-background" aria-hidden="true"><div className="home-intro-shape" /><div className="home-intro-photo" /><div className="home-intro-photo home-intro-photo-lower" /><div className="home-intro-line home-intro-line-top" /><div className="home-intro-line home-intro-line-bottom" /><div className="home-intro-dots" /></div>
       <div className="home-intro-inner">
-        <div className="home-intro-copy"><h1>Aprenda a se proteger<br className="home-title-break" /> no mundo digital</h1><p>Desenvolva conhecimentos e boas práticas de segurança digital com trilhas e aulas que ajudam você a reconhecer ameaças e proteger suas informações.</p><div className="home-intro-actions"><Link href="/trilhas" className="home-intro-primary">Explorar trilhas</Link><Link href="/dashboard" className="home-intro-secondary">Meu dashboard</Link></div></div>
+        <div className="home-intro-copy"><h1>Aprenda a se proteger<br className="home-title-break" /> no mundo digital</h1><p>Desenvolva conhecimentos e boas práticas de segurança digital com trilhas e aulas que ajudam você a reconhecer ameaças e proteger suas informações.</p><div className="home-intro-actions"><Link href="/login" className="home-intro-primary">Começar agora</Link><Link href="/dicas" className="home-intro-secondary">Ver dicas</Link></div></div>
         <div className="home-intro-tabs" aria-label="Conheça a aprendizagem">{panels.map((item, index) => <button key={item.title} onPointerUp={(event) => { event.preventDefault(); togglePanel(index) }} aria-pressed={activePanel === index} aria-controls="home-intro-panel">{item.title}</button>)}</div>
         <div className="home-mobile-accordions" aria-label="Conheça a aprendizagem">{panels.map((item, index) => <details key={item.title}><summary>{item.title}</summary><div className="home-mobile-accordion-body"><div className="home-mobile-accordion-content"><h2>{item.heading}</h2><p>{item.description}</p><div className="home-mobile-accordion-features">{item.features.map(([title, description]) => <div key={title}><strong>{title}</strong><span>{description}</span></div>)}</div><img src={index === 0 ? '/aprenda-a-se-proteger.png' : index === 1 ? '/desenvolva-seu-conhecimento.png' : '/acompanhe-sua-evolucao.png'} alt="" /></div></div></details>)}</div>
         <article id="home-intro-panel" className={`home-intro-panel${activePanel !== null ? ' is-open' : ''}`}><div className="home-intro-panel-copy"><h2>{panel.heading}</h2><p>{panel.description}</p><div className="home-intro-features">{panel.features.map(([title, description]) => <div className="home-intro-feature" key={title}><strong>{title}</strong><span>{description}</span></div>)}</div></div><div className="home-intro-art" aria-label="Ilustração da seção">{(activePanel ?? 0) === 0 ? <img className="home-intro-art-image" src="/aprenda-a-se-proteger.png" alt="Pessoa usando um notebook protegida por um escudo digital" /> : (activePanel ?? 0) === 1 ? <img className="home-intro-art-image" src="/desenvolva-seu-conhecimento.png" alt="Pessoa estudando conteúdos de cibersegurança" /> : <img className="home-intro-art-image" src="/acompanhe-sua-evolucao.png" alt="Pessoa acompanhando seu progresso em segurança digital" />}</div></article>
@@ -117,5 +118,6 @@ export default function Page() {
         </div>
       </div>
     </footer>
+    <SiteFooter />
   </main>
 }
