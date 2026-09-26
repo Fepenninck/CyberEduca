@@ -1,5 +1,6 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Request, UseGuards } from '@nestjs/common';
 import { UsuariosService } from './usuarios.service';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('usuarios')
 export class UsuariosController {
@@ -14,6 +15,12 @@ export class UsuariosController {
             dados.email,
             dados.senha,
         );
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('me')
+    meuPerfil(@Request() req: any) {
+        return req.user;
     }
 
     @Get(':id')
