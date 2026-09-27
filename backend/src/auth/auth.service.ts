@@ -50,6 +50,11 @@ export class AuthService {
       throw new UnauthorizedException('Credenciais inválidas.');
     }
 
+    // Conta criada via Google não possui senha local
+    if (!user.senhaHash) {
+      throw new UnauthorizedException('Esta conta usa login com Google.');
+    }
+
     // Compara a senha do DTO com o 'senhaHash' do banco
     const isPasswordValid = await bcrypt.compare(dto.password, user.senhaHash);
 

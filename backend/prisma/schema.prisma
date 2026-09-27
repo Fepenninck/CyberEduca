@@ -11,7 +11,8 @@ model Usuario {
   id         String          @id @default(uuid())
   nome       String
   email      String          @unique
-  senhaHash  String
+  senhaHash  String?
+  googleId   String?         @unique
   papel      String          @default("USUARIO")
   criadoEm   DateTime        @default(now())
   atualizadoEm DateTime @default(now()) @updatedAt
