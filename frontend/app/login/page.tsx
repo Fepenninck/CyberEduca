@@ -4,6 +4,7 @@ import { FormEvent, useState } from 'react'
 import Link from 'next/link'
 import { AlertCircle } from 'lucide-react'
 import './login.css'
+import { useRouter } from 'next/navigation'
 
 type Errors = { email?: string; password?: string }
 
@@ -15,17 +16,46 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [errors, setErrors] = useState<Errors>({})
+  const router = useRouter()
+  const [apiError, setApiError] = useState('')
+  const [loading, setLoading] = useState(false)
   const formIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && password.length >= 6
 
-  const submit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    const nextErrors: Errors = {}
-    if (!email.trim()) nextErrors.email = 'Informe seu e-mail.'
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) nextErrors.email = 'Digite um e-mail válido.'
-    if (!password) nextErrors.password = 'Informe sua senha.'
-    else if (password.length < 6) nextErrors.password = 'A senha deve ter pelo menos 6 caracteres.'
-    setErrors(nextErrors)
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
+  event.preventDefault()
+  const nextErrors: Errors = {}
+  if (!email.trim()) nextErrors.email = 'Informe seu e-mail.'
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) nextErrors.email = 'Digite um e-mail válido.'
+  if (!password) nextErrors.password = 'Informe sua senha.'
+  else if (password.length < 6) nextErrors.password = 'A senha deve ter pelo menos 6 caracteres.'
+  setErrors(nextErrors)
+  if (Object.keys(nextErrors).length > 0) return
+
+  setApiError('')
+  setLoading(true)
+
+  try {
+    const resposta = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    })
+
+    const dados = await resposta.json()
+
+    if (!resposta.ok) {
+      setApiError(dados.message || 'Não foi possível entrar.')
+      return
+    }
+
+    localStorage.setItem('token', dados.access_token)
+    router.push('/dashboard')
+  } catch {
+    setApiError('Erro de conexão com o servidor.')
+  } finally {
+    setLoading(false)
   }
+}
 
   return <main className="login-page">
     <div className="login-shell">
@@ -36,6 +66,7 @@ export default function LoginPage() {
           <div className="login-field"><label htmlFor="email">E-mail</label><div className={`login-input${errors.email ? ' is-invalid' : ''}`}><input id="email" name="email" type="email" autoComplete="email" value={email} onChange={(event) => { setEmail(event.target.value); setErrors((current) => ({ ...current, email: undefined })) }} aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? 'email-error' : undefined} />{errors.email && <AlertCircle aria-hidden="true" />}</div>{errors.email && <p className="login-error" id="email-error">{errors.email}</p>}</div>
           <div className="login-field"><label htmlFor="password">Senha</label><div className={`login-input${errors.password ? ' is-invalid' : ''}`}><input id="password" name="password" type={showPassword ? 'text' : 'password'} autoComplete="current-password" value={password} onChange={(event) => { setPassword(event.target.value); setErrors((current) => ({ ...current, password: undefined })) }} aria-invalid={Boolean(errors.password)} aria-describedby={errors.password ? 'password-error' : undefined} /><button type="button" className="password-toggle" onClick={() => setShowPassword((visible) => !visible)} aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}>{showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}</button></div>{errors.password && <p className="login-error" id="password-error">{errors.password}</p>}</div>
           <div className="login-options"><Link href="/em-breve">Esqueceu sua senha?</Link></div>
+          {apiError && <p className="login-error">{apiError}</p>}
           <button className="login-submit" type="submit" aria-disabled={!formIsValid}>Entrar</button>
         </form>
         <div className="login-divider"><span>ou</span></div>

@@ -4,6 +4,7 @@ import { FormEvent, useState } from 'react'
 import Link from 'next/link'
 import { AlertCircle } from 'lucide-react'
 import '../login/login.css'
+import { useRouter } from 'next/navigation'
 
 type Errors = { name?: string; email?: string; password?: string; confirmPassword?: string; terms?: string }
 
@@ -19,26 +20,54 @@ export default function CadastroPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [acceptedTerms, setAcceptedTerms] = useState(false)
   const [errors, setErrors] = useState<Errors>({})
+  const router = useRouter()
+  const [apiError, setApiError] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const emailIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
   const formIsValid = name.trim().length >= 2 && emailIsValid && password.length >= 8 && password === confirmPassword && acceptedTerms
 
   const clearError = (field: keyof Errors) => setErrors((current) => ({ ...current, [field]: undefined }))
 
-  const submit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    const nextErrors: Errors = {}
-    if (!name.trim()) nextErrors.name = 'Informe seu nome.'
-    else if (name.trim().length < 2) nextErrors.name = 'Digite um nome válido.'
-    if (!email.trim()) nextErrors.email = 'Informe seu e-mail.'
-    else if (!emailIsValid) nextErrors.email = 'Digite um e-mail válido.'
-    if (!password) nextErrors.password = 'Crie uma senha.'
-    else if (password.length < 8) nextErrors.password = 'A senha deve ter pelo menos 8 caracteres.'
-    if (!confirmPassword) nextErrors.confirmPassword = 'Confirme sua senha.'
-    else if (password !== confirmPassword) nextErrors.confirmPassword = 'As senhas não coincidem.'
-    if (!acceptedTerms) nextErrors.terms = 'Você precisa aceitar os termos para continuar.'
-    setErrors(nextErrors)
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
+  event.preventDefault()
+  const nextErrors: Errors = {}
+  if (!name.trim()) nextErrors.name = 'Informe seu nome.'
+  else if (name.trim().length < 2) nextErrors.name = 'Digite um nome válido.'
+  if (!email.trim()) nextErrors.email = 'Informe seu e-mail.'
+  else if (!emailIsValid) nextErrors.email = 'Digite um e-mail válido.'
+  if (!password) nextErrors.password = 'Crie uma senha.'
+  else if (password.length < 8) nextErrors.password = 'A senha deve ter pelo menos 8 caracteres.'
+  if (!confirmPassword) nextErrors.confirmPassword = 'Confirme sua senha.'
+  else if (password !== confirmPassword) nextErrors.confirmPassword = 'As senhas não coincidem.'
+  if (!acceptedTerms) nextErrors.terms = 'Você precisa aceitar os termos para continuar.'
+  setErrors(nextErrors)
+  if (Object.keys(nextErrors).length > 0) return
+
+  setApiError('')
+  setLoading(true)
+
+  try {
+    const resposta = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password }),
+    })
+
+    const dados = await resposta.json()
+
+    if (!resposta.ok) {
+      setApiError(Array.isArray(dados.message) ? dados.message.join(' ') : dados.message || 'Não foi possível criar a conta.')
+      return
+    }
+
+    router.push('/login')
+  } catch {
+    setApiError('Erro de conexão com o servidor.')
+  } finally {
+    setLoading(false)
   }
+}
 
   return <main className="login-page signup-page">
     <div className="login-shell">
@@ -56,7 +85,7 @@ export default function CadastroPage() {
 
           <label className="signup-terms"><input type="checkbox" checked={acceptedTerms} onChange={(event) => { setAcceptedTerms(event.target.checked); clearError('terms') }} /><span className="remember-box" aria-hidden="true" /><span>Li e aceito os <Link href="/politicas#termos-de-uso">Termos de Uso</Link> e a <Link href="/politicas#politica-de-privacidade">Política de Privacidade e LGPD</Link>.</span></label>
           {errors.terms && <p className="login-error signup-terms-error">{errors.terms}</p>}
-
+          {apiError && <p className="login-error">{apiError}</p>}
           <button className="login-submit" type="submit" aria-disabled={!formIsValid}>Criar conta</button>
         </form>
 
