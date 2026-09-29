@@ -1,21 +1,11 @@
-import { Body, Controller, Get, Param, Patch, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Request, UseGuards } from '@nestjs/common';
 import { UsuariosService } from './usuarios.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Controller('usuarios')
 export class UsuariosController {
     constructor(private readonly usuariosService: UsuariosService) {}
-
-    @Post()
-    criar(
-        @Body() dados: { nome: string; email: string; senha: string },
-    ) {
-        return this.usuariosService.criar(
-            dados.nome,
-            dados.email,
-            dados.senha,
-        );
-    }
 
     @UseGuards(JwtAuthGuard)
     @Get('me')
@@ -23,17 +13,10 @@ export class UsuariosController {
         return req.user;
     }
 
-    @Get(':id')
-    buscarPorId(@Param('id') id: string) {
-        return this.usuariosService.buscarPorId(id);
+    @UseGuards(JwtAuthGuard)
+    @Patch('me')
+    atualizarMeuPerfil(@Request() req: any, @Body() dados: UpdateProfileDto) {
+        return this.usuariosService.atualizar(req.user.id, dados);
     }
 
-    @Patch(':id')
-    atualizar(
-        @Param('id') id: string,
-        @Body() dados: { nome?: string; email?: string; senha?: string },
-    ) {
-        return this.usuariosService.atualizar(id, dados);
-    }
-    
 }

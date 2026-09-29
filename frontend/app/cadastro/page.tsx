@@ -5,8 +5,19 @@ import Link from 'next/link'
 import { AlertCircle } from 'lucide-react'
 import '../login/login.css'
 import { useRouter } from 'next/navigation'
+import { apiFetch } from '@/lib/api'
 
 type Errors = { name?: string; email?: string; password?: string; confirmPassword?: string; terms?: string }
+
+const passwordRules = [
+  { label: '8 caracteres', test: (value: string) => value.length >= 8 },
+  { label: 'Uma letra maiúscula', test: (value: string) => /[A-Z]/.test(value) },
+  { label: 'Uma letra minúscula', test: (value: string) => /[a-z]/.test(value) },
+  { label: 'Um número', test: (value: string) => /\d/.test(value) },
+  { label: 'Um caractere especial', test: (value: string) => /[^A-Za-z0-9\s]/.test(value) },
+]
+
+const passwordIsValid = (value: string) => passwordRules.every((rule) => rule.test(value))
 
 const VisibilityIcon = () => <svg className="visibility-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5C21.27 7.61 17 4.5 12 4.5Zm0 12.5a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z" /></svg>
 const VisibilityOffIcon = () => <svg className="visibility-off-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5C21.27 7.61 17 4.5 12 4.5Zm0 12.5a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z" /><path className="visibility-off-cut" d="M4 4 20 20" /><path className="visibility-off-slash" d="M4 4 20 20" /></svg>
@@ -25,7 +36,7 @@ export default function CadastroPage() {
   const [loading, setLoading] = useState(false)
 
   const emailIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-  const formIsValid = name.trim().length >= 2 && emailIsValid && password.length >= 8 && password === confirmPassword && acceptedTerms
+  const formIsValid = name.trim().length >= 2 && emailIsValid && passwordIsValid(password) && password === confirmPassword && acceptedTerms
 
   const clearError = (field: keyof Errors) => setErrors((current) => ({ ...current, [field]: undefined }))
 
@@ -37,7 +48,7 @@ export default function CadastroPage() {
   if (!email.trim()) nextErrors.email = 'Informe seu e-mail.'
   else if (!emailIsValid) nextErrors.email = 'Digite um e-mail válido.'
   if (!password) nextErrors.password = 'Crie uma senha.'
-  else if (password.length < 8) nextErrors.password = 'A senha deve ter pelo menos 8 caracteres.'
+  else if (!passwordIsValid(password)) nextErrors.password = 'A senha não atende a todos os requisitos.'
   if (!confirmPassword) nextErrors.confirmPassword = 'Confirme sua senha.'
   else if (password !== confirmPassword) nextErrors.confirmPassword = 'As senhas não coincidem.'
   if (!acceptedTerms) nextErrors.terms = 'Você precisa aceitar os termos para continuar.'
@@ -48,7 +59,7 @@ export default function CadastroPage() {
   setLoading(true)
 
   try {
-    const resposta = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
+    const resposta = await apiFetch('/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, email, password }),
@@ -79,7 +90,7 @@ export default function CadastroPage() {
 
           <div className="login-field"><label htmlFor="signup-email">E-mail</label><div className={`login-input${errors.email ? ' is-invalid' : ''}`}><input id="signup-email" name="signup-email" type="email" autoComplete="email" value={email} onChange={(event) => { setEmail(event.target.value); clearError('email') }} aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? 'signup-email-error' : undefined} />{errors.email && <AlertCircle aria-hidden="true" />}</div>{errors.email && <p className="login-error" id="signup-email-error">{errors.email}</p>}</div>
 
-          <div className="login-field"><label htmlFor="signup-password">Senha</label><div className={`login-input${errors.password ? ' is-invalid' : ''}`}><input id="signup-password" name="signup-password" type={showPassword ? 'text' : 'password'} autoComplete="new-password" value={password} onChange={(event) => { setPassword(event.target.value); clearError('password') }} aria-invalid={Boolean(errors.password)} aria-describedby={errors.password ? 'signup-password-error' : undefined} /><button type="button" className="password-toggle" onClick={() => setShowPassword((visible) => !visible)} aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}>{showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}</button></div>{errors.password && <p className="login-error" id="signup-password-error">{errors.password}</p>}</div>
+          <div className="login-field signup-password-field"><label htmlFor="signup-password">Senha</label><div className={`login-input${errors.password ? ' is-invalid' : ''}`}><input id="signup-password" name="signup-password" type={showPassword ? 'text' : 'password'} autoComplete="new-password" value={password} onChange={(event) => { setPassword(event.target.value); clearError('password') }} aria-invalid={Boolean(errors.password)} aria-describedby={`${errors.password ? 'signup-password-error ' : ''}password-requirements`} /><button type="button" className="password-toggle" onClick={() => setShowPassword((visible) => !visible)} aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}>{showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}</button></div>{errors.password && <p className="login-error" id="signup-password-error">{errors.password}</p>}<ul className="password-requirements" id="password-requirements" aria-label="Requisitos da senha">{passwordRules.map((rule) => <li className={rule.test(password) ? 'is-met' : ''} key={rule.label}>{rule.label}</li>)}</ul></div>
 
           <div className="login-field"><label htmlFor="confirm-password">Confirmar senha</label><div className={`login-input${errors.confirmPassword ? ' is-invalid' : ''}`}><input id="confirm-password" name="confirm-password" type={showConfirmPassword ? 'text' : 'password'} autoComplete="new-password" value={confirmPassword} onChange={(event) => { setConfirmPassword(event.target.value); clearError('confirmPassword') }} aria-invalid={Boolean(errors.confirmPassword)} aria-describedby={errors.confirmPassword ? 'confirm-password-error' : undefined} /><button type="button" className="password-toggle" onClick={() => setShowConfirmPassword((visible) => !visible)} aria-label={showConfirmPassword ? 'Ocultar senha' : 'Mostrar senha'}>{showConfirmPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}</button></div>{errors.confirmPassword && <p className="login-error" id="confirm-password-error">{errors.confirmPassword}</p>}</div>
 

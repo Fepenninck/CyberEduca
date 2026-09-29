@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   BookOpen,
   Check,
@@ -14,7 +15,7 @@ import {
   Menu,
   MonitorPlay,
 } from 'lucide-react'
-import { API_URL, TrackDetail, TrackSummary } from '@/lib/api'
+import { API_URL, getCurrentUser, TrackDetail, TrackSummary } from '@/lib/api'
 import { UserMenu } from '@/components/user-menu'
 import { DashboardNavigation } from '@/components/dashboard-navigation'
 
@@ -25,15 +26,18 @@ const trackThemes = [
 ]
 
 export default function DashboardPage() {
+  const router = useRouter()
   const [tracks, setTracks] = useState<TrackSummary[]>([])
   const [lessons, setLessons] = useState<TrackDetail['aulas']>([])
+  const [userName, setUserName] = useState('')
 
   useEffect(() => {
+    getCurrentUser().then((user) => setUserName(user.nome)).catch(() => router.replace('/login'))
     fetch(`${API_URL}/trilhas`)
       .then((response) => response.ok ? response.json() : Promise.reject(new Error('Não foi possível carregar as trilhas.')))
       .then(setTracks)
       .catch(() => setTracks([]))
-  }, [])
+  }, [router])
 
   const selectedTrack = tracks.find((track) => track.percentual > 0 && track.percentual < 100) ?? tracks[0]
 
@@ -61,7 +65,7 @@ export default function DashboardPage() {
     const themeIndex = currentTrack ? tracks.indexOf(currentTrack) % trackThemes.length : 0
 
     return {
-      userName: '',
+      userName,
       currentTrack: currentTrack?.titulo ?? 'Escolha uma trilha para começar',
       currentTrackImage: trackThemes[themeIndex].image,
       currentModule: currentLesson ? `Aula ${currentLesson.ordem}` : 'Sem aula disponível',
@@ -78,7 +82,7 @@ export default function DashboardPage() {
         status: track.percentual ? `${track.percentual}% concluído` : 'Não iniciado',
       })),
     }
-  }, [currentLesson, selectedTrack, tracks])
+  }, [currentLesson, selectedTrack, tracks, userName])
 
   const moduleCompleted = data.currentProgress === 100
   const moduleStatus = moduleCompleted ? 'Concluído' : data.currentProgress > 0 ? 'Em andamento' : 'Não iniciado'

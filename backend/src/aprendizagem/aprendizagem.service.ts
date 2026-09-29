@@ -4,6 +4,22 @@ import { PrismaService } from '../prisma.service';
 // TODO: substituir por req.user.id quando a autenticacao estiver pronta
 const USUARIO_DEMO_ID = '11111111-1111-1111-1111-111111111111';
 
+type TrilhaListada = {
+  id: string;
+  titulo: string;
+  descricao: string;
+  nivel: string;
+  bloqueada: boolean;
+  ordem: number;
+  _count: { aulas: number };
+};
+
+type AulaResumida = {
+  id: string;
+  titulo: string;
+  ordem: number;
+};
+
 @Injectable()
 export class AprendizagemService {
   constructor(private prisma: PrismaService) {}
@@ -67,7 +83,7 @@ async editarAula(
     });
 
     return Promise.all(
-      trilhas.map(async (t) => ({
+      trilhas.map(async (t: TrilhaListada) => ({
         id: t.id,
         titulo: t.titulo,
         descricao: t.descricao,
@@ -96,7 +112,7 @@ async editarAula(
       where: { usuarioId: USUARIO_DEMO_ID, aula: { trilhaId: id } },
       select: { aulaId: true },
     });
-    const idsConcluidas = new Set(concluidas.map((c) => c.aulaId));
+    const idsConcluidas = new Set(concluidas.map((c: { aulaId: string }) => c.aulaId));
 
     return {
       id: trilha.id,
@@ -105,7 +121,7 @@ async editarAula(
       nivel: trilha.nivel,
       bloqueada: false,
       percentual: await this.calcularPercentual(id),
-      aulas: trilha.aulas.map((a) => ({
+      aulas: trilha.aulas.map((a: AulaResumida) => ({
         id: a.id,
         titulo: a.titulo,
         ordem: a.ordem,
@@ -207,7 +223,9 @@ async editarAula(
 
     if (anteriores.length === 0) return false;
 
-    const percentuais = await Promise.all(anteriores.map((anterior) => this.calcularPercentual(anterior.id)));
+    const percentuais = await Promise.all(
+      anteriores.map((anterior: { id: string }) => this.calcularPercentual(anterior.id)),
+    );
     return percentuais.some((percentual) => percentual < 100);
   }
 }

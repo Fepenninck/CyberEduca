@@ -7,10 +7,10 @@ export function CookieConsent() {
   const [visible, setVisible] = useState(false)
   const pathname = usePathname()
 
-  useEffect(() => { setVisible(!window.localStorage.getItem('cybereduca-cookie-consent')) }, [])
+  useEffect(() => { setVisible(!document.cookie.split('; ').some((cookie) => cookie.startsWith('cybereduca_cookie_consent='))) }, [])
 
   const saveChoice = (choice: 'accepted' | 'rejected') => {
-    window.localStorage.setItem('cybereduca-cookie-consent', choice)
+    document.cookie = `cybereduca_cookie_consent=${choice}; Max-Age=31536000; Path=/; SameSite=Lax${window.location.protocol === 'https:' ? '; Secure' : ''}`
     setVisible(false)
   }
 

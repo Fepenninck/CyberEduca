@@ -3,23 +3,12 @@
 import Link from 'next/link'
 import { Camera, Cog, LockKeyhole, LogOut, ShieldCheck, UserRound, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { apiFetch, getCurrentUser, updateCurrentUser } from '@/lib/api'
 
-type Profile = { nome: string; email: string; foto?: string }
+type Profile = { nome: string; email: string; foto?: string | null }
 
 const defaultProfile: Profile = { nome: '', email: '' }
-
-export function getStoredProfile(): Profile {
-  if (typeof window === 'undefined') return defaultProfile
-  try {
-    const stored = JSON.parse(localStorage.getItem('cybereduca-profile') ?? '{}') as Profile
-    if (stored.nome === 'Felipe Penninck' && stored.email === 'felipe@cybereduca.com') {
-      const cleanedProfile = { ...stored, nome: '', email: '' }
-      localStorage.setItem('cybereduca-profile', JSON.stringify(cleanedProfile))
-      return { ...defaultProfile, ...cleanedProfile }
-    }
-    return { ...defaultProfile, ...stored }
-  } catch { return defaultProfile }
-}
 
 export function UserMenu() {
   const [open, setOpen] = useState(false)
@@ -28,12 +17,15 @@ export function UserMenu() {
   const [draftProfile, setDraftProfile] = useState<Profile>(defaultProfile)
   const menuRef = useRef<HTMLDivElement>(null)
   const photoInput = useRef<HTMLInputElement>(null)
+  const router = useRouter()
 
   useEffect(() => {
-    const update = () => setProfile(getStoredProfile())
+    const update = () => getCurrentUser()
+      .then((user) => setProfile({ nome: user.nome, email: user.email, foto: user.foto }))
+      .catch(() => setProfile(defaultProfile))
     update()
-    window.addEventListener('storage', update)
-    return () => window.removeEventListener('storage', update)
+    window.addEventListener('profile-updated', update)
+    return () => window.removeEventListener('profile-updated', update)
   }, [])
 
   useEffect(() => {
@@ -47,22 +39,35 @@ export function UserMenu() {
     setSettingsOpen(true)
   }
 
-  function saveSettings() {
-    localStorage.setItem('cybereduca-profile', JSON.stringify(draftProfile))
-    setProfile(draftProfile)
+  async function saveSettings() {
+    const updated = await updateCurrentUser(draftProfile)
+    setProfile({ nome: updated.nome, email: updated.email, foto: updated.foto })
     setSettingsOpen(false)
+    window.dispatchEvent(new Event('profile-updated'))
   }
 
   function choosePhoto(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
     if (!file) return
     const reader = new FileReader()
-    reader.onload = () => setDraftProfile((current) => ({ ...current, foto: String(reader.result) }))
+    reader.onload = () => {
+      const image = new Image()
+      image.onload = () => {
+        const canvas = document.createElement('canvas')
+        canvas.width = canvas.height = 320
+        const size = Math.min(image.width, image.height)
+        const sourceX = (image.width - size) / 2
+        const sourceY = (image.height - size) / 2
+        canvas.getContext('2d')?.drawImage(image, sourceX, sourceY, size, size, 0, 0, 320, 320)
+        setDraftProfile((current) => ({ ...current, foto: canvas.toDataURL('image/jpeg', .82) }))
+      }
+      image.src = String(reader.result)
+    }
     reader.readAsDataURL(file)
   }
 
   function removePhoto() {
-    setDraftProfile((current) => ({ ...current, foto: undefined }))
+    setDraftProfile((current) => ({ ...current, foto: null }))
     if (photoInput.current) photoInput.current.value = ''
   }
 
@@ -73,6 +78,13 @@ export function UserMenu() {
     document.addEventListener('keydown', escape)
     return () => { document.removeEventListener('mousedown', close); document.removeEventListener('keydown', escape) }
   }, [])
+
+  async function signOut() {
+    await apiFetch('/auth/logout', { method: 'POST' }).catch(() => undefined)
+    setOpen(false)
+    router.push('/login')
+    router.refresh()
+  }
 
   return <div className="user-menu" ref={menuRef}>
     <button className="dashboard-user" type="button" aria-label="Abrir perfil" aria-expanded={open} onClick={() => setOpen((value) => !value)}>
@@ -88,7 +100,7 @@ export function UserMenu() {
       <Link href="/privacidade" onClick={() => setOpen(false)}><ShieldCheck size={18} /> Privacidade e dados</Link>
       <Link href="/privacidade/politica" onClick={() => setOpen(false)}><ShieldCheck size={18} /> Segurança dos dados</Link>
       <div className="user-menu-divider" />
-      <Link className="user-menu-signout" href="/" onClick={() => { sessionStorage.clear(); setOpen(false) }}><LogOut size={18} /> Sair da conta</Link>
+      <button className="user-menu-signout" type="button" onClick={signOut}><LogOut size={18} /> Sair da conta</button>
     </div>}
     {settingsOpen && <div className="profile-settings-backdrop" role="dialog" aria-modal="true" aria-labelledby="quick-settings-title">
       <article className="profile-card profile-settings profile-settings-modal">

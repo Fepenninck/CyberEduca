@@ -54,18 +54,20 @@ export class UsuariosService {
             
             async atualizar(
                 id: string,
-                dados: { nome?: string; email?: string; senha?: string },
+                dados: { nome?: string; email?: string; foto?: string | null; senha?: string },
             ) {
                 const data: {
 
                     nome?: string;
                     email?: string;
+                    foto?: string | null;
                     senhaHash?: string;
                 } = {
 
 
                 nome: dados.nome,
                 email: dados.email,
+                foto: dados.foto,
                    
                 };
 
@@ -82,6 +84,7 @@ export class UsuariosService {
                         id: true,
                         nome: true,
                         email: true,
+                        foto: true,
                         papel: true,
                         criadoEm: true,
                         atualizadoEm: true,
@@ -91,4 +94,4 @@ export class UsuariosService {
             }
             
 
-} 
+}
