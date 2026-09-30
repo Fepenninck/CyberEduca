@@ -6,9 +6,17 @@ import {
   ProgressoController,
 } from './aprendizagem.controller';
 import { PrismaService } from '../prisma.service';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  controllers: [TrilhasController, AulasController, ProgressoController],
+  imports: [ AuthModule],
+  controllers: [
+    TrilhasController,
+    AulasController,
+    ProgressoController,
+  ],
   providers: [AprendizagemService, PrismaService],
+
 })
+
 export class AprendizagemModule {}

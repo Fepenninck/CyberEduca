@@ -1,9 +1,6 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 
-// TODO: substituir por req.user.id quando a autenticacao estiver pronta
-const USUARIO_DEMO_ID = '11111111-1111-1111-1111-111111111111';
-
 type TrilhaListada = {
   id: string;
   titulo: string;
@@ -76,7 +73,7 @@ async editarAula(
   });
 }
 
-  async listarTrilhas() {
+  async listarTrilhas(usuarioId: string) {
     const trilhas = await this.prisma.trilha.findMany({
       orderBy: { ordem: 'asc' },
       include: { _count: { select: { aulas: true } } },
@@ -88,14 +85,14 @@ async editarAula(
         titulo: t.titulo,
         descricao: t.descricao,
         nivel: t.nivel,
-        bloqueada: await this.estaBloqueada(t),
+        bloqueada: await this.estaBloqueada(t, usuarioId),
         totalAulas: t._count.aulas,
-        percentual: await this.calcularPercentual(t.id),
+        percentual: await this.calcularPercentual(t.id, usuarioId),
       })),
     );
   }
 
-  async detalharTrilha(id: string) {
+  async detalharTrilha(id: string, usuarioId: string) {
     const trilha = await this.prisma.trilha.findUnique({
       where: { id },
       include: { aulas: { orderBy: { ordem: 'asc' } } },
@@ -104,14 +101,22 @@ async editarAula(
     if (!trilha) {
       throw new NotFoundException('Trilha nao encontrada');
     }
-    if (await this.estaBloqueada(trilha)) {
+    if (await this.estaBloqueada(trilha, usuarioId)) {
       throw new ForbiddenException('Conclua as trilhas anteriores para desbloquear este conteúdo.');
     }
 
-    const concluidas = await this.prisma.progressoAula.findMany({
-      where: { usuarioId: USUARIO_DEMO_ID, aula: { trilhaId: id } },
-      select: { aulaId: true },
-    });
+   const concluidas = await this.prisma.progressoAula.findMany({
+  where: {
+    usuarioId,
+    concluida: true,
+    aula: {
+      trilhaId: id,
+    },
+  },
+  select: {
+    aulaId: true,
+  },
+});
     const idsConcluidas = new Set(concluidas.map((c: { aulaId: string }) => c.aulaId));
 
     return {
@@ -120,7 +125,7 @@ async editarAula(
       descricao: trilha.descricao,
       nivel: trilha.nivel,
       bloqueada: false,
-      percentual: await this.calcularPercentual(id),
+      percentual: await this.calcularPercentual(id, usuarioId),
       aulas: trilha.aulas.map((a: AulaResumida) => ({
         id: a.id,
         titulo: a.titulo,
@@ -130,7 +135,7 @@ async editarAula(
     };
   }
 
-  async buscarAula(id: string) {
+  async buscarAula(id: string, usuarioId: string) {
     const aula = await this.prisma.aula.findUnique({
       where: { id },
       include: { trilha: { select: { id: true, titulo: true, nivel: true, bloqueada: true, ordem: true } } },
@@ -139,18 +144,17 @@ async editarAula(
     if (!aula) {
       throw new NotFoundException('Aula nao encontrada');
     }
-    if (await this.estaBloqueada(aula.trilha)) {
+    if (await this.estaBloqueada(aula.trilha, usuarioId)) {
       throw new ForbiddenException('Conclua as trilhas anteriores para desbloquear este conteúdo.');
     }
 
     const progresso = await this.prisma.progressoAula.findUnique({
       where: {
-        usuarioId_aulaId: { usuarioId: USUARIO_DEMO_ID, aulaId: id },
+        usuarioId_aulaId: { usuarioId, aulaId: id, },
       },
     });
 
-    // A navegação é calculada pela ordem dentro da mesma trilha. Assim uma
-    // aula nunca leva o aluno, por acidente, para outra trilha.
+    
     const [anterior, proxima] = await Promise.all([
       this.prisma.aula.findFirst({
         where: { trilhaId: aula.trilhaId, ordem: { lt: aula.ordem } },
@@ -176,7 +180,7 @@ async editarAula(
     };
   }
 
-  async concluirAula(aulaId: string) {
+  async concluirAula(aulaId: string, usuarioId: string) {
     const aula = await this.prisma.aula.findUnique({ where: { id: aulaId } });
 
     if (!aula) {
@@ -185,47 +189,64 @@ async editarAula(
 
     await this.prisma.progressoAula.upsert({
       where: {
-        usuarioId_aulaId: { usuarioId: USUARIO_DEMO_ID, aulaId },
+        usuarioId_aulaId: { usuarioId, aulaId, },
       },
-      update: {},
-      create: { usuarioId: USUARIO_DEMO_ID, aulaId },
+      update: { concluida: true, dataConclusao: new Date(),},
+      create: { usuarioId, aulaId, concluida: true, },
     });
 
     return {
       aulaId,
       concluida: true,
-      percentualTrilha: await this.calcularPercentual(aula.trilhaId),
+      percentualTrilha: await this.calcularPercentual(aula.trilhaId, usuarioId, ),
     };
   }
 
-  async progressoGeral() {
-    return this.listarTrilhas();
+  async progressoGeral(usuarioId: string) {
+    return this.listarTrilhas(usuarioId);
   }
 
-  private async calcularPercentual(trilhaId: string): Promise<number> {
-    const total = await this.prisma.aula.count({ where: { trilhaId } });
-    if (total === 0) return 0;
+ private async calcularPercentual(
+  trilhaId: string,
+  usuarioId: string,
+): Promise<number> {
+  const total = await this.prisma.aula.count({
+    where: { trilhaId },
+  });
 
-    const feitas = await this.prisma.progressoAula.count({
-      where: { usuarioId: USUARIO_DEMO_ID, aula: { trilhaId } },
-    });
+  if (total === 0) return 0;
 
-    return Math.round((feitas / total) * 100);
-  }
+  const feitas = await this.prisma.progressoAula.count({
+    where: {
+      usuarioId,
+      concluida: true,
+      aula: { trilhaId },
+    },
+  });
 
-  private async estaBloqueada(trilha: { bloqueada: boolean; ordem: number }): Promise<boolean> {
-    if (!trilha.bloqueada) return false;
+  return Math.round((feitas / total) * 100);
+}
+  private async estaBloqueada(
+  trilha: { bloqueada: boolean; ordem: number },
+  usuarioId: string,
+): Promise<boolean> {
+  if (!trilha.bloqueada) return false;
 
-    const anteriores = await this.prisma.trilha.findMany({
-      where: { ordem: { lt: trilha.ordem } },
-      select: { id: true },
-    });
+  const anteriores = await this.prisma.trilha.findMany({
+    where: {
+      ordem: { lt: trilha.ordem },
+    },
+    select: { id: true },
+  });
 
-    if (anteriores.length === 0) return false;
+  if (anteriores.length === 0) return false;
 
-    const percentuais = await Promise.all(
-      anteriores.map((anterior: { id: string }) => this.calcularPercentual(anterior.id)),
-    );
-    return percentuais.some((percentual) => percentual < 100);
-  }
+  const percentuais = await Promise.all(
+    anteriores.map((anterior: { id: string }) =>
+      this.calcularPercentual(anterior.id, usuarioId),
+    ),
+  );
+
+  return percentuais.some((percentual) => percentual < 100);
+}
 }
