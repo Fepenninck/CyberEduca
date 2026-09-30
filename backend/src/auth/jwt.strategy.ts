@@ -14,11 +14,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
             ?.split(';')
             .map((item) => item.trim())
             .find((item) => item.startsWith('cybereduca_session='));
-          return cookie ? decodeURIComponent(cookie.slice('cybereduca_session='.length)) : null;
+          return cookie
+            ? decodeURIComponent(cookie.slice('cybereduca_session='.length))
+            : null;
         },
       ]),
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET || 'chave_secreta_super_segura',
+      secretOrKey: process.env.JWT_SECRET!,
     });
   }
 

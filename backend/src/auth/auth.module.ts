@@ -11,7 +11,7 @@ import { GoogleStrategy } from './google.strategy';
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
-      secret: process.env.JWT_SECRET || 'chave_secreta_super_segura',
+      secret: process.env.JWT_SECRET!,
       signOptions: { expiresIn: '1d' },
     }),
   ],
