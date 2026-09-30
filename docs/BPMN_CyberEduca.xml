@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    id="Definitions_CyberEduca"
+    targetNamespace="http://bpmn.io/schema/bpmn">
+
+    <!-- Processo Principal: Plataforma CyberEduca+ -->
+    <bpmn:process id="Process_CyberEduca" isExecutable="true">
+
+        <!-- Pool de Usuário -->
+        <bpmn:participant id="Participant_User" name="Usuário" processRef="Process_UserLearning"/>
+
+        <!-- Pool de Administrador -->
+        <bpmn:participant id="Participant_Admin" name="Administrador" processRef="Process_AdminManagement"/>
+
+        <!-- Definição do processo de aprendizado do usuário -->
+        <bpmn:process id="Process_UserLearning" isExecutable="true">
+            <!-- Início: Novo usuário ou usuário existente -->
+            <bpmn:startEvent id="Event_Start_User" name="Usuário Acessa Plataforma"/>
+
+            <!-- Tarefa: Autenticação -->
+            <bpmn:task id="Task_Authentication" name="Realizar Autenticação (Cadastro/Login)"/>
+
+            <!-- Tarefa: Navegar para Trilha -->
+            <bpmn:task id="Task_SelectTrail" name="Selecionar Trilha de Aprendizagem"/>
+
+            <!-- Gateway de Decisão: Escolher atividade -->
+            <bpmn:exclusiveGateway id="Gateway_ChooseActivity" name="Escolher Atividade"/>
+
+            <!-- Tarefa: Realizar Aula -->
+            <bpmn:task id="Task_ViewLesson" name="Visualizar Aula e Conteúdo"/>
+
+            <!-- Tarefa: Responder Quiz -->
+            <bpmn:task id="Task_TakeQuiz" name="Responder Quiz"/>
+
+            <!-- Tarefa: Praticar Phishing -->
+            <bpmn:task id="Task_PhishingSimulator" name="Praticar Simulador de Phishing"/>
+
+            <!-- Tarefa: Revisar Histórico -->
+            <bpmn:task id="Task_ReviewHistory" name="Revisar Histórico e Desempenho"/>
+
+            <!-- Tarefa: Ler Notícias -->
+            <bpmn:task id="Task_ReadNews" name="Ler Notícias sobre Cibersegurança"/>
+
+            <!-- Gateway: Continuar na plataforma? -->
+            <bpmn:exclusiveGateway id="Gateway_ContinueUsing" name="Deseja Continuar?"/>
+
+            <!-- Evento Final: Logout -->
+            <bpmn:endEvent id="Event_End_User" name="Usuário Finaliza Sessão"/>
+
+            <!-- Conectores de Sequência -->
+            <bpmn:sequenceFlow id="Flow_Start_Auth" sourceRef="Event_Start_User" targetRef="Task_Authentication"/>
+            <bpmn:sequenceFlow id="Flow_Auth_SelectTrail" sourceRef="Task_Authentication" targetRef="Task_SelectTrail"/>
+            <bpmn:sequenceFlow id="Flow_SelectTrail_Gateway" sourceRef="Task_SelectTrail" targetRef="Gateway_ChooseActivity"/>
+
+            <!-- Fluxo para Aula -->
+            <bpmn:sequenceFlow id="Flow_Gateway_Lesson" sourceRef="Gateway_ChooseActivity" targetRef="Task_ViewLesson">
+                <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">activity == 'lesson'</bpmn:conditionExpression>
+            </bpmn:sequenceFlow>
+
+            <!-- Fluxo para Quiz -->
+            <bpmn:sequenceFlow id="Flow_Gateway_Quiz" sourceRef="Gateway_ChooseActivity" targetRef="Task_TakeQuiz">
+                <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">activity == 'quiz'</bpmn:conditionExpression>
+            </bpmn:sequenceFlow>
+
+            <!-- Fluxo para Simulador de Phishing -->
+            <bpmn:sequenceFlow id="Flow_Gateway_Phishing" sourceRef="Gateway_ChooseActivity" targetRef="Task_PhishingSimulator">
+                <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">activity == 'phishing'</bpmn:conditionExpression>
+            </bpmn:sequenceFlow>
+
+            <!-- Fluxo para Histórico -->
+            <bpmn:sequenceFlow id="Flow_Gateway_History" sourceRef="Gateway_ChooseActivity" targetRef="Task_ReviewHistory">
+                <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">activity == 'history'</bpmn:conditionExpression>
+            </bpmn:sequenceFlow>
+
+            <!-- Fluxo para Notícias -->
+            <bpmn:sequenceFlow id="Flow_Gateway_News" sourceRef="Gateway_ChooseActivity" targetRef="Task_ReadNews">
+                <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">activity == 'news'</bpmn:conditionExpression>
+            </bpmn:sequenceFlow>
+
+            <!-- Convergência de todas as atividades -->
+            <bpmn:sequenceFlow id="Flow_Lesson_Continue" sourceRef="Task_ViewLesson" targetRef="Gateway_ContinueUsing"/>
+            <bpmn:sequenceFlow id="Flow_Quiz_Continue" sourceRef="Task_TakeQuiz" targetRef="Gateway_ContinueUsing"/>
+            <bpmn:sequenceFlow id="Flow_Phishing_Continue" sourceRef="Task_PhishingSimulator" targetRef="Gateway_ContinueUsing"/>
+            <bpmn:sequenceFlow id="Flow_History_Continue" sourceRef="Task_ReviewHistory" targetRef="Gateway_ContinueUsing"/>
+            <bpmn:sequenceFlow id="Flow_News_Continue" sourceRef="Task_ReadNews" targetRef="Gateway_ContinueUsing"/>
+
+            <!-- Decisão final -->
+            <bpmn:sequenceFlow id="Flow_Continue_Yes" sourceRef="Gateway_ContinueUsing" targetRef="Task_SelectTrail">
+                <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">continueUsing == true</bpmn:conditionExpression>
+            </bpmn:sequenceFlow>
+            <bpmn:sequenceFlow id="Flow_Continue_No" sourceRef="Gateway_ContinueUsing" targetRef="Event_End_User">
+                <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">continueUsing == false</bpmn:conditionExpression>
+            </bpmn:sequenceFlow>
+        </bpmn:process>
+
+        <!-- Definição do processo de administração -->
+        <bpmn:process id="Process_AdminManagement" isExecutable="true">
+            <!-- Início: Admin acessa painel -->
+            <bpmn:startEvent id="Event_Start_Admin" name="Admin Acessa Painel Administrativo"/>
+
+            <!-- Tarefa: Autenticação Admin -->
+            <bpmn:task id="Task_Admin_Authentication" name="Realizar Autenticação de Admin"/>
+
+            <!-- Gateway: Escolher gerenciamento -->
+            <bpmn:exclusiveGateway id="Gateway_AdminChoice" name="Escolher Gerenciamento"/>
+
+            <!-- Tarefa: Gerenciar Trilhas -->
+            <bpmn:task id="Task_ManageTrails" name="Gerenciar Trilhas (CRUD)"/>
+
+            <!-- Tarefa: Gerenciar Aulas -->
+            <bpmn:task id="Task_ManageLessons" name="Gerenciar Aulas e Conteúdo"/>
+
+            <!-- Tarefa: Gerenciar Quizzes -->
+            <bpmn:task id="Task_ManageQuizzes" name="Gerenciar Quizzes"/>
+
+            <!-- Tarefa: Gerenciar Cenários Phishing -->
+            <bpmn:task id="Task_ManagePhishing" name="Gerenciar Cenários de Phishing"/>
+
+            <!-- Tarefa: Gerenciar Usuários -->
+            <bpmn:task id="Task_ManageUsers" name="Gerenciar Usuários (Perfis, Bloqueio, etc)"/>
+
+            <!-- Tarefa: Visualizar Relatórios -->
+            <bpmn:task id="Task_ViewReports" name="Visualizar Relatórios de Desempenho"/>
+
+            <!-- Gateway: Continuar gerenciando? -->
+            <bpmn:exclusiveGateway id="Gateway_AdminContinue" name="Continuar Gerenciando?"/>
+
+            <!-- Evento Final: Admin finaliza -->
+            <bpmn:endEvent id="Event_End_Admin" name="Admin Finaliza Sessão"/>
+
+            <!-- Conectores -->
+            <bpmn:sequenceFlow id="Flow_Admin_Start_Auth" sourceRef="Event_Start_Admin" targetRef="Task_Admin_Authentication"/>
+            <bpmn:sequenceFlow id="Flow_Admin_Auth_Gateway" sourceRef="Task_Admin_Authentication" targetRef="Gateway_AdminChoice"/>
+
+            <!-- Fluxos de gerenciamento -->
+            <bpmn:sequenceFlow id="Flow_Admin_Trails" sourceRef="Gateway_AdminChoice" targetRef="Task_ManageTrails">
+                <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">management == 'trails'</bpmn:conditionExpression>
+            </bpmn:sequenceFlow>
+            <bpmn:sequenceFlow id="Flow_Admin_Lessons" sourceRef="Gateway_AdminChoice" targetRef="Task_ManageLessons">
+                <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">management == 'lessons'</bpmn:conditionExpression>
+            </bpmn:sequenceFlow>
+            <bpmn:sequenceFlow id="Flow_Admin_Quizzes" sourceRef="Gateway_AdminChoice" targetRef="Task_ManageQuizzes">
+                <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">management == 'quizzes'</bpmn:conditionExpression>
+            </bpmn:sequenceFlow>
+            <bpmn:sequenceFlow id="Flow_Admin_Phishing" sourceRef="Gateway_AdminChoice" targetRef="Task_ManagePhishing">
+                <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">management == 'phishing'</bpmn:conditionExpression>
+            </bpmn:sequenceFlow>
+            <bpmn:sequenceFlow id="Flow_Admin_Users" sourceRef="Gateway_AdminChoice" targetRef="Task_ManageUsers">
+                <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">management == 'users'</bpmn:conditionExpression>
+            </bpmn:sequenceFlow>
+            <bpmn:sequenceFlow id="Flow_Admin_Reports" sourceRef="Gateway_AdminChoice" targetRef="Task_ViewReports">
+                <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">management == 'reports'</bpmn:conditionExpression>
+            </bpmn:sequenceFlow>
+
+            <!-- Convergência -->
+            <bpmn:sequenceFlow id="Flow_Admin_Trails_Continue" sourceRef="Task_ManageTrails" targetRef="Gateway_AdminContinue"/>
+            <bpmn:sequenceFlow id="Flow_Admin_Lessons_Continue" sourceRef="Task_ManageLessons" targetRef="Gateway_AdminContinue"/>
+            <bpmn:sequenceFlow id="Flow_Admin_Quizzes_Continue" sourceRef="Task_ManageQuizzes" targetRef="Gateway_AdminContinue"/>
+            <bpmn:sequenceFlow id="Flow_Admin_Phishing_Continue" sourceRef="Task_ManagePhishing" targetRef="Gateway_AdminContinue"/>
+            <bpmn:sequenceFlow id="Flow_Admin_Users_Continue" sourceRef="Task_ManageUsers" targetRef="Gateway_AdminContinue"/>
+            <bpmn:sequenceFlow id="Flow_Admin_Reports_Continue" sourceRef="Task_ViewReports" targetRef="Gateway_AdminContinue"/>
+
+            <!-- Decisão final -->
+            <bpmn:sequenceFlow id="Flow_Admin_Continue_Yes" sourceRef="Gateway_AdminContinue" targetRef="Gateway_AdminChoice">
+                <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">continueManaging == true</bpmn:conditionExpression>
+            </bpmn:sequenceFlow>
+            <bpmn:sequenceFlow id="Flow_Admin_Continue_No" sourceRef="Gateway_AdminContinue" targetRef="Event_End_Admin">
+                <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">continueManaging == false</bpmn:conditionExpression>
+            </bpmn:sequenceFlow>
+        </bpmn:process>
+
+        <!-- Diagramação (Visualização) -->
+        <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+            <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_CyberEduca">
+                <!-- Pool de Usuário -->
+                <bpmndi:BPMNShape id="BPMNShape_Participant_User" bpmnElement="Participant_User" isHorizontal="true">
+                    <dc:Bounds x="50" y="50" width="900" height="450"/>
+                </bpmndi:BPMNShape>
+
+                <!-- Pool de Admin -->
+                <bpmndi:BPMNShape id="BPMNShape_Participant_Admin" bpmnElement="Participant_Admin" isHorizontal="true">
+                    <dc:Bounds x="50" y="550" width="900" height="450"/>
+                </bpmndi:BPMNShape>
+            </bpmndi:BPMNPlane>
+        </bpmndi:BPMNDiagram>
+    </bpmn:process>
+</bpmn:definitions>
