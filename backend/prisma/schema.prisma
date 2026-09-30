@@ -17,6 +17,8 @@ model Usuario {
   papel      String          @default("USUARIO")
   criadoEm   DateTime        @default(now())
   atualizadoEm DateTime @default(now()) @updatedAt
+  tokenRecuperacaoHash String? @unique
+  tokenRecuperacaoExpiraEm DateTime?
   progressos ProgressoAula[]
 }
 
@@ -39,8 +41,6 @@ enum NivelTrilha {
 model Aula {
   id         String          @id @default(uuid())
   titulo     String
-  // Conteúdo em Markdown. Comece vazio e preencha quando criar cada aula.
-  // O Markdown suporta títulos, texto, listas, links e imagens.
   conteudo   String          @default("")
   ordem      Int
   trilhaId   String
