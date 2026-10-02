@@ -28,8 +28,11 @@ export class AuthController {
   ) {}
 
   @Post('register')
-  async register(@Body() registerDto: RegisterDto) {
-    return this.authService.register(registerDto);
+  async register(@Body() registerDto: RegisterDto, @Req() request: Request) {
+    return this.authService.register(registerDto, {
+      ip: request.ip,
+      userAgent: request.get('user-agent'),
+    });
   }
 
   @HttpCode(HttpStatus.OK)

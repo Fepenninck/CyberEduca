@@ -19,9 +19,17 @@ export class AuthService {
     private readonly auditoria: AuditoriaService,
   ) {}
 
-  async register(dto: RegisterDto) {
+  async register(
+    dto: RegisterDto,
+    contexto: {
+      ip?: string;
+      userAgent?: string;
+    },
+  ) {
     const userExists = await this.prisma.usuario.findUnique({
-      where: { email: dto.email },
+      where: {
+        email: dto.email,
+      },
     });
 
     if (userExists) {
@@ -36,6 +44,19 @@ export class AuthService {
         email: dto.email,
         senhaHash: hashedPassword,
       },
+    });
+
+    await this.auditoria.registrar({
+      acao: AcaoAuditoria.CADASTRO,
+      entidade: 'Usuario',
+      entidadeId: user.id,
+      atorId: user.id,
+      detalhes: {
+        metodo: 'SENHA',
+      },
+      ip: contexto.ip,
+      userAgent: contexto.userAgent,
+      sucesso: true,
     });
 
     return {
