@@ -75,10 +75,7 @@ describe('Progresso das aulas - integração', () => {
 
     prisma = app.get(PrismaService);
 
-    /*
-     * Remove dados deixados por alguma execução anterior.
-     * A ordem é importante por causa das relações do banco.
-     */
+
     await prisma.logAuditoria.deleteMany({
       where: {
         atorId: usuarioId,
@@ -109,9 +106,6 @@ describe('Progresso das aulas - integração', () => {
       },
     });
 
-    /*
-     * Cria o usuário usado pelos testes.
-     */
     await prisma.usuario.create({
       data: {
         id: usuarioId,
@@ -120,10 +114,7 @@ describe('Progresso das aulas - integração', () => {
         papel: 'USUARIO',
       },
     });
-
-    /*
-     * Cria uma trilha exclusiva para os testes.
-     */
+    
     await prisma.trilha.create({
       data: {
         id: trilhaId,
@@ -134,9 +125,7 @@ describe('Progresso das aulas - integração', () => {
       },
     });
 
-    /*
-     * Cria uma aula dentro da trilha de teste.
-     */
+    
     await prisma.aula.create({
       data: {
         id: aulaId,
@@ -149,9 +138,7 @@ describe('Progresso das aulas - integração', () => {
   });
 
   beforeEach(async () => {
-    /*
-     * Cada teste começa sem progresso e sem auditoria.
-     */
+    
     await prisma.logAuditoria.deleteMany({
       where: {
         atorId: usuarioId,
