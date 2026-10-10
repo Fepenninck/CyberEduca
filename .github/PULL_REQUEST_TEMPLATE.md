@@ -2,7 +2,7 @@
 - **Aluno(s):**
   - Luís Felipe Penninck dos Santos - RGM 11231101140
   - Caio Miranda do Nascimento - RGM 1123110183
-  - Thiago: ____________________________
+  - Thiago dos Santos Soares - RGM 11221101451
 - **Projeto (PFC):** CyberEduca+
 - **Branch:** feat/testes-automatizados
 
@@ -12,7 +12,8 @@ Foram implementados testes unitários e de integração para o progresso do usu�
 Caio: 
 Foram implementados testes unitários e de integração focados no módulo de Autenticação e Usuários. Os cenários garantem a emissão correta de tokens JWT em logins válidos, bloqueiam acessos com credenciais incorretas e validam tentativas de login com contas inexistentes. O teste E2E assegura a resposta e o status HTTP correto do endpoint de autenticação. 
 
-Thiago: ____________________________________________________________________
+Thiago: 
+Foram implementados testes unitários e de integração para o detalhamento de trilhas e o cálculo de progresso no AprendizagemService. Os testes unitários, escritos com Vitest, cobrem o retorno correto de uma trilha liberada, o bloqueio de trilhas cujo pré-requisito não foi concluído, a busca por uma trilha inexistente, o cálculo percentual em 5 combinações (teste parametrizado) e a tentativa de concluir uma aula inexistente. O teste de integração valida, pela API, a resposta HTTP ao detalhar uma trilha inexistente.
 
 ## 3. Cenários de testes unitários implementados
 | # | Classe testada | Método / regra | Cenário | Tipo | Arquivo de teste | Método de teste |
@@ -24,12 +25,13 @@ Thiago: ____________________________________________________________________
 | 5 | AuthService | login() | Usuário fornece credenciais válidas e recebe token JWT | Feliz | auth.service.spec.ts | faz login válido e assina o token |
 | 6 | AuthService | login() | Tentativa de login com senha incorreta | Violação | auth.service.spec.ts | rejeita login com credenciais inválidas |
 | 7 | AuthService | login() | Tentativa de login com e-mail não existente | Limite | auth.service.spec.ts | rejeita login quando o e-mail não existe no sistema |
-| 8 |  |  |  |  |  |  |
-| 9 |  |  |  |  |  |  |
-| 10 |  |  |  |  |  |  |
+| 8 | AprendizagemService | detalharTrilha() | Trilha existente e liberada retorna seus detalhes | Feliz | aprendizagem.service.vitest.ts | deve retornar detalhes da trilha quando ela existe e está desbloqueada |
+| 9 | AprendizagemService | detalharTrilha() | Trilha bloqueada por pré-requisito não concluído | Violação | aprendizagem.service.vitest.ts | deve lançar ForbiddenException quando a trilha está bloqueada |
+| 10 | AprendizagemService | detalharTrilha() | Trilha inexistente | Limite | aprendizagem.service.vitest.ts | deve lançar NotFoundException quando a trilha não existe |
+| 11 | AprendizagemService | calcularPercentual() | Percentual em 5 combinações (0/0, 1/2, 2/2, 5/10, 10/10) — teste parametrizado | Limite | aprendizagem.service.vitest.ts | deve calcular %i aulas concluídas de %i total = %i% |
 
 Tipo: Feliz | Violação | Limite  
-**Total de cenários unitários:** 10
+**Total de cenários unitários:** 11
 
 
 
@@ -40,7 +42,7 @@ Tipo: Feliz | Violação | Limite
 | 1 | Prisma + Banco | Salvar e recuperar um registro de progresso | progresso.e2e-spec.ts | deve salvar e recuperar o progresso no banco de teste | Prisma + PostgreSQL |
 | 2 | API + Controller + Service + Banco | Concluir uma aula pela API e confirmar a persistência | progresso.e2e-spec.ts | deve concluir uma aula pelo fluxo API, Controller, Service e Banco | Supertest + Prisma + PostgreSQL |
 | 3 | API + Controller + Service | Autenticação HTTP retornando status de sucesso e corpo com token JWT | auth.e2e-spec.ts | POST /auth/login - integração › responde com sucesso ao autenticar pelo endpoint HTTP | Supertest + Nest Application |
-| 4 |  |  |  |  |  |
+| 4 | API + Controller + Service + Banco | Detalhar uma trilha inexistente pela API retorna 404 | aprendizagem.e2e-spec.ts | deve retornar 404 ao detalhar uma trilha inexistente pela API | Supertest + Prisma + PostgreSQL |
 
 **Total de cenários de integração:** 4
 
@@ -53,9 +55,11 @@ Tipo: Feliz | Violação | Limite
 | backend/test/progresso.e2e-spec.ts | Criado | 2 |
 | backend/test/auth.e2e-spec.ts | Criado | 1 |
 |  backend/src/auth/auth.service.spec.ts | Criado | 3 |
+| backend/src/aprendizagem/aprendizagem.service.vitest.ts | Criado | 9 |
+| backend/test/aprendizagem.e2e-spec.ts | Criado | 1 |
 
-**Total de arquivos de teste:** 2 + arquivos de Caio e Thiago  
-**Total de testes:** 14
+**Total de arquivos de teste:** 6  
+**Total de testes:** 20
 
 
 
@@ -65,12 +69,15 @@ Tipo: Feliz | Violação | Limite
 cd backend
 npm test
 npm run test:e2e
+npx vitest run
 ```
 
 ## 7. Evidências
 - **Resultado da execução:** Felipe: 6 testes executados, 6 aprovados, 0 falhas. O resultado completo dos 14 testes será adicionado após a integração das entregas de Caio e Thiago.
 
 Caio: 4 testes executados, 4 aprovados, 0 falhas.
+
+Thiago: 9 testes unitários executados (3 de detalharTrilha, 5 casos parametrizados de calcularPercentual e 1 de concluirAula), 9 aprovados, 0 falhas. Teste de integração: ____ executado, ____ aprovado, ____ falhas.
 - **Link do CI (se houver):** não se aplica
 
 ## 8. Decisões e dificuldades
@@ -90,6 +97,6 @@ Depois de integrar com a branch do grupo, precisei fazer mais alguns ajustes nos
 - [x] Todos os testes passam localmente com o comando da seção 6
 - [x] Cada cenário listado nas seções 3 e 4 existe no código
 - [x] Cada arquivo de teste alterado ou criado está listado na seção 5
-- [ ] Mínimos do exercício atendidos (10 unitários em 3 classes; 4 de integração)
+- [x] Mínimos do exercício atendidos (10 unitários em 3 classes; 4 de integração)
 - [x] Nenhum teste com @Disabled, sem asserção ou com Thread.sleep
 - [x] Professor adicionado como reviewer
