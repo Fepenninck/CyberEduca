@@ -1,14 +1,16 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Request, UseGuards, } from '@nestjs/common';
 import { AprendizagemService } from './aprendizagem.service';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('trilhas')
+@UseGuards(JwtAuthGuard)
 export class TrilhasController {
   constructor(private readonly service: AprendizagemService) {}
 
 
   @Get()
-  listar() {
-    return this.service.listarTrilhas();
+  listar(@Request() req: any) {
+    return this.service.listarTrilhas(req.user.id);
   }
 
   @Post()
@@ -37,18 +39,19 @@ editar(
 }
 
   @Get(':id')
-  detalhar(@Param('id') id: string) {
-    return this.service.detalharTrilha(id);
+detalhar(@Param('id') id: string, @Request() req: any) {
+  return this.service.detalharTrilha(id, req.user.id);
   }
 }
 
 @Controller('aulas')
+@UseGuards(JwtAuthGuard)
 export class AulasController {
   constructor(private readonly service: AprendizagemService) {}
 
   @Get(':id')
-  buscar(@Param('id') id: string) {
-    return this.service.buscarAula(id);
+buscar(@Param('id') id: string, @Request() req: any) {
+  return this.service.buscarAula(id, req.user.id);
   }
 
 @Post()
@@ -79,17 +82,20 @@ editar(
 }
 
   @Post(':id/concluir')
-  concluir(@Param('id') id: string) {
-    return this.service.concluirAula(id);
+concluir(@Param('id') id: string, @Request() req: any) {
+  return this.service.concluirAula(id, req.user.id);
   }
 }
 
 @Controller('progresso')
+@UseGuards(JwtAuthGuard)
 export class ProgressoController {
   constructor(private readonly service: AprendizagemService) {}
 
   @Get()
-  geral() {
-    return this.service.progressoGeral();
-  }
+geral(@Request() req: any) {
+  return this.service.progressoGeral(req.user.id);
 }
+}
+
+

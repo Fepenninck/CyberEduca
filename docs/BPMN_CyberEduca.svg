@@ -1,0 +1,205 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2d3748"/>
+    </marker>
+    <style>
+      .title { font: 700 40px 'Segoe UI', Arial, sans-serif; fill: #123c6d; }
+      .pool-title { font: 700 28px 'Segoe UI', Arial, sans-serif; fill: #123c6d; }
+      .label { font: 500 18px 'Segoe UI', Arial, sans-serif; fill: #1f2d3d; }
+      .small { font: 500 14px 'Segoe UI', Arial, sans-serif; fill: #2a3b4d; }
+      .tiny { font: 700 18px 'Segoe UI', Arial, sans-serif; fill: #2a3b4d; }
+      .start { fill: #dff5e0; stroke: #2e9f57; stroke-width: 2; }
+      .end { fill: #f9d8d8; stroke: #d85f5f; stroke-width: 2; }
+      .task-user { fill: #eaf5ff; stroke: #2d699c; stroke-width: 2; }
+      .task-admin { fill: #e9f8eb; stroke: #4c9d6a; stroke-width: 2; }
+      .gateway { fill: #f9e7b7; stroke: #232323; stroke-width: 2; }
+      .pool-user { fill: #edf6ff; stroke: #7aaad1; stroke-width: 2; }
+      .pool-admin { fill: #eefaf0; stroke: #7fb882; stroke-width: 2; }
+      .legend { font: 700 20px 'Segoe UI', Arial, sans-serif; fill: #1f2d3d; }
+      .legend-text { font: 500 18px 'Segoe UI', Arial, sans-serif; fill: #1f2d3d; }
+      .flow { stroke: #2d3748; stroke-width: 2.2; fill: none; marker-end: url(#arrow); }
+      .flow-label { font: 600 15px 'Segoe UI', Arial, sans-serif; fill: #2d3748; }
+      .decision-label { font: 600 14px 'Segoe UI', Arial, sans-serif; fill: #2d3748; }
+      .solid { stroke: #2d3748; stroke-width: 2; fill: none; }
+      .legend-box { stroke: #2d3748; stroke-width: 1.2; fill: white; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" fill="#f2f5f8"/>
+
+  <text x="800" y="58" text-anchor="middle" class="title">CyberEduca+ — Diagrama BPMN dos Processos de Negócio</text>
+
+  <!-- Usuário pool -->
+  <rect x="20" y="100" width="1560" height="300" class="pool-user" rx="0"/>
+  <text x="120" y="150" class="pool-title">Usuário /</text>
+  <text x="120" y="180" class="pool-title">Aprendiz</text>
+
+  <!-- Admin pool -->
+  <rect x="20" y="430" width="1560" height="300" class="pool-admin" rx="0"/>
+  <text x="120" y="480" class="pool-title">Administrador</text>
+
+  <!-- start User -->
+  <circle cx="160" cy="250" r="34" class="start"/>
+  <text x="160" y="256" text-anchor="middle" class="small">Usuário acessa</text>
+  <text x="160" y="276" text-anchor="middle" class="small">a plataforma</text>
+
+  <!-- task user 1 -->
+  <rect x="240" y="220" width="180" height="64" class="task-user" rx="0"/>
+  <text x="330" y="258" text-anchor="middle" class="label">Realizar cadastro</text>
+  <text x="330" y="280" text-anchor="middle" class="label">ou login</text>
+
+  <!-- task user 2 -->
+  <rect x="470" y="220" width="180" height="64" class="task-user" rx="0"/>
+  <text x="560" y="258" text-anchor="middle" class="label">Selecionar trilha de</text>
+  <text x="560" y="280" text-anchor="middle" class="label">aprendizagem</text>
+
+  <!-- decision 1 -->
+  <polygon points="760,220 822,252 760,284 698,252" class="gateway"/>
+  <text x="760" y="250" text-anchor="middle" class="decision-label">Qual atividade</text>
+  <text x="760" y="268" text-anchor="middle" class="decision-label">deseja realizar?</text>
+
+  <!-- vertical task column -->
+  <rect x="870" y="150" width="180" height="60" class="task-user" rx="0"/>
+  <text x="960" y="188" text-anchor="middle" class="label">Visualizar aula</text>
+  <text x="960" y="208" text-anchor="middle" class="label">e conteúdo</text>
+
+  <rect x="870" y="220" width="180" height="60" class="task-user" rx="0"/>
+  <text x="960" y="258" text-anchor="middle" class="label">Responder quiz</text>
+
+  <rect x="870" y="290" width="180" height="60" class="task-user" rx="0"/>
+  <text x="960" y="328" text-anchor="middle" class="label">Praticar simulador</text>
+  <text x="960" y="348" text-anchor="middle" class="label">de phishing</text>
+
+  <rect x="870" y="360" width="180" height="60" class="task-user" rx="0"/>
+  <text x="960" y="398" text-anchor="middle" class="label">Consultar histórico</text>
+  <text x="960" y="418" text-anchor="middle" class="label">e desempenho</text>
+
+  <rect x="870" y="430" width="180" height="60" class="task-user" rx="0"/>
+  <text x="960" y="468" text-anchor="middle" class="label">Ler notícias sobre</text>
+  <text x="960" y="488" text-anchor="middle" class="label">cibersegurança</text>
+
+  <!-- decision 2 -->
+  <polygon points="1160,280 1222,312 1160,344 1098,312" class="gateway"/>
+  <text x="1160" y="312" text-anchor="middle" class="decision-label">Deseja continuar</text>
+  <text x="1160" y="330" text-anchor="middle" class="decision-label">utilizando a plataforma?</text>
+
+  <!-- final user -->
+  <rect x="1285" y="250" width="190" height="64" class="task-user" rx="0"/>
+  <text x="1380" y="288" text-anchor="middle" class="label">Finalizar sessão</text>
+  <circle cx="1485" cy="282" r="32" class="end"/>
+  <text x="1485" y="288" text-anchor="middle" class="small">Usuário encerra</text>
+  <text x="1485" y="308" text-anchor="middle" class="small">o acesso</text>
+
+  <!-- Flow arrows user -->
+  <path d="M194,250 L240,250" class="flow"/>
+  <path d="M420,252 L470,252" class="flow"/>
+  <path d="M650,252 L698,252" class="flow"/>
+  <path d="M760,284 L760,320 L870,320" class="flow"/>
+  <path d="M760,220 L760,180 L870,180" class="flow"/>
+  <path d="M760,284 L760,420 L870,420" class="flow"/>
+  <path d="M760,220 L760,150 L870,150" class="flow"/>
+  <path d="M760,284 L760,468 L870,468" class="flow"/>
+  <path d="M1050,180 L1130,180 L1130,312 L1098,312" class="flow"/>
+  <path d="M1050,252 L1115,252 L1115,312 L1098,312" class="flow"/>
+  <path d="M1050,320 L1065,320 L1065,312 L1098,312" class="flow"/>
+  <path d="M1050,390 L1115,390 L1115,312 L1098,312" class="flow"/>
+  <path d="M1050,460 L1130,460 L1130,312 L1098,312" class="flow"/>
+  <path d="M1222,312 L1285,312" class="flow"/>
+  <path d="M1380,314 L1380,520 L560,520 L560,284" class="flow"/>
+  <text x="720" y="200" class="flow-label">Sim</text>
+  <text x="1168" y="230" class="flow-label">Não</text>
+
+  <!-- Admin area -->
+  <!-- start Admin -->
+  <circle cx="160" cy="520" r="34" class="start"/>
+  <text x="160" y="526" text-anchor="middle" class="small">Administrador</text>
+  <text x="160" y="546" text-anchor="middle" class="small">acessa o painel</text>
+  <text x="160" y="566" text-anchor="middle" class="small">administrativo</text>
+
+  <!-- task admin 1 -->
+  <rect x="240" y="500" width="180" height="64" class="task-admin" rx="0"/>
+  <text x="330" y="538" text-anchor="middle" class="label">Realizar autenticação</text>
+  <text x="330" y="560" text-anchor="middle" class="label">de administrador</text>
+
+  <!-- decision admin 1 -->
+  <polygon points="520,500 582,532 520,564 458,532" class="gateway"/>
+  <text x="520" y="530" text-anchor="middle" class="decision-label">Qual área deseja</text>
+  <text x="520" y="548" text-anchor="middle" class="decision-label">gerenciar?</text>
+
+  <!-- task admin list -->
+  <rect x="630" y="470" width="170" height="50" class="task-admin" rx="0"/>
+  <text x="715" y="502" text-anchor="middle" class="label">Gerenciar trilhas de</text>
+  <text x="715" y="522" text-anchor="middle" class="label">aprendizagem</text>
+
+  <rect x="630" y="530" width="170" height="50" class="task-admin" rx="0"/>
+  <text x="715" y="562" text-anchor="middle" class="label">Gerenciar aulas e</text>
+  <text x="715" y="582" text-anchor="middle" class="label">conteúdos</text>
+
+  <rect x="630" y="590" width="170" height="50" class="task-admin" rx="0"/>
+  <text x="715" y="622" text-anchor="middle" class="label">Gerenciar quizzes</text>
+
+  <rect x="630" y="650" width="170" height="50" class="task-admin" rx="0"/>
+  <text x="715" y="682" text-anchor="middle" class="label">Gerenciar cenários</text>
+  <text x="715" y="702" text-anchor="middle" class="label">de phishing</text>
+
+  <rect x="835" y="470" width="170" height="50" class="task-admin" rx="0"/>
+  <text x="920" y="502" text-anchor="middle" class="label">Gerenciar usuários</text>
+
+  <rect x="835" y="530" width="170" height="50" class="task-admin" rx="0"/>
+  <text x="920" y="562" text-anchor="middle" class="label">Visualizar relatórios</text>
+  <text x="920" y="582" text-anchor="middle" class="label">de desempenho</text>
+
+  <!-- decision admin 2 -->
+  <polygon points="1130,530 1192,562 1130,594 1068,562" class="gateway"/>
+  <text x="1130" y="562" text-anchor="middle" class="decision-label">Deseja continuar</text>
+  <text x="1130" y="580" text-anchor="middle" class="decision-label">gerenciando?</text>
+
+  <!-- final admin -->
+  <rect x="1285" y="500" width="190" height="64" class="task-admin" rx="0"/>
+  <text x="1380" y="538" text-anchor="middle" class="label">Finalizar sessão</text>
+  <text x="1380" y="560" text-anchor="middle" class="label">administrativa</text>
+  <circle cx="1485" cy="532" r="32" class="end"/>
+  <text x="1485" y="538" text-anchor="middle" class="small">Administrador</text>
+  <text x="1485" y="558" text-anchor="middle" class="small">encerra o acesso</text>
+
+  <!-- admin flow -->
+  <path d="M194,520 L240,520" class="flow"/>
+  <path d="M420,532 L458,532" class="flow"/>
+  <path d="M520,564 L520,610 L630,610" class="flow"/>
+  <path d="M520,500 L520,495 L630,495" class="flow"/>
+  <path d="M520,564 L520,675 L630,675" class="flow"/>
+  <path d="M520,564 L520,495 L835,495" class="flow"/>
+  <path d="M520,564 L520,555 L835,555" class="flow"/>
+  <path d="M800,495 L910,495 L910,530 L1068,562" class="flow"/>
+  <path d="M800,555 L905,555 L905,562 L1068,562" class="flow"/>
+  <path d="M800,610 L980,610 L980,562 L1068,562" class="flow"/>
+  <path d="M800,675 L980,675 L980,562 L1068,562" class="flow"/>
+  <path d="M1192,562 L1285,562" class="flow"/>
+  <path d="M1380,564 L1380,720 L540,720 L540,532 L582,532" class="flow"/>
+  <text x="560" y="500" class="flow-label">Sim</text>
+  <text x="1188" y="510" class="flow-label">Não</text>
+
+  <!-- legend -->
+  <rect x="20" y="760" width="1560" height="80" class="legend-box"/>
+
+  <text x="40" y="790" class="legend">Legenda:</text>
+
+  <circle cx="210" cy="790" r="12" class="start"/>
+  <text x="230" y="798" class="legend-text">Evento de início</text>
+
+  <circle cx="460" cy="790" r="12" class="end"/>
+  <text x="480" y="798" class="legend-text">Evento de fim</text>
+
+  <rect x="710" y="778" width="110" height="26" class="task-user"/>
+  <text x="835" y="798" class="legend-text">Tarefa (usuário)</text>
+
+  <rect x="1045" y="778" width="120" height="26" class="task-admin"/>
+  <text x="1185" y="798" class="legend-text">Tarefa (administrador)</text>
+
+  <polygon points="1380,778 1428,793 1380,808 1332,793" class="gateway"/>
+  <text x="1448" y="798" class="legend-text">Gateway exclusivo</text>
+
+  <path d="M1528,793 L1560,793" class="flow"/>
+  <text x="1565" y="800" class="legend-text">Fluxo de sequência</text>
+</svg>

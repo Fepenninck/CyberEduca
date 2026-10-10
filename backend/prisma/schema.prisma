@@ -8,23 +8,27 @@ datasource db {
 }
 
 model Usuario {
-  id         String          @id @default(uuid())
-  nome       String
-  email      String          @unique
-  senhaHash  String?
-  googleId   String?         @unique
-  papel      String          @default("USUARIO")
-  criadoEm   DateTime        @default(now())
-  atualizadoEm DateTime @default(now()) @updatedAt
-  progressos ProgressoAula[]
+  id                       String          @id @default(uuid())
+  nome                     String
+  email                    String          @unique
+  senhaHash                String?
+  googleId                 String?         @unique
+  foto                     String?
+  papel                    String          @default("USUARIO")
+  criadoEm                 DateTime        @default(now())
+  atualizadoEm             DateTime        @default(now()) @updatedAt
+  tokenRecuperacaoHash     String?         @unique
+  tokenRecuperacaoExpiraEm DateTime?
+  progressos               ProgressoAula[]
+  auditorias               LogAuditoria[]
 }
 
 model Trilha {
-  id        String @id @default(uuid())
+  id        String      @id @default(uuid())
   titulo    String
   descricao String
   nivel     NivelTrilha @default(BASICO)
-  bloqueada Boolean      @default(false)
+  bloqueada Boolean     @default(false)
   ordem     Int
   aulas     Aula[]
 }
@@ -38,8 +42,6 @@ enum NivelTrilha {
 model Aula {
   id         String          @id @default(uuid())
   titulo     String
-  // Conteúdo em Markdown. Comece vazio e preencha quando criar cada aula.
-  // O Markdown suporta títulos, texto, listas, links e imagens.
   conteudo   String          @default("")
   ordem      Int
   trilhaId   String
@@ -59,4 +61,39 @@ model ProgressoAula {
   aula          Aula     @relation(fields: [aulaId], references: [id], onDelete: Cascade)
 
   @@unique([usuarioId, aulaId])
+}
+
+enum AcaoAuditoria {
+  CADASTRO
+  LOGIN
+  LOGIN_FALHOU
+  ATUALIZAR
+  CRIAR
+  EXCLUIR
+  CONCLUIR_AULA
+  LOGOUT
+}
+
+model LogAuditoria {
+  id         String        @id @default(uuid())
+  acao       AcaoAuditoria
+  entidade   String
+  entidadeId String?
+  atorId     String?
+  ator       Usuario?      @relation(fields: [atorId], references: [id], onDelete: SetNull)
+
+  dadosAnteriores Json?
+  dadosNovos      Json?
+  detalhes        Json?
+
+  ip        String?
+  userAgent String?
+  sucesso   Boolean  @default(true)
+  erro      String?
+  criadoEm  DateTime @default(now())
+
+  @@index([atorId])
+  @@index([entidade, entidadeId])
+  @@index([acao])
+  @@index([criadoEm])
 }

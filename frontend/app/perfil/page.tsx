@@ -3,13 +3,14 @@
 import Link from 'next/link'
 import { BookOpen, Check, ChevronLeft, ClipboardCheck, Clock3, Home, LockKeyhole, MonitorPlay, Save, ShieldCheck, UserRound, X } from 'lucide-react'
 import { ChangeEvent, PointerEvent, useEffect, useMemo, useRef, useState } from 'react'
-import { API_URL, TrackSummary } from '@/lib/api'
+import { useRouter } from 'next/navigation'
+import { API_URL, getCurrentUser, TrackSummary, updateCurrentUser } from '@/lib/api'
 import { DashboardNavigation } from '@/components/dashboard-navigation'
-import { getStoredProfile } from '@/components/user-menu'
 
-type Profile = { nome: string; email: string; foto?: string }
+type Profile = { nome: string; email: string; foto?: string | null }
 
 export default function PerfilPage() {
+  const router = useRouter()
   const [profile, setProfile] = useState<Profile>({ nome: '', email: '' })
   const [tracks, setTracks] = useState<TrackSummary[]>([])
   const [cropSource, setCropSource] = useState('')
@@ -21,9 +22,11 @@ export default function PerfilPage() {
   const cropDrag = useRef({ x: 0, y: 0, offsetX: 0, offsetY: 0 })
 
   useEffect(() => {
-    setProfile(getStoredProfile())
+    getCurrentUser()
+      .then((user) => setProfile({ nome: user.nome, email: user.email, foto: user.foto }))
+      .catch(() => router.replace('/login'))
     fetch(`${API_URL}/trilhas`).then((response) => response.ok ? response.json() : []).then(setTracks).catch(() => setTracks([]))
-  }, [])
+  }, [router])
 
   const stats = useMemo(() => {
     const completed = tracks.reduce((total, track) => total + Math.round(track.totalAulas * track.percentual / 100), 0)
@@ -43,7 +46,7 @@ export default function PerfilPage() {
 
   function applyCrop() {
     const image = new Image()
-    image.onload = () => {
+    image.onload = async () => {
       const canvas = document.createElement('canvas')
       canvas.width = canvas.height = 320
       const scale = Math.max(canvas.width / image.width, canvas.height / image.height) * zoom
@@ -52,11 +55,10 @@ export default function PerfilPage() {
       const x = (canvas.width - width) / 2 + canvas.width * cropOffset.x / 100
       const y = (canvas.height - height) / 2 + canvas.height * cropOffset.y / 100
       canvas.getContext('2d')?.drawImage(image, x, y, width, height)
-      setProfile((current) => {
-        const updatedProfile = { ...current, foto: canvas.toDataURL('image/jpeg', .9) }
-        localStorage.setItem('cybereduca-profile', JSON.stringify(updatedProfile))
-        return updatedProfile
-      })
+      const updatedProfile = { ...profile, foto: canvas.toDataURL('image/jpeg', .82) }
+      setProfile(updatedProfile)
+      await updateCurrentUser(updatedProfile)
+      window.dispatchEvent(new Event('profile-updated'))
       setCropSource('')
     }
     image.src = cropSource
@@ -77,8 +79,10 @@ export default function PerfilPage() {
     })
   }
 
-  function saveProfile() {
-    localStorage.setItem('cybereduca-profile', JSON.stringify(profile))
+  async function saveProfile() {
+    const updated = await updateCurrentUser(profile)
+    setProfile({ nome: updated.nome, email: updated.email, foto: updated.foto })
+    window.dispatchEvent(new Event('profile-updated'))
     setSaved(true)
     window.setTimeout(() => setSaved(false), 2400)
   }
@@ -90,9 +94,9 @@ export default function PerfilPage() {
     <section className="profile-wrap">
       <Link className="profile-back" href="/dashboard"><ChevronLeft size={16} /> Voltar ao dashboard</Link>
       <header className="profile-hero">
-        <div className="profile-avatar">
+        <button className="profile-avatar" type="button" onClick={() => fileInput.current?.click()} aria-label="Alterar foto de perfil">
           {profile.foto ? <img src={profile.foto} alt="Foto de perfil" /> : <UserRound size={44} />}
-        </div>
+        </button>
         <div className="profile-identity"><span className="profile-kicker">Perfil do aluno</span><div><h1>{profile.nome || 'Seu perfil'}</h1>{profile.nome && <span className="profile-handle">@{profile.nome.toLowerCase().replace(/\s+/g, '')}</span>}</div><p>{profile.email || 'Dados da conta indisponíveis'}</p></div>
       </header>
 

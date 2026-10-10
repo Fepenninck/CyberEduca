@@ -3,6 +3,7 @@ import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { AprendizagemService } from './aprendizagem.service';
 import { PrismaService } from '../prisma.service';
+import { AuditoriaService } from '../auditoria.service';
 import { NivelTrilha } from '@prisma/client';
 
 describe('AprendizagemService', () => {
@@ -36,6 +37,10 @@ describe('AprendizagemService', () => {
               count: vi.fn(),
             },
           },
+        },
+        {
+          provide: AuditoriaService,
+          useValue: { registrar: vi.fn() },
         },
       ],
     }).compile();
@@ -82,7 +87,7 @@ describe('AprendizagemService', () => {
       vi.spyOn(prisma.progressoAula, 'count').mockResolvedValue(2);
       vi.spyOn(prisma.trilha, 'findMany').mockResolvedValue([]);
 
-      const resultado = await service.detalharTrilha(trilhaId);
+      const resultado = await service.detalharTrilha(trilhaId, 'usuario-1');
 
       expect(resultado).toBeDefined();
       expect(resultado.id).toBe(trilhaId);
@@ -112,7 +117,7 @@ describe('AprendizagemService', () => {
         .mockResolvedValueOnce(0);
       vi.spyOn(prisma.progressoAula, 'count').mockResolvedValueOnce(5);
 
-      await expect(service.detalharTrilha(trilhaId)).rejects.toThrow(ForbiddenException);
+      await expect(service.detalharTrilha(trilhaId, 'usuario-1')).rejects.toThrow(ForbiddenException);
     });
 
     // TESTE 3: CASO-LIMITE - Trilha não encontrada
@@ -121,7 +126,7 @@ describe('AprendizagemService', () => {
 
       vi.spyOn(prisma.trilha, 'findUnique').mockResolvedValue(null);
 
-      await expect(service.detalharTrilha(trilhaId)).rejects.toThrow(NotFoundException);
+      await expect(service.detalharTrilha(trilhaId, 'usuario-1')).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -140,7 +145,7 @@ describe('AprendizagemService', () => {
         vi.spyOn(prisma.aula, 'count').mockResolvedValue(total);
         vi.spyOn(prisma.progressoAula, 'count').mockResolvedValue(concluidas);
 
-        const resultado = await service['calcularPercentual'](trilhaId);
+        const resultado = await service['calcularPercentual'](trilhaId, 'usuario-1');
 
         expect(resultado).toBe(percentualEsperado);
       },
@@ -153,7 +158,7 @@ describe('AprendizagemService', () => {
 
       vi.spyOn(prisma.aula, 'findUnique').mockResolvedValue(null);
 
-      await expect(service.concluirAula(aulaIdInexistente)).rejects.toThrow(NotFoundException);
+      await expect(service.concluirAula(aulaIdInexistente, 'usuario-1')).rejects.toThrow(NotFoundException);
       expect(prisma.progressoAula.upsert).not.toHaveBeenCalled();
     });
   });

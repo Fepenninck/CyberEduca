@@ -1,20 +1,35 @@
-import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { AcaoAuditoria } from '@prisma/client';
+import { AuditoriaService } from '../auditoria.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private readonly auditoria: AuditoriaService,
   ) {}
 
-  async register(dto: RegisterDto) {
+  async register(
+    dto: RegisterDto,
+    contexto: {
+      ip?: string;
+      userAgent?: string;
+    },
+  ) {
     const userExists = await this.prisma.usuario.findUnique({
-      where: { email: dto.email },
+      where: {
+        email: dto.email,
+      },
     });
 
     if (userExists) {
@@ -25,10 +40,23 @@ export class AuthService {
 
     const user = await this.prisma.usuario.create({
       data: {
-        nome: dto.name, // Mapeado de dto.name para a coluna 'nome'
+        nome: dto.name,
         email: dto.email,
-        senhaHash: hashedPassword, // Mapeado da senha cifrada para a coluna 'senhaHash'
+        senhaHash: hashedPassword,
       },
+    });
+
+    await this.auditoria.registrar({
+      acao: AcaoAuditoria.CADASTRO,
+      entidade: 'Usuario',
+      entidadeId: user.id,
+      atorId: user.id,
+      detalhes: {
+        metodo: 'SENHA',
+      },
+      ip: contexto.ip,
+      userAgent: contexto.userAgent,
+      sucesso: true,
     });
 
     return {
@@ -41,29 +69,81 @@ export class AuthService {
     };
   }
 
-  async login(dto: LoginDto) {
+  async login(
+    dto: LoginDto,
+    contexto: {
+      ip?: string;
+      userAgent?: string;
+    },
+  ) {
     const user = await this.prisma.usuario.findUnique({
       where: { email: dto.email },
     });
 
     if (!user) {
+      await this.auditoria.registrar({
+        acao: AcaoAuditoria.LOGIN_FALHOU,
+        entidade: 'Usuario',
+        detalhes: {
+          emailInformado: dto.email,
+          motivo: 'USUARIO_NAO_ENCONTRADO',
+        },
+        ip: contexto.ip,
+        userAgent: contexto.userAgent,
+        sucesso: false,
+      });
       throw new UnauthorizedException('Credenciais inválidas.');
     }
 
-    // Conta criada via Google não possui senha local
     if (!user.senhaHash) {
+      await this.auditoria.registrar({
+        acao: AcaoAuditoria.LOGIN_FALHOU,
+        entidade: 'Usuario',
+        entidadeId: user.id,
+        atorId: user.id,
+        detalhes: {
+          motivo: 'CONTA_GOOGLE',
+        },
+        ip: contexto.ip,
+        userAgent: contexto.userAgent,
+        sucesso: false,
+      });
       throw new UnauthorizedException('Esta conta usa login com Google.');
     }
 
-    // Compara a senha do DTO com o 'senhaHash' do banco
     const isPasswordValid = await bcrypt.compare(dto.password, user.senhaHash);
 
     if (!isPasswordValid) {
+      await this.auditoria.registrar({
+        acao: AcaoAuditoria.LOGIN_FALHOU,
+        entidade: 'Usuario',
+        entidadeId: user.id,
+        atorId: user.id,
+        detalhes: {
+          motivo: 'SENHA_INCORRETA',
+        },
+        ip: contexto.ip,
+        userAgent: contexto.userAgent,
+        sucesso: false,
+      });
       throw new UnauthorizedException('Credenciais inválidas.');
     }
 
     const payload = { sub: user.id, email: user.email };
     const token = this.jwtService.sign(payload);
+
+    await this.auditoria.registrar({
+      acao: AcaoAuditoria.LOGIN,
+      entidade: 'Usuario',
+      entidadeId: user.id,
+      atorId: user.id,
+      detalhes: {
+        metodo: 'SENHA',
+      },
+      ip: contexto.ip,
+      userAgent: contexto.userAgent,
+      sucesso: true,
+    });
 
     return {
       message: 'Login realizado com sucesso!',
