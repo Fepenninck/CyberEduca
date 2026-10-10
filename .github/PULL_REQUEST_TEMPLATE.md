@@ -82,12 +82,14 @@ Caio:
 O principal desafio técnico ocorreu na configuração dos testes em ambiente Node ESM (--experimental-vm-modules). Foi necessário importar o objeto jest explicitamente através de @jest/globals e garantir a resolução correta das dependências de módulo (como o JwtAuthGuard) utilizando .overrideProvider() na injeção do ambiente de testes de integração, mockando o serviço para não depender do banco e focar no endpoint
 
 
-Thiago: ____________________________________________________________________
+Thiago: 
+Usei o Vitest para mockar o PrismaService e o AuditoriaService, sem precisar depender do banco nos testes. O problema apareceu na hora de usar o Jest com os módulos ESM do NestJS no Node 22. Acabei usando o Vitest, que já tem suporte nativo a esse formato. Como o grupo também usa Jest, deixei os arquivos com a extensão .vitest.ts e configurei o Vitest para executar apenas eles, evitando conflitos entre as duas ferramentas.
+Depois de integrar com a branch do grupo, precisei fazer mais alguns ajustes nos testes. Alguns métodos tinham mudado de assinatura, incluindo o parâmetro usuarioId, e também passou a ser necessário considerar a dependência do AuditoriaService.
 
 ## 9. Checklist de entrega
-- [ ] Todos os testes passam localmente com o comando da seção 6
-- [ ] Cada cenário listado nas seções 3 e 4 existe no código
-- [ ] Cada arquivo de teste alterado ou criado está listado na seção 5
+- [x] Todos os testes passam localmente com o comando da seção 6
+- [x] Cada cenário listado nas seções 3 e 4 existe no código
+- [x] Cada arquivo de teste alterado ou criado está listado na seção 5
 - [ ] Mínimos do exercício atendidos (10 unitários em 3 classes; 4 de integração)
 - [x] Nenhum teste com @Disabled, sem asserção ou com Thread.sleep
 - [x] Professor adicionado como reviewer
