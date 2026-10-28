@@ -8,19 +8,22 @@ datasource db {
 }
 
 model Usuario {
-  id                       String          @id @default(uuid())
+  id                       String              @id @default(uuid())
   nome                     String
-  email                    String          @unique
+  email                    String              @unique
   senhaHash                String?
-  googleId                 String?         @unique
+  googleId                 String?             @unique
   foto                     String?
-  papel                    String          @default("USUARIO")
-  criadoEm                 DateTime        @default(now())
-  atualizadoEm             DateTime        @default(now()) @updatedAt
-  tokenRecuperacaoHash     String?         @unique
+  papel                    String              @default("USUARIO")
+  criadoEm                 DateTime            @default(now())
+  atualizadoEm             DateTime            @default(now()) @updatedAt
+  tokenRecuperacaoHash     String?             @unique
   tokenRecuperacaoExpiraEm DateTime?
   progressos               ProgressoAula[]
   auditorias               LogAuditoria[]
+  tentativasQuiz           TentativaQuiz[]
+  tentativasPhishing       TentativaPhishing[]
+  consultasSeguranca       ConsultaSeguranca[]
 }
 
 model Trilha {
@@ -40,13 +43,15 @@ enum NivelTrilha {
 }
 
 model Aula {
-  id         String          @id @default(uuid())
-  titulo     String
-  conteudo   String          @default("")
-  ordem      Int
-  trilhaId   String
-  trilha     Trilha          @relation(fields: [trilhaId], references: [id], onDelete: Cascade)
-  progressos ProgressoAula[]
+  id               String            @id @default(uuid())
+  titulo           String
+  conteudo         String            @default("")
+  ordem            Int
+  trilhaId         String
+  trilha           Trilha            @relation(fields: [trilhaId], references: [id], onDelete: Cascade)
+  progressos       ProgressoAula[]
+  quizzes          Quiz[]
+  cenariosPhishing CenarioPhishing[]
 
   @@unique([trilhaId, ordem])
 }
@@ -96,4 +101,149 @@ model LogAuditoria {
   @@index([entidade, entidadeId])
   @@index([acao])
   @@index([criadoEm])
+}
+
+enum StatusAtividade {
+  RASCUNHO
+  PUBLICADO
+  ARQUIVADO
+}
+
+enum TipoCenarioPhishing {
+  EMAIL
+  SMS
+  SITE
+  REDE_SOCIAL
+}
+
+enum ResultadoConsultaSeguranca {
+  SEM_DETECCOES
+  SUSPEITO
+  MALICIOSO
+  SEM_DADOS
+}
+
+model Quiz {
+  id           String          @id @default(uuid())
+  titulo       String
+  descricao    String
+  aulaId       String
+  status       StatusAtividade @default(RASCUNHO)
+  criadoEm     DateTime        @default(now())
+  atualizadoEm DateTime        @updatedAt
+
+  aula       Aula            @relation(fields: [aulaId], references: [id], onDelete: Restrict)
+  questoes   QuestaoQuiz[]
+  tentativas TentativaQuiz[]
+
+  @@index([aulaId, status])
+  @@index([status])
+}
+
+model QuestaoQuiz {
+  id         String @id @default(uuid())
+  quizId     String
+  enunciado  String
+  explicacao String
+  ordem      Int
+
+  quiz         Quiz              @relation(fields: [quizId], references: [id], onDelete: Restrict)
+  alternativas AlternativaQuiz[]
+  respostas    RespostaQuiz[]
+
+  @@unique([quizId, ordem])
+}
+
+model AlternativaQuiz {
+  id        String  @id @default(uuid())
+  questaoId String
+  texto     String
+  correta   Boolean @default(false)
+  ordem     Int
+
+  questao   QuestaoQuiz    @relation(fields: [questaoId], references: [id], onDelete: Restrict)
+  respostas RespostaQuiz[]
+
+  @@unique([questaoId, ordem])
+}
+
+model TentativaQuiz {
+  id            String   @id @default(uuid())
+  usuarioId     String
+  quizId        String
+  totalQuestoes Int
+  totalAcertos  Int
+  concluidoEm   DateTime @default(now())
+
+  usuario   Usuario        @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  quiz      Quiz           @relation(fields: [quizId], references: [id], onDelete: Restrict)
+  respostas RespostaQuiz[]
+
+  @@index([usuarioId, concluidoEm])
+  @@index([quizId])
+}
+
+model RespostaQuiz {
+  id            String  @id @default(uuid())
+  tentativaId   String
+  questaoId     String
+  alternativaId String
+  acertou       Boolean
+
+  tentativa   TentativaQuiz   @relation(fields: [tentativaId], references: [id], onDelete: Cascade)
+  questao     QuestaoQuiz     @relation(fields: [questaoId], references: [id], onDelete: Restrict)
+  alternativa AlternativaQuiz @relation(fields: [alternativaId], references: [id], onDelete: Restrict)
+
+  @@unique([tentativaId, questaoId])
+  @@index([questaoId])
+  @@index([alternativaId])
+}
+
+model CenarioPhishing {
+  id               String              @id @default(uuid())
+  titulo           String
+  descricao        String
+  conteudoMensagem String
+  tipo             TipoCenarioPhishing
+  ehPhishing       Boolean
+  explicacao       String
+  aulaId           String
+  status           StatusAtividade     @default(RASCUNHO)
+  criadoEm         DateTime            @default(now())
+  atualizadoEm     DateTime            @updatedAt
+
+  aula       Aula                @relation(fields: [aulaId], references: [id], onDelete: Restrict)
+  tentativas TentativaPhishing[]
+
+  @@index([aulaId, status])
+  @@index([status])
+}
+
+model TentativaPhishing {
+  id                 String   @id @default(uuid())
+  usuarioId          String
+  cenarioId          String
+  respostaEhPhishing Boolean
+  acertou            Boolean
+  concluidoEm        DateTime @default(now())
+
+  usuario Usuario         @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  cenario CenarioPhishing @relation(fields: [cenarioId], references: [id], onDelete: Restrict)
+
+  @@index([usuarioId, concluidoEm])
+  @@index([cenarioId])
+}
+
+model ConsultaSeguranca {
+  id           String                     @id @default(uuid())
+  usuarioId    String
+  dominio      String
+  provedor     String                     @default("VIRUSTOTAL")
+  resultado    ResultadoConsultaSeguranca
+  consultadoEm DateTime                   @default(now())
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId, consultadoEm])
+  @@index([dominio])
 }
