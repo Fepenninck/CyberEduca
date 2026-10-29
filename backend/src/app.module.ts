@@ -3,8 +3,15 @@ import { AprendizagemModule } from './aprendizagem/aprendizagem.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { AuthModule } from './auth/auth.module';
 import { AuditoriaModule } from './auditoria.module';
+import { QuizzesModule } from './quizzes/quizzes.module';
 
 @Module({
-  imports: [AuditoriaModule, AprendizagemModule, UsuariosModule, AuthModule],
+  imports: [
+    AuditoriaModule,
+    AprendizagemModule,
+    UsuariosModule,
+    AuthModule,
+    QuizzesModule,
+  ],
 })
 export class AppModule {}
