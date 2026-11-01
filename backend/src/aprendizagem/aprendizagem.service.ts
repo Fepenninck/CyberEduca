@@ -81,6 +81,37 @@ export class AprendizagemService {
     });
   }
 
+  async listarTrilhasAdmin() {
+    const trilhas = await this.prisma.trilha.findMany({
+      orderBy: { ordem: 'asc' },
+      include: { _count: { select: { aulas: true } } },
+    });
+
+    return trilhas.map((trilha) => ({
+      id: trilha.id,
+      titulo: trilha.titulo,
+      descricao: trilha.descricao,
+      nivel: trilha.nivel,
+      bloqueada: trilha.bloqueada,
+      ordem: trilha.ordem,
+      totalAulas: trilha._count.aulas,
+    }));
+  }
+
+  listarAulasAdmin() {
+    return this.prisma.aula.findMany({
+      orderBy: [{ trilhaId: 'asc' }, { ordem: 'asc' }],
+      select: {
+        id: true,
+        titulo: true,
+        conteudo: true,
+        ordem: true,
+        trilhaId: true,
+        trilha: { select: { id: true, titulo: true } },
+      },
+    });
+  }
+
   async listarTrilhas(usuarioId: string) {
     const trilhas = await this.prisma.trilha.findMany({
       orderBy: { ordem: 'asc' },
