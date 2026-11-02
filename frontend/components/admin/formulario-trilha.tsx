@@ -22,6 +22,7 @@ export function FormularioTrilha({
   const [descricao, setDescricao] = useState(initialValues?.descricao ?? '')
   const [ordem, setOrdem] = useState(String(initialValues?.ordem ?? 1))
   const [bloqueada, setBloqueada] = useState(initialValues?.bloqueada ?? false)
+  const [nivel, setNivel] = useState<TrilhaInput['nivel']>(initialValues?.nivel ?? 'BASICO')
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
 
@@ -34,9 +35,15 @@ export function FormularioTrilha({
       await onSubmit({
         titulo: titulo.trim(),
         descricao: descricao.trim(),
-        ordem: Number(ordem),
+        ordem: Number.parseInt(ordem, 10),
         bloqueada,
+        nivel,
       })
+      setTitulo('')
+      setDescricao('')
+      setOrdem('1')
+      setBloqueada(false)
+      setNivel('BASICO')
     } catch (erroEnvio) {
       setErro(erroEnvio instanceof Error ? erroEnvio.message : 'Não foi possível salvar a trilha.')
     } finally {
@@ -58,6 +65,14 @@ export function FormularioTrilha({
         <label className="text-sm font-medium text-slate-200">
           Ordem
           <input className={campoClass} type="number" min={1} step={1} value={ordem} onChange={(event) => setOrdem(event.target.value)} required />
+        </label>
+        <label className="text-sm font-medium text-slate-200">
+          Nível da trilha
+          <select className={campoClass} value={nivel} onChange={(event) => setNivel(event.target.value as TrilhaInput['nivel'])} required>
+            <option value="BASICO">Iniciante</option>
+            <option value="INTERMEDIARIO">Intermediário</option>
+            <option value="AVANCADO">Avançado</option>
+          </select>
         </label>
         <label className="flex min-h-20 items-center gap-3 rounded-lg border border-[#29394f] bg-[#0b1522] px-4 text-sm text-slate-200">
           <input className="size-4 accent-[#b2ff00]" type="checkbox" checked={bloqueada} onChange={(event) => setBloqueada(event.target.checked)} />

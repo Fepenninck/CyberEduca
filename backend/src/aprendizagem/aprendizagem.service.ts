@@ -1,10 +1,11 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { AcaoAuditoria } from '@prisma/client';
+import { AcaoAuditoria, NivelTrilha } from '@prisma/client';
 import { AuditoriaService } from '../auditoria.service';
 
 type TrilhaListada = {
@@ -34,10 +35,27 @@ export class AprendizagemService {
     descricao: string;
     bloqueada?: boolean;
     ordem: number;
+    nivel?: NivelTrilha;
   }) {
-    return this.prisma.trilha.create({
-      data: dados,
-    });
+    try {
+      const ordem = Number(dados.ordem);
+      if (!Number.isInteger(ordem) || ordem < 1) {
+        throw new BadRequestException('A ordem da trilha deve ser um número inteiro maior que zero.');
+      }
+
+      return await this.prisma.trilha.create({
+        data: {
+          ...dados,
+          ordem,
+          nivel: dados.nivel ?? NivelTrilha.BASICO,
+        },
+      });
+    } catch (error: unknown) {
+      console.error('Erro Prisma:', error);
+      throw new BadRequestException(
+        error instanceof Error ? error.message : 'Não foi possível criar a trilha.',
+      );
+    }
   }
 
   async editarTrilha(
@@ -47,6 +65,7 @@ export class AprendizagemService {
       descricao?: string;
       bloqueada?: boolean;
       ordem?: number;
+      nivel?: NivelTrilha;
     },
   ) {
     return this.prisma.trilha.update({
@@ -55,15 +74,31 @@ export class AprendizagemService {
     });
   }
 
+  async excluirTrilha(id: string) {
+    return this.prisma.trilha.delete({ where: { id } });
+  }
+
   async criarAula(dados: {
     titulo: string;
     conteudo: string;
     ordem: number;
     trilhaId: string;
   }) {
-    return this.prisma.aula.create({
-      data: dados,
-    });
+    try {
+      const ordem = Number(dados.ordem);
+      if (!Number.isInteger(ordem) || ordem < 1) {
+        throw new BadRequestException('A ordem da aula deve ser um número inteiro maior que zero.');
+      }
+
+      return await this.prisma.aula.create({
+        data: { ...dados, ordem },
+      });
+    } catch (error: unknown) {
+      console.error('Erro Prisma:', error);
+      throw new BadRequestException(
+        error instanceof Error ? error.message : 'Não foi possível criar a aula.',
+      );
+    }
   }
 
   async editarAula(
@@ -79,6 +114,10 @@ export class AprendizagemService {
       where: { id },
       data: dados,
     });
+  }
+
+  async excluirAula(id: string) {
+    return this.prisma.aula.delete({ where: { id } });
   }
 
   async listarTrilhasAdmin() {

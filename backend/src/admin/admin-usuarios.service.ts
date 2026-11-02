@@ -40,4 +40,27 @@ export class AdminUsuariosService {
 
     return usuario;
   }
+
+  async atualizarUsuario(id: string, dados: { nome?: string; email?: string }) {
+    return this.prisma.usuario.update({
+      where: { id },
+      data: dados,
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+        foto: true,
+        papel: true,
+        criadoEm: true,
+        atualizadoEm: true,
+      },
+    });
+  }
+
+  async excluirUsuario(id: string) {
+    return this.prisma.usuario.delete({
+      where: { id },
+      select: { id: true, nome: true, email: true },
+    });
+  }
 }

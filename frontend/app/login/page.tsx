@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { AlertCircle } from 'lucide-react'
 import './login.css'
 import { useRouter } from 'next/navigation'
-import { apiFetch } from '@/lib/api'
+import { apiFetch, getCurrentUser } from '@/lib/api'
 
 type Errors = { email?: string; password?: string }
 
@@ -49,7 +49,8 @@ export default function LoginPage() {
       return
     }
 
-    router.push('/dashboard')
+    const usuario = await getCurrentUser()
+    router.push(usuario.papel === 'ADMIN' ? '/admin' : '/dashboard')
   } catch {
     setApiError('Erro de conexão com o servidor.')
   } finally {

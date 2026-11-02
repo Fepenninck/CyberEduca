@@ -31,6 +31,7 @@ model Trilha {
   bloqueada Boolean     @default(false)
   ordem     Int
   aulas     Aula[]
+  provas    Prova[]
 }
 
 enum NivelTrilha {
@@ -49,6 +50,46 @@ model Aula {
   progressos ProgressoAula[]
 
   @@unique([trilhaId, ordem])
+}
+
+enum StatusProva {
+  RASCUNHO
+  PUBLICADO
+  ARQUIVADO
+}
+
+model Prova {
+  id           String         @id @default(uuid())
+  titulo       String
+  descricao    String
+  trilhaId     String
+  status       StatusProva    @default(RASCUNHO)
+  criadoEm     DateTime       @default(now())
+  atualizadoEm DateTime       @default(now()) @updatedAt
+  trilha       Trilha         @relation(fields: [trilhaId], references: [id], onDelete: Cascade)
+  questoes     QuestaoProva[]
+}
+
+model QuestaoProva {
+  id           String             @id @default(uuid())
+  enunciado    String
+  tipo         TipoQuestao        @default(MULTIPLA_ESCOLHA)
+  provaId      String
+  prova        Prova              @relation(fields: [provaId], references: [id], onDelete: Cascade)
+  alternativas AlternativaProva[]
+}
+
+enum TipoQuestao {
+  MULTIPLA_ESCOLHA
+  DISSERTATIVA
+}
+
+model AlternativaProva {
+  id        String       @id @default(uuid())
+  texto     String
+  isCorreta Boolean      @default(false)
+  questaoId String
+  questao   QuestaoProva @relation(fields: [questaoId], references: [id], onDelete: Cascade)
 }
 
 model ProgressoAula {

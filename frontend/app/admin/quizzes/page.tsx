@@ -1,9 +1,9 @@
 'use client'
 
-import { ArrowRight, ClipboardCheck, Plus } from 'lucide-react'
+import { ArrowRight, ClipboardCheck, Plus, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { alterarStatusQuiz, listarQuizzesAdmin, type QuizAdmin, type StatusPublicacao } from '@/lib/admin-api'
+import { alterarStatusQuiz, excluirQuiz, listarQuizzesAdmin, type QuizAdmin, type StatusPublicacao } from '@/lib/admin-api'
 
 const statusPossiveis: StatusPublicacao[] = ['RASCUNHO', 'PUBLICADO', 'ARQUIVADO']
 
@@ -50,6 +50,17 @@ export default function AdminQuizzesPage() {
     }
   }
 
+  async function removerQuiz(quiz: QuizAdmin) {
+    if (!window.confirm('Tem certeza que deseja excluir?')) return
+    setErro(null)
+    try {
+      await excluirQuiz(quiz.id)
+      setAtualizacao((valor) => valor + 1)
+    } catch (erroExclusao) {
+      setErro(erroExclusao instanceof Error ? erroExclusao.message : 'Não foi possível excluir o quiz.')
+    }
+  }
+
   return (
     <section>
       <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
@@ -86,18 +97,23 @@ export default function AdminQuizzesPage() {
                 </div>
                 <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.07] pt-4">
                   <span className="text-xs text-slate-500">Aula: {quiz.aulaId}</span>
-                  <label className="flex items-center gap-2 text-xs text-slate-400">
-                    Status
-                    <select
-                      aria-label={`Status do quiz ${quiz.titulo}`}
-                      value={quiz.status}
-                      disabled={quizAtualizando === quiz.id}
-                      onChange={(event) => void mudarStatus(quiz, event.target.value as StatusPublicacao)}
-                      className="rounded-md border border-[#35465c] bg-[#091321] px-2 py-1.5 text-xs text-white outline-none focus:border-[#b2ff00] disabled:opacity-50"
-                    >
-                      {statusPossiveis.map((status) => <option key={status} value={status}>{status}</option>)}
-                    </select>
-                  </label>
+                  <div className="flex items-center gap-3">
+                    <label className="flex items-center gap-2 text-xs text-slate-400">
+                      Status
+                      <select
+                        aria-label={`Status do quiz ${quiz.titulo}`}
+                        value={quiz.status}
+                        disabled={quizAtualizando === quiz.id}
+                        onChange={(event) => void mudarStatus(quiz, event.target.value as StatusPublicacao)}
+                        className="rounded-md border border-[#35465c] bg-[#091321] px-2 py-1.5 text-xs text-white outline-none focus:border-[#b2ff00] disabled:opacity-50"
+                      >
+                        {statusPossiveis.map((status) => <option key={status} value={status}>{status}</option>)}
+                      </select>
+                    </label>
+                    <button type="button" aria-label={`Excluir quiz ${quiz.titulo}`} onClick={() => void removerQuiz(quiz)} className="rounded-lg border border-[#35465c] p-2 text-slate-300 transition hover:border-rose-400 hover:text-rose-300">
+                      <Trash2 aria-hidden="true" size={16} />
+                    </button>
+                  </div>
                 </div>
               </article>
             )

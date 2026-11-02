@@ -60,20 +60,21 @@ export default function EditarProvaPage() {
 
   async function salvarDadosProva(dados: ProvaInput) {
     if (!prova) return
-    const atualizada = await atualizarProvaAdmin(prova.id, dados)
-    setProva((atual) => atual ? { ...atual, ...dados, ...atualizada, questoes: atualizada.questoes ?? atual.questoes } : atual)
+    const { questoes: _questoes, ...dadosBasicos } = dados
+    const atualizada = await atualizarProvaAdmin(prova.id, dadosBasicos)
+    setProva((atual) => atual ? { ...atual, ...dadosBasicos, ...atualizada, questoes: atualizada.questoes ?? atual.questoes } : atual)
     setSucesso('Dados da prova atualizados.')
     setErro(null)
   }
 
-  async function adicionarQuestao(enunciado: string) {
+  async function adicionarQuestao(dados: { enunciado: string; tipo: 'MULTIPLA_ESCOLHA' | 'DISSERTATIVA' }) {
     if (!prova) return
     setQuestaoAtualizando(true)
     setErro(null)
     setSucesso(null)
 
     try {
-      const questao = await adicionarQuestaoProva(prova.id, { enunciado })
+      const questao = await adicionarQuestaoProva(prova.id, dados)
       setProva((atual) => atual ? {
         ...atual,
         questoes: [...(atual.questoes ?? []), { ...questao, alternativas: questao.alternativas ?? [] }],
@@ -135,6 +136,7 @@ export default function EditarProvaPage() {
                 key={prova.id}
                 trilhas={trilhas}
                 initialValues={prova}
+                permitirQuestoes={false}
                 submitLabel="Salvar dados da prova"
                 onSubmit={salvarDadosProva}
               />
@@ -148,7 +150,7 @@ export default function EditarProvaPage() {
               </span>
               <div>
                 <h3 className="text-xl font-semibold text-white">Questões</h3>
-                <p className="text-xs text-slate-400">Adicione o enunciado e depois cadastre suas alternativas.</p>
+                <p className="text-xs text-slate-400">Adicione questões de múltipla escolha ou dissertativas.</p>
               </div>
             </div>
             <FormularioQuestaoProva onSubmit={adicionarQuestao} />
@@ -170,9 +172,9 @@ export default function EditarProvaPage() {
                       <span>{alternativa.texto}</span>
                     </div>
                   ))}
-                  <FormularioAlternativaProva
+                  {questao.tipo === 'MULTIPLA_ESCOLHA' && <FormularioAlternativaProva
                     onSubmit={(dados) => adicionarAlternativa(questao.id, dados)}
-                  />
+                  />}
                   {alternativaAtualizando === questao.id && <span className="sr-only">Adicionando alternativa</span>}
                 </div>
               </article>

@@ -1,11 +1,12 @@
 'use client'
 
-import { BookOpen, Pencil, Plus } from 'lucide-react'
+import { BookOpen, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { FormularioAula } from '@/components/admin/formulario-aula'
 import {
   criarAula,
   editarAula,
+  excluirAula,
   listarAulas,
   listarTrilhas,
   type AdminAula,
@@ -62,6 +63,17 @@ export default function AdminAulasPage() {
     setAtualizacao((valor) => valor + 1)
   }
 
+  async function removerAula(id: string) {
+    if (!window.confirm('Tem certeza que deseja excluir?')) return
+    setErro(null)
+    try {
+      await excluirAula(id)
+      setAtualizacao((valor) => valor + 1)
+    } catch (erroExclusao) {
+      setErro(erroExclusao instanceof Error ? erroExclusao.message : 'Não foi possível excluir a aula.')
+    }
+  }
+
   return (
     <section>
       <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
@@ -81,6 +93,7 @@ export default function AdminAulasPage() {
           <FormularioAula
             key={aulaEditando?.id ?? 'nova-aula'}
             trilhas={trilhas}
+            aulasExistentes={aulas}
             initialValues={aulaEditando ?? undefined}
             submitLabel={aulaEditando ? 'Salvar alterações' : 'Criar aula'}
             onSubmit={salvarAula}
@@ -113,9 +126,14 @@ export default function AdminAulasPage() {
                   <p className="mt-3 text-xs text-slate-500">Ordem {aula.ordem}</p>
                 </div>
               </div>
-              <button type="button" aria-label={`Editar ${aula.titulo}`} onClick={() => { setAulaEditando(aula); setMostrarFormulario(true) }} className="rounded-lg border border-[#35465c] p-2 text-slate-300 transition hover:border-[#b2ff00] hover:text-[#b2ff00]">
-                <Pencil aria-hidden="true" size={16} />
-              </button>
+              <div className="flex shrink-0 gap-2">
+                <button type="button" aria-label={`Editar ${aula.titulo}`} onClick={() => { setAulaEditando(aula); setMostrarFormulario(true) }} className="rounded-lg border border-[#35465c] p-2 text-slate-300 transition hover:border-[#b2ff00] hover:text-[#b2ff00]">
+                  <Pencil aria-hidden="true" size={16} />
+                </button>
+                <button type="button" aria-label={`Excluir ${aula.titulo}`} onClick={() => void removerAula(aula.id)} className="rounded-lg border border-[#35465c] p-2 text-slate-300 transition hover:border-rose-400 hover:text-rose-300">
+                  <Trash2 aria-hidden="true" size={16} />
+                </button>
+              </div>
             </article>
           ))}
         </div>

@@ -1,11 +1,12 @@
 'use client'
 
-import { GraduationCap, Pencil, Plus } from 'lucide-react'
+import { GraduationCap, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { FormularioTrilha } from '@/components/admin/formulario-trilha'
 import {
   criarTrilha,
   editarTrilha,
+  excluirTrilha,
   listarTrilhas,
   type AdminTrilha,
   type TrilhaInput,
@@ -54,6 +55,17 @@ export default function AdminTrilhasPage() {
     setMostrarFormulario(false)
     setTrilhaEditando(null)
     setAtualizacao((valor) => valor + 1)
+  }
+
+  async function removerTrilha(id: string) {
+    if (!window.confirm('Tem certeza que deseja excluir?')) return
+    setErro(null)
+    try {
+      await excluirTrilha(id)
+      setAtualizacao((valor) => valor + 1)
+    } catch (erroExclusao) {
+      setErro(erroExclusao instanceof Error ? erroExclusao.message : 'Não foi possível excluir a trilha.')
+    }
   }
 
   return (
@@ -105,9 +117,14 @@ export default function AdminTrilhasPage() {
                     <p className="mt-1 line-clamp-2 text-sm leading-5 text-slate-400">{trilha.descricao}</p>
                   </div>
                 </div>
-                <button type="button" aria-label={`Editar ${trilha.titulo}`} onClick={() => { setTrilhaEditando(trilha); setMostrarFormulario(true) }} className="rounded-lg border border-[#35465c] p-2 text-slate-300 transition hover:border-[#b2ff00] hover:text-[#b2ff00]">
-                  <Pencil aria-hidden="true" size={16} />
-                </button>
+                <div className="flex shrink-0 gap-2">
+                  <button type="button" aria-label={`Editar ${trilha.titulo}`} onClick={() => { setTrilhaEditando(trilha); setMostrarFormulario(true) }} className="rounded-lg border border-[#35465c] p-2 text-slate-300 transition hover:border-[#b2ff00] hover:text-[#b2ff00]">
+                    <Pencil aria-hidden="true" size={16} />
+                  </button>
+                  <button type="button" aria-label={`Excluir ${trilha.titulo}`} onClick={() => void removerTrilha(trilha.id)} className="rounded-lg border border-[#35465c] p-2 text-slate-300 transition hover:border-rose-400 hover:text-rose-300">
+                    <Trash2 aria-hidden="true" size={16} />
+                  </button>
+                </div>
               </div>
               <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-white/[0.07] pt-4 text-xs text-slate-400">
                 <span className="rounded-full bg-white/[0.06] px-2.5 py-1">Ordem {trilha.ordem}</span>

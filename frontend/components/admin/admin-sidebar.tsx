@@ -1,21 +1,36 @@
 'use client'
 
-import { BookOpen, ClipboardCheck, FileCheck2, GraduationCap, LayoutDashboard, ShieldAlert, Users } from 'lucide-react'
+import { BookOpen, FileCheck2, GraduationCap, LayoutDashboard, LogOut, Users } from 'lucide-react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { apiFetch } from '@/lib/api'
 
 const links = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/trilhas', label: 'Trilhas', icon: GraduationCap },
   { href: '/admin/aulas', label: 'Aulas', icon: BookOpen },
-  { href: '/admin/quizzes', label: 'Quizzes', icon: ClipboardCheck },
   { href: '/admin/provas', label: 'Provas', icon: FileCheck2 },
-  { href: '/admin/simulacoes', label: 'Simulações', icon: ShieldAlert },
   { href: '/admin/usuarios', label: 'Usuários', icon: Users },
 ]
 
 export function AdminSidebar() {
   const pathname = usePathname()
+  const router = useRouter()
+  const [saindo, setSaindo] = useState(false)
+
+  async function sair() {
+    setSaindo(true)
+    try {
+      await apiFetch('/auth/logout', { method: 'POST' })
+    } catch {
+      // Ainda encaminha para o login se a API de logout estiver indisponível.
+    } finally {
+      setSaindo(false)
+      router.push('/login')
+      router.refresh()
+    }
+  }
 
   return (
     <aside className="border-b border-[#27364b] bg-[#0d1725] md:fixed md:inset-y-0 md:left-0 md:z-40 md:w-64 md:border-r md:border-b-0">
@@ -50,6 +65,17 @@ export function AdminSidebar() {
           )
         })}
       </nav>
+      <div className="p-3 md:absolute md:inset-x-0 md:bottom-0">
+        <button
+          type="button"
+          onClick={sair}
+          disabled={saindo}
+          className="flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-sm text-slate-300 transition-colors hover:bg-rose-400/10 hover:text-rose-200 disabled:opacity-60"
+        >
+          <LogOut aria-hidden="true" size={18} />
+          {saindo ? 'Saindo…' : 'Sair'}
+        </button>
+      </div>
     </aside>
   )
 }

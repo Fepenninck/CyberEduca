@@ -1,10 +1,11 @@
 'use client'
 
 import { useState, type FormEvent } from 'react'
-import type { AdminTrilha, AulaInput } from '@/lib/admin-api'
+import type { AdminAula, AdminTrilha, AulaInput } from '@/lib/admin-api'
 
 type FormularioAulaProps = {
   trilhas: AdminTrilha[]
+  aulasExistentes: AdminAula[]
   onSubmit: (dados: AulaInput) => Promise<void>
   initialValues?: Partial<AulaInput>
   submitLabel?: string
@@ -15,15 +16,22 @@ const campoClass = 'mt-2 w-full rounded-lg border border-[#35465c] bg-[#091321] 
 
 export function FormularioAula({
   trilhas,
+  aulasExistentes,
   onSubmit,
   initialValues,
   submitLabel = 'Salvar aula',
   onCancel,
 }: FormularioAulaProps) {
+  const trilhaInicialId = initialValues?.trilhaId ?? trilhas[0]?.id ?? ''
+  const proximaOrdem = (id: string) => Math.max(
+    0,
+    ...aulasExistentes.filter((aula) => aula.trilhaId === id).map((aula) => aula.ordem),
+  ) + 1
+
   const [titulo, setTitulo] = useState(initialValues?.titulo ?? '')
   const [conteudo, setConteudo] = useState(initialValues?.conteudo ?? '')
-  const [ordem, setOrdem] = useState(String(initialValues?.ordem ?? 1))
-  const [trilhaId, setTrilhaId] = useState(initialValues?.trilhaId ?? trilhas[0]?.id ?? '')
+  const [ordem, setOrdem] = useState(String(initialValues?.ordem ?? proximaOrdem(trilhaInicialId)))
+  const [trilhaId, setTrilhaId] = useState(trilhaInicialId)
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
 
@@ -33,7 +41,10 @@ export function FormularioAula({
     setErro(null)
 
     try {
-      await onSubmit({ titulo: titulo.trim(), conteudo, ordem: Number(ordem), trilhaId })
+      await onSubmit({ titulo: titulo.trim(), conteudo, ordem: Number.parseInt(ordem, 10), trilhaId })
+      setTitulo('')
+      setConteudo('')
+      setOrdem(String(Math.max(proximaOrdem(trilhaId), Number.parseInt(ordem, 10) + 1)))
     } catch (erroEnvio) {
       setErro(erroEnvio instanceof Error ? erroEnvio.message : 'Não foi possível salvar a aula.')
     } finally {
@@ -58,7 +69,17 @@ export function FormularioAula({
         </label>
         <label className="text-sm font-medium text-slate-200">
           Trilha
-          <select className={campoClass} value={trilhaId} onChange={(event) => setTrilhaId(event.target.value)} required disabled={trilhas.length === 0}>
+          <select
+            className={campoClass}
+            value={trilhaId}
+            onChange={(event) => {
+              const novoTrilhaId = event.target.value
+              setTrilhaId(novoTrilhaId)
+              setOrdem(String(proximaOrdem(novoTrilhaId)))
+            }}
+            required
+            disabled={trilhas.length === 0}
+          >
             <option value="" disabled>Selecione uma trilha</option>
             {trilhas.map((trilha) => (
               <option key={trilha.id} value={trilha.id}>{trilha.titulo}</option>

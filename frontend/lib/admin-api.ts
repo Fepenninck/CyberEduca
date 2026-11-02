@@ -16,18 +16,20 @@ export type AdminUsuario = {
   atualizadoEm: string
 }
 
+export type AtualizacaoUsuario = Pick<AdminUsuario, 'nome' | 'email'>
+
 export type TrilhaInput = {
   titulo: string
   descricao: string
   bloqueada?: boolean
   ordem: number
+  nivel: 'BASICO' | 'INTERMEDIARIO' | 'AVANCADO'
 }
 
 export type TrilhaUpdate = Partial<TrilhaInput>
 
 export type AdminTrilha = TrilhaInput & {
   id: string
-  nivel: 'BASICO' | 'INTERMEDIARIO' | 'AVANCADO'
   totalAulas: number
 }
 
@@ -74,12 +76,15 @@ export type ProvaInput = {
   descricao: string
   trilhaId: string
   status: StatusPublicacao
+  questoes?: QuestaoProvaInput[]
 }
 
 export type ProvaUpdate = Partial<ProvaInput>
 
 export type QuestaoProvaInput = {
   enunciado: string
+  tipo: 'MULTIPLA_ESCOLHA' | 'DISSERTATIVA'
+  alternativas?: AlternativaProvaInput[]
 }
 
 export type AlternativaProvaInput = {
@@ -91,12 +96,12 @@ export type AlternativaProvaAdmin = AlternativaProvaInput & {
   id: string
 }
 
-export type QuestaoProvaAdmin = QuestaoProvaInput & {
+export type QuestaoProvaAdmin = Omit<QuestaoProvaInput, 'alternativas'> & {
   id: string
   alternativas?: AlternativaProvaAdmin[]
 }
 
-export type ProvaAdmin = ProvaInput & {
+export type ProvaAdmin = Omit<ProvaInput, 'questoes'> & {
   id: string
   trilha?: { id: string; titulo: string }
   questoes?: QuestaoProvaAdmin[]
@@ -137,6 +142,17 @@ export function buscarUsuario(id: string): Promise<AdminUsuario> {
   return requestJson(`/admin/usuarios/${encodeURIComponent(id)}`)
 }
 
+export function atualizarUsuario(id: string, dados: AtualizacaoUsuario): Promise<AdminUsuario> {
+  return requestJson(`/admin/usuarios/${encodeURIComponent(id)}`, {
+    method: 'PATCH',
+    body: JSON.stringify(dados),
+  })
+}
+
+export function excluirUsuario(id: string): Promise<void> {
+  return requestJson(`/admin/usuarios/${encodeURIComponent(id)}`, { method: 'DELETE' })
+}
+
 export function listarTrilhas(): Promise<AdminTrilha[]> {
   return requestJson('/admin/trilhas')
 }
@@ -159,6 +175,10 @@ export function editarTrilha(id: string, dados: TrilhaUpdate) {
   })
 }
 
+export function excluirTrilha(id: string): Promise<void> {
+  return requestJson(`/admin/trilhas/${encodeURIComponent(id)}`, { method: 'DELETE' })
+}
+
 export function criarAula(dados: AulaInput) {
   return requestJson('/admin/aulas', {
     method: 'POST',
@@ -171,6 +191,10 @@ export function editarAula(id: string, dados: AulaUpdate) {
     method: 'PATCH',
     body: JSON.stringify(dados),
   })
+}
+
+export function excluirAula(id: string): Promise<void> {
+  return requestJson(`/admin/aulas/${encodeURIComponent(id)}`, { method: 'DELETE' })
 }
 
 export function listarQuizzesAdmin(): Promise<QuizAdmin[]> {
@@ -189,6 +213,10 @@ export function alterarStatusQuiz(id: string, status: StatusPublicacao): Promise
     method: 'PATCH',
     body: JSON.stringify({ status }),
   })
+}
+
+export function excluirQuiz(id: string): Promise<void> {
+  return requestJson(`/admin/quizzes/${encodeURIComponent(id)}`, { method: 'DELETE' })
 }
 
 export function listarCenariosAdmin(): Promise<CenarioPhishingAdmin[]> {
@@ -249,4 +277,8 @@ export function alterarStatusProva(id: string, status: StatusPublicacao): Promis
     method: 'PATCH',
     body: JSON.stringify({ status }),
   })
+}
+
+export function excluirProva(id: string): Promise<void> {
+  return requestJson(`/admin/provas/${encodeURIComponent(id)}`, { method: 'DELETE' })
 }

@@ -3,7 +3,7 @@
 import { Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { TabelaUsuarios } from '@/components/admin/tabela-usuarios'
-import { listarUsuarios, type AdminUsuario } from '@/lib/admin-api'
+import { excluirUsuario, listarUsuarios, type AdminUsuario } from '@/lib/admin-api'
 
 export default function AdminUsuariosPage() {
   const [usuarios, setUsuarios] = useState<AdminUsuario[]>([])
@@ -32,6 +32,11 @@ export default function AdminUsuariosPage() {
     }
   }, [tentativa])
 
+  async function removerUsuario(id: string) {
+    await excluirUsuario(id)
+    setTentativa((valor) => valor + 1)
+  }
+
   return (
     <section>
       <div className="mb-7">
@@ -54,7 +59,7 @@ export default function AdminUsuariosPage() {
       {carregando ? (
         <div className="h-64 animate-pulse rounded-2xl border border-[#29394f] bg-[#101b2a]" aria-label="Carregando usuários" />
       ) : (
-        <TabelaUsuarios usuarios={usuarios} />
+        <TabelaUsuarios usuarios={usuarios} onDelete={removerUsuario} />
       )}
     </section>
   )
