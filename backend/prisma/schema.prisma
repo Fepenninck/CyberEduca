@@ -21,6 +21,7 @@ model Usuario {
   tokenRecuperacaoExpiraEm DateTime?
   progressos               ProgressoAula[]
   auditorias               LogAuditoria[]
+  tentativasProva          TentativaProva[]
 }
 
 model Trilha {
@@ -31,6 +32,7 @@ model Trilha {
   bloqueada Boolean     @default(false)
   ordem     Int
   aulas     Aula[]
+  provas    Prova[]
 }
 
 enum NivelTrilha {
@@ -96,4 +98,80 @@ model LogAuditoria {
   @@index([entidade, entidadeId])
   @@index([acao])
   @@index([criadoEm])
+}
+
+enum StatusProva {
+  RASCUNHO
+  PUBLICADA
+  ARQUIVADA
+}
+
+model Prova {
+  id           String          @id @default(uuid())
+  titulo       String
+  descricao    String          @default("")
+  trilhaId     String
+  trilha       Trilha          @relation(fields: [trilhaId], references: [id], onDelete: Cascade)
+  status       StatusProva     @default(RASCUNHO)
+  criadoEm     DateTime        @default(now())
+  atualizadoEm DateTime        @default(now()) @updatedAt
+  questoes     QuestaoProva[]
+  tentativas   TentativaProva[]
+
+  @@index([trilhaId])
+  @@index([status])
+}
+
+model QuestaoProva {
+  id           String             @id @default(uuid())
+  provaId      String
+  prova        Prova              @relation(fields: [provaId], references: [id], onDelete: Cascade)
+  enunciado    String
+  ordem        Int
+  alternativas AlternativaProva[]
+  respostas    RespostaProva[]
+
+  @@unique([provaId, ordem])
+}
+
+model AlternativaProva {
+  id        String          @id @default(uuid())
+  questaoId String
+  questao   QuestaoProva    @relation(fields: [questaoId], references: [id], onDelete: Cascade)
+  texto     String
+  correta   Boolean         @default(false)
+  ordem     Int
+  respostas RespostaProva[]
+
+  @@unique([questaoId, ordem])
+}
+
+model TentativaProva {
+  id            String          @id @default(uuid())
+  usuarioId     String
+  usuario       Usuario         @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  provaId       String
+  prova         Prova           @relation(fields: [provaId], references: [id], onDelete: Cascade)
+  nota          Float           @default(0)
+  totalQuestoes Int             @default(0)
+  totalAcertos  Int             @default(0)
+  iniciadoEm    DateTime        @default(now())
+  concluidoEm   DateTime?
+  respostas     RespostaProva[]
+
+  @@index([usuarioId])
+  @@index([provaId])
+}
+
+model RespostaProva {
+  id            String           @id @default(uuid())
+  tentativaId   String
+  tentativa     TentativaProva   @relation(fields: [tentativaId], references: [id], onDelete: Cascade)
+  questaoId     String
+  questao       QuestaoProva     @relation(fields: [questaoId], references: [id], onDelete: Cascade)
+  alternativaId String
+  alternativa   AlternativaProva @relation(fields: [alternativaId], references: [id], onDelete: Cascade)
+  acertou       Boolean          @default(false)
+
+  @@unique([tentativaId, questaoId])
 }
