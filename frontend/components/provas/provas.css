@@ -1,0 +1,118 @@
+.provas-grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  margin: 2rem 0 3rem;
+}
+
+.prova-card {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(148, 163, 184, .25);
+  border-radius: 12px;
+  background: rgba(15, 23, 42, .35);
+}
+
+.prova-card h3 { margin: 0; font-size: 1.1rem; font-weight: 600; }
+.prova-card p { margin: 0; font-size: .9rem; opacity: .75; line-height: 1.5; }
+
+.prova-card-meta {
+  display: flex;
+  gap: .75rem;
+  flex-wrap: wrap;
+  font-size: .8rem;
+  opacity: .65;
+}
+
+.prova-card-cta {
+  margin-top: auto;
+  align-self: flex-start;
+  padding: .6rem 1.25rem;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #fff;
+  font-size: .9rem;
+  text-decoration: none;
+}
+
+.prova-player { max-width: 760px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+
+.prova-progresso {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: .85rem;
+  opacity: .7;
+  margin-bottom: 1.5rem;
+}
+
+.prova-questao {
+  padding: 1.5rem;
+  border: 1px solid rgba(148, 163, 184, .25);
+  border-radius: 12px;
+  margin-bottom: 1rem;
+}
+
+.prova-questao-enunciado { font-size: 1.05rem; font-weight: 600; margin: 0 0 1.25rem; line-height: 1.5; }
+
+.prova-alternativas { display: flex; flex-direction: column; gap: .6rem; }
+
+.prova-alternativa {
+  display: flex;
+  align-items: flex-start;
+  gap: .75rem;
+  padding: .9rem 1rem;
+  border: 1px solid rgba(148, 163, 184, .3);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: .95rem;
+  line-height: 1.45;
+}
+
+.prova-alternativa:hover { border-color: rgba(37, 99, 235, .6); }
+.prova-alternativa.is-selected { border-color: #2563eb; background: rgba(37, 99, 235, .12); }
+.prova-alternativa input { margin-top: .2rem; }
+
+.prova-acoes { display: flex; gap: .75rem; align-items: center; margin-top: 1.5rem; }
+
+.prova-submit {
+  padding: .75rem 1.75rem;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #fff;
+  font-size: .95rem;
+  cursor: pointer;
+}
+
+.prova-submit:disabled { opacity: .5; cursor: not-allowed; }
+
+.prova-erro { color: #f87171; font-size: .875rem; margin: .75rem 0 0; }
+
+.prova-resultado {
+  max-width: 520px;
+  margin: 3rem auto;
+  padding: 2.5rem;
+  text-align: center;
+  border: 1px solid rgba(148, 163, 184, .25);
+  border-radius: 12px;
+}
+
+.prova-resultado-nota { font-size: 3.5rem; font-weight: 700; margin: 1rem 0 .25rem; }
+.prova-resultado-nota.is-aprovado { color: #4ade80; }
+.prova-resultado-nota.is-reprovado { color: #f87171; }
+.prova-resultado-detalhe { font-size: .95rem; opacity: .75; margin: 0 0 2rem; }
+
+.prova-resultado-acoes { display: flex; gap: .75rem; justify-content: center; flex-wrap: wrap; }
+
+.prova-resultado-acoes a {
+  padding: .7rem 1.5rem;
+  border-radius: 8px;
+  border: 1px solid rgba(148, 163, 184, .4);
+  text-decoration: none;
+  font-size: .9rem;
+}
+
+.provas-vazio { opacity: .7; font-size: .95rem; padding: 2rem 0; }
