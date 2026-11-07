@@ -133,6 +133,17 @@ export class ProvasService {
   ) {
     await this.garantirProvaExiste(provaId);
 
+    const ordemOcupada = await this.prisma.questaoProva.findFirst({
+      where: { provaId, ordem: dados.ordem },
+      select: { id: true },
+    });
+
+    if (ordemOcupada) {
+      throw new BadRequestException(
+        `Ja existe uma questao na ordem ${dados.ordem} nesta prova.`,
+      );
+    }
+
     const questao = await this.prisma.questaoProva.create({
       data: { provaId, enunciado: dados.enunciado, ordem: dados.ordem },
     });
@@ -156,11 +167,17 @@ export class ProvasService {
   ) {
     const questao = await this.prisma.questaoProva.findUnique({
       where: { id: questaoId },
-      include: { alternativas: { select: { id: true, correta: true } } },
+      include: { alternativas: { select: { id: true, correta: true, ordem: true } } },
     });
 
     if (!questao || questao.provaId !== provaId) {
       throw new NotFoundException('Questao nao encontrada nesta prova.');
+    }
+
+    if (questao.alternativas.some((a: { ordem: number }) => a.ordem === dados.ordem)) {
+      throw new BadRequestException(
+        `Ja existe uma alternativa na ordem ${dados.ordem} nesta questao.`,
+      );
     }
 
     const jaTemCorreta = questao.alternativas.some(
