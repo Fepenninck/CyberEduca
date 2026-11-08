@@ -8,7 +8,6 @@ import {
 } from "@/components/activities/activity-state";
 import { useActivity } from "@/components/activities/use-activity";
 import { PhishingSimulator } from "@/components/phishing/phishing-simulator";
-import { localScenarios } from "@/lib/library-activities";
 export default function CenarioPage({
   params,
 }: {
@@ -16,10 +15,7 @@ export default function CenarioPage({
 }) {
   const { cenarioId } = use(params);
   const loader = useCallback(
-    (signal: AbortSignal) => {
-      const local = localScenarios.find((s) => s.id === cenarioId);
-      return local ? Promise.resolve(local) : buscarCenario(cenarioId, signal);
-    },
+    (signal: AbortSignal) => buscarCenario(cenarioId, signal),
     [cenarioId],
   );
   const { data, error, loading, retry } = useActivity(loader);

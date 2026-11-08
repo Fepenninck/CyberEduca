@@ -41,9 +41,7 @@ export function PhishingFeedback({
         </button>
       </div>
       <p className="activity-footnote">
-        {resultado.cenarioId.startsWith("local-")
-          ? "Prática local corrigida neste navegador, sem envio ao servidor."
-          : "Tentativa registrada. O progresso da aula não foi alterado."}
+        Tentativa registrada. O progresso da aula não foi alterado.
       </p>
     </section>
   );

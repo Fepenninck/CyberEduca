@@ -1,4 +1,7 @@
 "use client";
+import { parseLessonMaterial } from "@/lib/lesson-material";
+import { LessonLearningContent } from "@/components/activities/lesson-learning-content";
+
 
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
@@ -10,7 +13,6 @@ import { API_URL } from "@/lib/api";
 import type { TrackDetail } from "@/lib/api";
 import { isLessonUnlocked } from "@/lib/lesson-access";
 import { loadLearningAccess } from '@/lib/course-access';
-import { markCourseStarted } from '@/lib/course-status';
 
 type NavigationLesson = { id: string; titulo: string; ordem: number } | null;
 type Lesson = {
@@ -82,7 +84,6 @@ export function LessonStudy({
             "Aula bloqueada. Conclua a aula anterior para liberar este conteúdo.",
           );
         setLesson(loaded);
-        markCourseStarted(loaded.trilha.id, loaded.id);
       } catch (cause) {
         setError(cause instanceof Error ? cause.message : "Erro inesperado.");
       } finally {
@@ -167,6 +168,7 @@ export function LessonStudy({
               />
             </div>
           ))}
+{parseLessonMaterial(lesson.conteudo) ? <LessonLearningContent key={lesson.id} lesson={parseLessonMaterial(lesson.conteudo)!} aulaId={lesson.id} showDiagram /> : (
           <ReactMarkdown
             components={{
               img: ({ src, alt }) => (
@@ -181,6 +183,7 @@ export function LessonStudy({
             {markdown ||
               "Este conteúdo ainda está em branco. Escreva a sua aula no banco de dados."}
           </ReactMarkdown>
+)}
         </section>
         <div className="lesson-actions">
           <button

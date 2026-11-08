@@ -13,7 +13,6 @@ import { PhishingSms } from "./phishing-sms";
 import { PhishingSite } from "./phishing-site";
 import { PhishingSocial } from "./phishing-social";
 import { PhishingFeedback } from "./phishing-feedback";
-import { localScenarios } from "@/lib/library-activities";
 export function PhishingSimulator({ cenario }: { cenario: CenarioDetalhe }) {
   const [escolha, setEscolha] = useState<boolean | null>(null);
   const [resultado, setResultado] = useState<ResultadoPhishing | null>(null);
@@ -30,27 +29,6 @@ export function PhishingSimulator({ cenario }: { cenario: CenarioDetalhe }) {
     setSending(true);
     setError(null);
     try {
-      const local = localScenarios.find((s) => s.id === cenario.id);
-      if (local) {
-        const result = {
-          tentativaId: `local-${Date.now()}`,
-          cenarioId: cenario.id,
-          acertou: escolha === local.phishing,
-          concluido: true,
-          progressoAtualizado: false,
-          explicacao: local.explanation,
-        };
-        try {
-          localStorage.setItem(
-            `cybereduca-simulation-${cenario.id}`,
-            JSON.stringify(result),
-          );
-        } catch {
-          /* Correção disponível mesmo sem armazenamento. */
-        }
-        setResultado(result);
-        return;
-      }
       setResultado(await enviarRespostaCenario(cenario.id, escolha));
     } catch (cause) {
       setError(

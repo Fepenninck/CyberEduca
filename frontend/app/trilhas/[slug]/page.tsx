@@ -1,4 +1,7 @@
 "use client";
+import { parseLessonMaterial } from "@/lib/lesson-material";
+import { LessonLearningContent } from "@/components/activities/lesson-learning-content";
+
 
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
@@ -25,7 +28,6 @@ import { DashboardNavigation } from "@/components/dashboard-navigation";
 import { LockKeyhole } from "lucide-react";
 import { isLessonUnlocked } from "@/lib/lesson-access";
 import { loadLearningAccess } from '@/lib/course-access';
-import { markCourseStarted } from '@/lib/course-status';
 
 type LessonContent = {
   id: string;
@@ -48,7 +50,7 @@ function splitLessonContent(content: string) {
   };
 }
 
-function TrackModulePage({ params }: { params: Promise<{ slug: string }> }) {
+function TrackModulePage({ params }: { params: Promise<{ slug: string; lesson?: string }> }) {
   const router = useRouter();
   const [track, setTrack] = useState<TrackDetail | null>(null);
   const [selectedLesson, setSelectedLesson] = useState<LessonContent | null>(
@@ -58,9 +60,12 @@ function TrackModulePage({ params }: { params: Promise<{ slug: string }> }) {
   const [savingCompletion, setSavingCompletion] = useState(false);
   const [error, setError] = useState("");
   const [isExpanded, setIsExpanded] = useState(true);
+  const [initialLessonId, setInitialLessonId] = useState<string>();
 
   useEffect(() => {
-    params.then(({ slug }) =>
+    params.then(({ slug, lesson }) => {
+      setInitialLessonId(lesson);
+      return (
       fetch(`${API_URL}/trilhas/${slug}`)
         .then(async (response) => {
           if (!response.ok) throw new Error("Trilha não encontrada.");
@@ -72,8 +77,9 @@ function TrackModulePage({ params }: { params: Promise<{ slug: string }> }) {
         })
         .catch((cause) =>
           setError(cause instanceof Error ? cause.message : "Erro inesperado."),
-        ),
-    );
+        )
+      );
+    });
   }, [params]);
 
   async function selectLesson(lessonId: string, progressTrack = track) {
@@ -92,7 +98,6 @@ function TrackModulePage({ params }: { params: Promise<{ slug: string }> }) {
       const response = await fetch(`${API_URL}/aulas/${lessonId}`);
       if (!response.ok) throw new Error("Não foi possível carregar a aula.");
       setSelectedLesson(await response.json());
-      markCourseStarted(progressTrack.id, lessonId);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Erro inesperado.");
     } finally {
@@ -145,9 +150,10 @@ function TrackModulePage({ params }: { params: Promise<{ slug: string }> }) {
   useEffect(() => {
     if (!track || selectedLesson) return;
     const firstLesson =
+      track.aulas.find((lesson) => lesson.id === initialLessonId) ??
       track.aulas.find((lesson) => !lesson.concluida) ?? track.aulas[0];
     if (firstLesson) selectLesson(firstLesson.id);
-  }, [track, selectedLesson]);
+  }, [track, selectedLesson, initialLessonId]);
 
   if (error && !track)
     return (
@@ -324,6 +330,7 @@ function TrackModulePage({ params }: { params: Promise<{ slug: string }> }) {
                         />
                       </div>
                     ))}
+{parseLessonMaterial(selectedLesson!.conteudo) ? <LessonLearningContent key={selectedLesson!.id} lesson={parseLessonMaterial(selectedLesson!.conteudo)!} aulaId={selectedLesson!.id} showDiagram /> : (
                     <ReactMarkdown
                       components={{
                         img: ({ src, alt }) => (
@@ -334,6 +341,7 @@ function TrackModulePage({ params }: { params: Promise<{ slug: string }> }) {
                       {lessonBody.markdown ||
                         "Este conteúdo ainda está em preparação."}
                     </ReactMarkdown>
+)}
                   </div>
                 ) : (
                   <button

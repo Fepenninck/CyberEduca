@@ -1,72 +1,9 @@
-import { libraryCourses, levelNames, type CourseLevel } from "./course-library";
-import type { QuizDetalhe, ResultadoQuiz, RespostaQuiz } from "./quizzes-api";
-import type { CenarioDetalhe } from "./phishing-api";
-
-export const libraryQuizzes: QuizDetalhe[] = libraryCourses.map((course) => ({
-  id: `local-${course.id}`,
-  titulo: course.title,
-  descricao: `Revise os conceitos de ${levelNames[course.level].toLowerCase()} com explicações para cada resposta.`,
-  aulaId: course.id,
-  aula: { id: course.id, titulo: course.title },
-  questoes: course.lessons.map((l) => ({
-    id: `${course.id}-${l.id}`,
-    enunciado: l.question,
-    ordem: Number(l.id.split("-")[1]),
-    alternativas: l.options.map((texto, i) => ({
-      id: `${course.id}-${l.id}-${i}`,
-      texto,
-      ordem: i + 1,
-    })),
-  })),
-}));
-export const assessments: QuizDetalhe[] = (
-  ["BASICO", "INTERMEDIARIO", "AVANCADO"] as CourseLevel[]
-).map((level) => ({
-  id: `avaliacao-${level.toLowerCase()}`,
-  titulo: `Autoavaliação — ${levelNames[level]}`,
-  descricao:
-    "Verifique seu domínio dos temas do nível. Resultado educativo calculado e salvo neste navegador, sem certificação.",
-  aulaId: level,
-  aula: { id: level, titulo: levelNames[level] },
-  questoes: libraryQuizzes
-    .filter(
-      (q) => libraryCourses.find((c) => c.id === q.aulaId)?.level === level,
-    )
-    .flatMap((q) => q.questoes),
-}));
-export function findLocalQuiz(id: string) {
-  return [...libraryQuizzes, ...assessments].find((q) => q.id === id);
-}
-export function correctLocalQuiz(
-  quiz: QuizDetalhe,
-  respostas: RespostaQuiz[],
-): ResultadoQuiz {
-  const feedback = quiz.questoes.map((q) => {
-    const course = libraryCourses.find((c) =>
-      c.lessons.some((l) => `${c.id}-${l.id}` === q.id),
-    )!;
-    const lesson = course.lessons.find((l) => `${course.id}-${l.id}` === q.id)!;
-    const alternativaId =
-      respostas.find((r) => r.questaoId === q.id)?.alternativaId || "";
-    const alternativaCorretaId = q.alternativas[lesson.correct].id;
-    return {
-      questaoId: q.id,
-      alternativaId,
-      alternativaCorretaId,
-      acertou: alternativaId === alternativaCorretaId,
-      explicacao: lesson.explanation,
-    };
-  });
-  return {
-    tentativaId: `local-${Date.now()}`,
-    quizId: quiz.id,
-    totalQuestoes: quiz.questoes.length,
-    totalAcertos: feedback.filter((f) => f.acertou).length,
-    concluido: true,
-    progressoAtualizado: false,
-    feedback,
-  };
-}
+import { levelNames, type CourseLevel } from './course-library';
+type CenarioDetalhe = {
+  id: string; titulo: string; descricao: string; conteudoMensagem: string;
+  tipo: 'EMAIL' | 'SMS' | 'SITE' | 'REDE_SOCIAL';
+  aulaId: string; aula: { id: string; titulo: string };
+};
 type LocalScenario = CenarioDetalhe & {
   phishing: boolean;
   explanation: string;

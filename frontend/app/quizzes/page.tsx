@@ -9,7 +9,6 @@ import {
 import { useActivity } from "@/components/activities/use-activity";
 import { QuizCard } from "@/components/quizzes/quiz-card";
 import { listarQuizzes } from "@/lib/quizzes-api";
-import { LibraryQuizCatalog } from "@/components/activities/library-catalog";
 export default function QuizzesPage() {
   const loader = useCallback(
     (signal: AbortSignal) =>
@@ -26,7 +25,6 @@ export default function QuizzesPage() {
       title="Conhecimento que vira prática."
       description="Revise o que aprendeu nas aulas. Responda no seu ritmo e entenda cada escolha com um feedback explicado."
     >
-      <LibraryQuizCatalog />
       <div className="activity-section-label">
         <h2>Quizzes publicados na sua conta</h2>
         <span>

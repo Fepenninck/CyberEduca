@@ -8,7 +8,6 @@ import {
 import { ActivityError } from "@/components/activities/activity-state";
 import { QuizQuestion } from "./quiz-question";
 import { QuizResult } from "./quiz-result";
-import { correctLocalQuiz } from "@/lib/library-activities";
 export function QuizPlayer({ quiz }: { quiz: QuizDetalhe }) {
   const [respostas, setRespostas] = useState<Record<string, string>>({});
   const [resultado, setResultado] = useState<ResultadoQuiz | null>(null);
@@ -26,25 +25,6 @@ export function QuizPlayer({ quiz }: { quiz: QuizDetalhe }) {
     setSending(true);
     setError(null);
     try {
-      if (quiz.id.startsWith("local-") || quiz.id.startsWith("avaliacao-")) {
-        const result = correctLocalQuiz(
-          quiz,
-          quiz.questoes.map((q) => ({
-            questaoId: q.id,
-            alternativaId: respostas[q.id],
-          })),
-        );
-        try {
-          localStorage.setItem(
-            `cybereduca-result-${quiz.id}`,
-            JSON.stringify(result),
-          );
-        } catch {
-          /* A prática continua disponível sem armazenamento. */
-        }
-        setResultado(result);
-        return;
-      }
       setResultado(
         await enviarRespostasQuiz(
           quiz.id,

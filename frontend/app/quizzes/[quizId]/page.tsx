@@ -8,7 +8,6 @@ import {
 } from "@/components/activities/activity-state";
 import { useActivity } from "@/components/activities/use-activity";
 import { QuizPlayer } from "@/components/quizzes/quiz-player";
-import { findLocalQuiz } from "@/lib/library-activities";
 export default function QuizPage({
   params,
 }: {
@@ -16,10 +15,7 @@ export default function QuizPage({
 }) {
   const { quizId } = use(params);
   const loader = useCallback(
-    (signal: AbortSignal) => {
-      const local = findLocalQuiz(quizId);
-      return local ? Promise.resolve(local) : buscarQuiz(quizId, signal);
-    },
+    (signal: AbortSignal) => buscarQuiz(quizId, signal),
     [quizId],
   );
   const { data, error, loading, retry } = useActivity(loader);

@@ -1,8 +1,8 @@
 "use client";
 import { useId, useState } from "react";
+import Link from "next/link";
 import ReactMarkdown from "react-markdown";
-import type { LibraryLesson } from "@/lib/course-library";
-import { lessonSupplements } from "@/lib/lesson-supplements";
+import type { LessonMaterial } from "@/lib/lesson-material";
 
 function SupplementMarkdown({ source }: { source: string }) {
   const blocks = source.split(/(^\|[^\n]+\|(?:\n\|[^\n]+\|)+)/gm);
@@ -46,30 +46,20 @@ function SupplementMarkdown({ source }: { source: string }) {
     </>
   );
 }
-import {
-  lessonVideos,
-  courseDiagrams,
-  courseReadings,
-} from "@/lib/lesson-media";
 
 export function LessonLearningContent({
   lesson,
-  courseId,
+  aulaId,
   showDiagram,
 }: {
-  lesson: LibraryLesson;
-  courseId: string;
+  lesson: LessonMaterial;
+  aulaId: string;
   showDiagram: boolean;
 }) {
-  const [choice, setChoice] = useState<number | null>(null);
-  const [checked, setChecked] = useState(false);
-  const [notes, setNotes] = useState("");
   const [solution, setSolution] = useState(false);
   const [videoError, setVideoError] = useState(false);
   const unique = useId();
-  const video = lessonVideos[`${courseId}/${lesson.id}`];
-  const diagram = courseDiagrams[courseId];
-  const supplement = lessonSupplements[`${courseId}/${lesson.id}`];
+  const { video, diagram, supplement } = lesson;
   return (
     <div className="lesson-learning-content">
       <h2>O que você vai aprender</h2>
@@ -221,21 +211,6 @@ export function LessonLearningContent({
         de análise, não é necessário executar ataques, abrir arquivos suspeitos
         ou alterar sistemas de terceiros.
       </p>
-      <label htmlFor={`${unique}-notes`}>
-        <strong>Sua entrega</strong>
-      </label>
-      <textarea
-        id={`${unique}-notes`}
-        className="lesson-practice-notes"
-        rows={5}
-        value={notes}
-        onChange={(e) => setNotes(e.target.value)}
-        placeholder="Registre sua análise, a decisão, a evidência e as limitações..."
-      />
-      <p className="lesson-media-credit">
-        Este rascunho é temporário e não é enviado ao servidor. Copie o texto se
-        quiser guardá-lo antes de mudar de aula.
-      </p>
       <button
         className="lesson-review-button"
         onClick={() => setSolution((value) => !value)}
@@ -246,7 +221,7 @@ export function LessonLearningContent({
       {solution && (
         <div className="lesson-review-box">
           <h3>Critérios para revisar</h3>
-          <ReactMarkdown>{lesson.expected || lesson.explanation}</ReactMarkdown>
+          <ReactMarkdown>{lesson.expected || "Justifique sua análise com os conceitos da aula."}</ReactMarkdown>
           <ul>
             <li>A resposta resolve o pedido específico da atividade?</li>
             <li>Você distinguiu uma evidência de uma hipótese?</li>
@@ -256,42 +231,7 @@ export function LessonLearningContent({
         </div>
       )}
       <h2>Teste sua compreensão</h2>
-      <fieldset className="lesson-checkpoint">
-        <legend>{lesson.question}</legend>
-        {lesson.options.map((option, i) => (
-          <label key={option}>
-            <input
-              type="radio"
-              name={`${unique}-answer`}
-              checked={choice === i}
-              onChange={() => {
-                setChoice(i);
-                setChecked(false);
-              }}
-            />
-            {option}
-          </label>
-        ))}
-        <button
-          className="lesson-review-button"
-          disabled={choice === null}
-          onClick={() => setChecked(true)}
-        >
-          Conferir resposta
-        </button>
-        {checked && (
-          <p role="status">
-            <strong>
-              {choice === lesson.correct
-                ? "Resposta correta."
-                : "Vamos revisar."}
-            </strong>{" "}
-            {lesson.explanation}
-            {choice !== lesson.correct &&
-              ` Resposta esperada: ${lesson.options[lesson.correct]}`}
-          </p>
-        )}
-      </fieldset>
+      <Link className="lesson-review-button" href={`/quizzes?aulaId=${encodeURIComponent(aulaId)}`}>Responder o quiz desta aula</Link>
       <h2>Referências e leitura guiada</h2>
       <p>
         Explicações e casos didáticos originais do CyberEduca+. Os materiais
@@ -308,7 +248,7 @@ export function LessonLearningContent({
         Explique com suas palavras como aplicá-la ao exercício e em que situação
         ela seria insuficiente.
       </p>
-      {courseReadings[courseId]?.map((reading) => (
+      {lesson.readings?.map((reading) => (
         <div key={reading.url}>
           <p>
             <a href={reading.url} target="_blank" rel="noreferrer">

@@ -13,14 +13,6 @@ export function QuizResult({
   return (
     <section className="activity-panel" aria-labelledby="quiz-result-title">
       <div className="activity-result-top">
-        {quiz.id.startsWith("avaliacao-") && (
-          <strong className="assessment-score">
-            {Math.round(
-              (resultado.totalAcertos / resultado.totalQuestoes) * 100,
-            )}
-            % de acertos
-          </strong>
-        )}
         <CheckCircle2 size={36} />
         <span className="activity-kicker">PRÁTICA CONCLUÍDA</span>
         <h2 id="quiz-result-title" tabIndex={-1}>
@@ -80,17 +72,13 @@ export function QuizResult({
         </button>
         <Link
           className="dashboard-button-secondary"
-          href={quiz.id.startsWith("avaliacao-") ? "/avaliacoes" : "/quizzes"}
+          href="/quizzes"
         >
-          {quiz.id.startsWith("avaliacao-")
-            ? "Ver outras avaliações"
-            : "Ver outros quizzes"}
+          Ver outros quizzes
         </Link>
       </div>
       <p className="activity-footnote">
-        {quiz.id.startsWith("local-") || quiz.id.startsWith("avaliacao-")
-          ? "Resultado educativo calculado neste navegador. Não é uma prova certificadora e não foi enviado ao servidor."
-          : "Sua tentativa foi registrada. Esta prática não gera nota nem conclui a aula automaticamente."}
+        Sua tentativa foi registrada. Esta prática não gera nota nem conclui a aula automaticamente.
       </p>
     </section>
   );

@@ -14,7 +14,6 @@ import {
   ActivityLoading,
 } from "@/components/activities/activity-state";
 import { useActivity } from "@/components/activities/use-activity";
-import { LocalSimulationCatalog } from "@/components/activities/library-catalog";
 const icons = {
   EMAIL: Mail,
   SMS: MessageSquare,
@@ -41,7 +40,6 @@ export default function SimulacoesPage() {
       title="Um olhar atento faz a diferença."
       description="E-mail, SMS, sites e redes sociais: pratique como reconhecer tentativas de phishing em um ambiente de aprendizagem."
     >
-      <LocalSimulationCatalog />
       <div className="activity-section-label">
         <h2>Cenários publicados na sua conta</h2>
       </div>
