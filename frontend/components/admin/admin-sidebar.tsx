@@ -1,6 +1,6 @@
 'use client'
 
-import { BookOpen, FileCheck2, GraduationCap, LayoutDashboard, LogOut, Users } from 'lucide-react'
+import { BookOpen, ClipboardList, FileCheck2, GraduationCap, LayoutDashboard, LogOut, ShieldAlert, Users } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -10,7 +10,9 @@ const links = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/trilhas', label: 'Trilhas', icon: GraduationCap },
   { href: '/admin/aulas', label: 'Aulas', icon: BookOpen },
+  { href: '/admin/simulacoes', label: 'Simulações', icon: ShieldAlert },
   { href: '/admin/provas', label: 'Provas', icon: FileCheck2 },
+  { href: '/admin/resultados', label: 'Resultados', icon: ClipboardList },
   { href: '/admin/usuarios', label: 'Usuários', icon: Users },
 ]
 

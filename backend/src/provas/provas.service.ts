@@ -1,32 +1,39 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { StatusProva, TipoQuestao } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
 import { RespostaQuestaoDto } from './dto/responder-prova.dto';
+import { FinalizarProvaDto } from './dto/finalizar-prova.dto';
 
 @Injectable()
 export class ProvasService {
   constructor(private readonly prisma: PrismaService) {}
 
-  listarAdmin() {
-    return this.prisma.prova.findMany({
-      orderBy: { criadoEm: 'desc' },
-      include: {
-        trilha: { select: { id: true, titulo: true } },
-        questoes: {
-          orderBy: { id: 'asc' },
-          include: { alternativas: { orderBy: { id: 'asc' } } },
+  async listarAdmin() {
+    try {
+      return await this.prisma.prova.findMany({
+        orderBy: { criadoEm: 'desc' },
+        include: {
+          trilha: { select: { id: true, titulo: true } },
+          questoes: {
+            orderBy: { ordem: 'asc' },
+            include: { alternativas: { orderBy: { ordem: 'asc' } } },
+          },
         },
-      },
-    });
+      });
+    } catch (error) {
+      console.error('Erro Prisma Provas:', error);
+      throw new BadRequestException(this.mensagemErro(error));
+    }
   }
 
   listarPublicadas() {
     return this.prisma.prova.findMany({
-      where: { status: StatusProva.PUBLICADO },
+      where: { status: { in: [StatusProva.PUBLICADO, StatusProva.PUBLICADA] } },
       orderBy: { criadoEm: 'desc' },
       select: {
         id: true,
@@ -38,21 +45,29 @@ export class ProvasService {
     });
   }
 
-  async buscarPublicada(id: string) {
+  async buscarPublicada(id: string, usuarioId?: string) {
+    if (usuarioId) {
+      const concluida = await this.prisma.resultadoProva.findUnique({
+        where: { usuarioId_provaId: { usuarioId, provaId: id } },
+        select: { id: true },
+      });
+      if (concluida) throw new ConflictException('Você já concluiu esta avaliação.');
+    }
+
     const prova = await this.prisma.prova.findFirst({
-      where: { id, status: StatusProva.PUBLICADO },
+      where: { id, status: { in: [StatusProva.PUBLICADO, StatusProva.PUBLICADA] } },
       select: {
         id: true,
         titulo: true,
         descricao: true,
         questoes: {
-          orderBy: { id: 'asc' },
+          orderBy: { ordem: 'asc' },
           select: {
             id: true,
             enunciado: true,
             tipo: true,
             alternativas: {
-              orderBy: { id: 'asc' },
+              orderBy: { ordem: 'asc' },
               select: { id: true, texto: true },
             },
           },
@@ -100,13 +115,21 @@ export class ProvasService {
           ...(dados.questoes?.length
             ? {
                 questoes: {
-                  create: dados.questoes.map((questao) => ({
-                    enunciado: questao.enunciado,
-                    tipo: questao.tipo,
-                    ...(questao.alternativas?.length
-                      ? { alternativas: { create: questao.alternativas } }
-                      : {}),
-                  })),
+                      create: dados.questoes.map((questao, indice) => ({
+                        enunciado: questao.enunciado,
+                        ordem: indice + 1,
+                        tipo: questao.tipo,
+                        ...(questao.alternativas?.length
+                          ? {
+                              alternativas: {
+                                create: questao.alternativas.map((alternativa, alternativaIndice) => ({
+                                  ...alternativa,
+                                  ordem: alternativaIndice + 1,
+                                })),
+                              },
+                            }
+                          : {}),
+                      })),
                 },
               }
             : {}),
@@ -117,7 +140,7 @@ export class ProvasService {
         },
       });
     } catch (error) {
-      console.error('Erro Prisma ao criar prova:', error);
+      console.error('Erro Prisma Provas:', error);
       throw new BadRequestException(this.mensagemErro(error));
     }
   }
@@ -161,9 +184,10 @@ export class ProvasService {
     dados: { enunciado: string; tipo?: TipoQuestao },
   ) {
     try {
+      const ordem = await this.prisma.questaoProva.count({ where: { provaId } }) + 1;
       return await this.prisma.questaoProva.create({
-        data: { provaId, ...dados },
-        include: { alternativas: true },
+        data: { provaId, ...dados, ordem },
+        include: { alternativas: { orderBy: { ordem: 'asc' } } },
       });
     } catch (error) {
       console.error('Erro Prisma ao adicionar questão à prova:', error);
@@ -178,13 +202,13 @@ export class ProvasService {
   ) {
     const questao = await this.prisma.questaoProva.findFirst({
       where: { id: questaoId, provaId },
-      select: { id: true },
+      select: { id: true, _count: { select: { alternativas: true } } },
     });
     if (!questao) throw new NotFoundException('Questão não encontrada nesta prova.');
 
     try {
       return await this.prisma.alternativaProva.create({
-        data: { questaoId, ...dados },
+        data: { questaoId, ...dados, ordem: questao._count.alternativas + 1 },
       });
     } catch (error) {
       console.error('Erro Prisma ao adicionar alternativa:', error);
@@ -192,9 +216,21 @@ export class ProvasService {
     }
   }
 
-  async corrigirRespostas(provaId: string, respostas: RespostaQuestaoDto[]) {
+  async corrigirRespostas(
+    provaId: string,
+    respostas: RespostaQuestaoDto[],
+    usuarioId?: string,
+  ) {
+    if (usuarioId) {
+      const concluida = await this.prisma.resultadoProva.findUnique({
+        where: { usuarioId_provaId: { usuarioId, provaId } },
+        select: { id: true },
+      });
+      if (concluida) throw new ConflictException('Você já concluiu esta avaliação.');
+    }
+
     const prova = await this.prisma.prova.findFirst({
-      where: { id: provaId, status: StatusProva.PUBLICADO },
+      where: { id: provaId, status: { in: [StatusProva.PUBLICADO, StatusProva.PUBLICADA] } },
       select: {
         questoes: {
           select: {
@@ -241,6 +277,74 @@ export class ProvasService {
       percentual: totalQuestoes ? Math.round((acertos / totalQuestoes) * 100) : 0,
       resultado,
     };
+  }
+
+  async statusDoAluno(provaId: string, usuarioId: string) {
+    const prova = await this.prisma.prova.findUnique({
+      where: { id: provaId },
+      select: { id: true, titulo: true },
+    });
+    if (!prova) throw new NotFoundException('Prova não encontrada.');
+
+    const resultado = await this.prisma.resultadoProva.findUnique({
+      where: { usuarioId_provaId: { usuarioId, provaId } },
+      select: { acertos: true, totalQuestoes: true, criadoEm: true },
+    });
+    return {
+      concluida: Boolean(resultado),
+      resultado: resultado ? { ...resultado, titulo: prova.titulo } : null,
+    };
+  }
+
+  async finalizarParaAluno(
+    provaId: string,
+    usuarioId: string,
+    dados: FinalizarProvaDto,
+  ) {
+    const existente = await this.prisma.resultadoProva.findUnique({
+      where: { usuarioId_provaId: { usuarioId, provaId } },
+      select: { acertos: true, totalQuestoes: true, criadoEm: true },
+    });
+    if (existente) {
+      const prova = await this.prisma.prova.findUnique({
+        where: { id: provaId },
+        select: { titulo: true },
+      });
+      if (!prova) throw new NotFoundException('Prova não encontrada.');
+      const percentual = existente.totalQuestoes
+        ? Math.round((existente.acertos / existente.totalQuestoes) * 100)
+        : 0;
+      return {
+        ...existente,
+        titulo: prova.titulo,
+        percentual,
+        resultado: [],
+        jaConcluida: true,
+      };
+    }
+
+    const corrigido = await this.corrigirRespostas(provaId, dados.respostas, usuarioId);
+    if (dados.acertos !== corrigido.acertos || dados.totalQuestoes !== corrigido.totalQuestoes) {
+      throw new BadRequestException('O resultado enviado não corresponde às respostas da avaliação.');
+    }
+
+    const [prova, resultado] = await Promise.all([
+      this.prisma.prova.findUnique({ where: { id: provaId }, select: { titulo: true } }),
+      this.prisma.resultadoProva.upsert({
+        where: { usuarioId_provaId: { usuarioId, provaId } },
+        update: {},
+        create: {
+          usuarioId,
+          provaId,
+          acertos: corrigido.acertos,
+          totalQuestoes: corrigido.totalQuestoes,
+        },
+        select: { acertos: true, totalQuestoes: true, criadoEm: true },
+      }),
+    ]);
+    if (!prova) throw new NotFoundException('Prova não encontrada.');
+
+    return { ...corrigido, ...resultado, titulo: prova.titulo, jaConcluida: false };
   }
 
   private mensagemErro(error: unknown) {

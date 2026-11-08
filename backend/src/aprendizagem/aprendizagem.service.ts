@@ -45,7 +45,9 @@ export class AprendizagemService {
 
       return await this.prisma.trilha.create({
         data: {
-          ...dados,
+          titulo: dados.titulo,
+          descricao: dados.descricao,
+          bloqueada: dados.bloqueada ?? false,
           ordem,
           nivel: dados.nivel ?? NivelTrilha.BASICO,
         },
@@ -70,7 +72,10 @@ export class AprendizagemService {
   ) {
     return this.prisma.trilha.update({
       where: { id },
-      data: dados,
+      data: {
+        ...dados,
+        ...(dados.bloqueada !== undefined ? { bloqueada: dados.bloqueada } : {}),
+      },
     });
   }
 

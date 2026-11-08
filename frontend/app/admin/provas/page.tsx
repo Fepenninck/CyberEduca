@@ -3,13 +3,14 @@
 import { ArrowUpRight, FileCheck2, Plus, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { alterarStatusProva, excluirProva, listarProvasAdmin, type ProvaAdmin, type StatusPublicacao } from '@/lib/admin-api'
+import { alterarStatusProva, excluirProva, listarProvasAdmin, type ProvaAdmin, type StatusProvaAdmin } from '@/lib/admin-api'
 
-const statusOptions: StatusPublicacao[] = ['RASCUNHO', 'PUBLICADO', 'ARQUIVADO']
+const statusOptions: StatusProvaAdmin[] = ['RASCUNHO', 'PUBLICADO', 'PUBLICADA', 'ARQUIVADO']
 
-const statusClass: Record<StatusPublicacao, string> = {
+const statusClass: Record<StatusProvaAdmin, string> = {
   RASCUNHO: 'bg-slate-700/60 text-slate-300',
   PUBLICADO: 'bg-[#b2ff00]/10 text-[#d5ff86]',
+  PUBLICADA: 'bg-[#b2ff00]/10 text-[#d5ff86]',
   ARQUIVADO: 'bg-amber-300/10 text-amber-200',
 }
 
@@ -41,7 +42,7 @@ export default function AdminProvasPage() {
     }
   }, [atualizacao])
 
-  async function mudarStatus(prova: ProvaAdmin, status: StatusPublicacao) {
+  async function mudarStatus(prova: ProvaAdmin, status: StatusProvaAdmin) {
     if (status === prova.status) return
     setProvaAtualizando(prova.id)
     setErro(null)
@@ -118,7 +119,7 @@ export default function AdminProvasPage() {
                       aria-label={`Status da prova ${prova.titulo}`}
                       value={prova.status}
                       disabled={provaAtualizando === prova.id}
-                      onChange={(event) => void mudarStatus(prova, event.target.value as StatusPublicacao)}
+                      onChange={(event) => void mudarStatus(prova, event.target.value as StatusProvaAdmin)}
                       className="rounded-md border border-[#35465c] bg-[#091321] px-2 py-1.5 text-xs text-white outline-none focus:border-[#b2ff00] disabled:opacity-50"
                     >
                       {statusOptions.map((status) => <option key={status} value={status}>{status}</option>)}

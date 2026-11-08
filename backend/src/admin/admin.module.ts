@@ -3,6 +3,7 @@ import { AprendizagemService } from '../aprendizagem/aprendizagem.service';
 import { AuthModule } from '../auth/auth.module';
 import { AuditoriaModule } from '../auditoria.module';
 import { ProvasModule } from '../provas/provas.module';
+import { SimulacoesModule } from '../simulacoes/simulacoes.module';
 import { PrismaService } from '../prisma.service';
 import { AdminController } from './admin.controller';
 import { AdminDashboardService } from './admin-dashboard.service';
@@ -11,7 +12,7 @@ import { AdminService } from './admin.service';
 import { AdminUsuariosService } from './admin-usuarios.service';
 
 @Module({
-  imports: [AuthModule, AuditoriaModule, ProvasModule],
+  imports: [AuthModule, AuditoriaModule, ProvasModule, SimulacoesModule],
   controllers: [AdminController],
   providers: [
     AdminGuard,

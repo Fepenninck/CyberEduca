@@ -26,6 +26,9 @@ export type ResultadoProva = {
   acertos: number
   totalQuestoes: number
   percentual: number
+  criadoEm?: string
+  titulo?: string
+  jaConcluida?: boolean
   resultado: Array<{
     questaoId: string
     tipo: 'MULTIPLA_ESCOLHA' | 'DISSERTATIVA'
@@ -37,6 +40,11 @@ export type ResultadoProva = {
     alternativaCorretaId: string | null
     textoCorreto: string | null
   }>
+}
+
+export type StatusProva = {
+  concluida: boolean
+  resultado: { acertos: number; totalQuestoes: number; criadoEm: string; titulo: string } | null
 }
 
 async function requestJson<T>(path: string, options?: RequestInit): Promise<T> {
@@ -72,5 +80,24 @@ export function enviarRespostasProva(
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ respostas }),
+  })
+}
+
+export function verificarStatusProva(id: string): Promise<StatusProva> {
+  return requestJson(`/provas/${encodeURIComponent(id)}/status`)
+}
+
+export function finalizarProva(
+  id: string,
+  dados: {
+    acertos: number
+    totalQuestoes: number
+    respostas: Array<{ questaoId: string; alternativaId?: string; respostaTexto?: string }>
+  },
+): Promise<ResultadoProva> {
+  return requestJson(`/provas/${encodeURIComponent(id)}/finalizar`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(dados),
   })
 }

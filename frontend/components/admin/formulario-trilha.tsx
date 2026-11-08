@@ -21,7 +21,9 @@ export function FormularioTrilha({
   const [titulo, setTitulo] = useState(initialValues?.titulo ?? '')
   const [descricao, setDescricao] = useState(initialValues?.descricao ?? '')
   const [ordem, setOrdem] = useState(String(initialValues?.ordem ?? 1))
-  const [bloqueada, setBloqueada] = useState(initialValues?.bloqueada ?? false)
+  const [statusAcesso, setStatusAcesso] = useState<'DISPONIVEL' | 'BLOQUEADA'>(
+    initialValues?.bloqueada ? 'BLOQUEADA' : 'DISPONIVEL',
+  )
   const [nivel, setNivel] = useState<TrilhaInput['nivel']>(initialValues?.nivel ?? 'BASICO')
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
@@ -36,13 +38,13 @@ export function FormularioTrilha({
         titulo: titulo.trim(),
         descricao: descricao.trim(),
         ordem: Number.parseInt(ordem, 10),
-        bloqueada,
+        bloqueada: statusAcesso === 'BLOQUEADA',
         nivel,
       })
       setTitulo('')
       setDescricao('')
       setOrdem('1')
-      setBloqueada(false)
+      setStatusAcesso('DISPONIVEL')
       setNivel('BASICO')
     } catch (erroEnvio) {
       setErro(erroEnvio instanceof Error ? erroEnvio.message : 'Não foi possível salvar a trilha.')
@@ -74,9 +76,12 @@ export function FormularioTrilha({
             <option value="AVANCADO">Avançado</option>
           </select>
         </label>
-        <label className="flex min-h-20 items-center gap-3 rounded-lg border border-[#29394f] bg-[#0b1522] px-4 text-sm text-slate-200">
-          <input className="size-4 accent-[#b2ff00]" type="checkbox" checked={bloqueada} onChange={(event) => setBloqueada(event.target.checked)} />
-          Iniciar trilha bloqueada
+        <label className="text-sm font-medium text-slate-200">
+          Status de acesso
+          <select className={campoClass} value={statusAcesso} onChange={(event) => setStatusAcesso(event.target.value as 'DISPONIVEL' | 'BLOQUEADA')} required>
+            <option value="DISPONIVEL">Disponível para os alunos</option>
+            <option value="BLOQUEADA">Bloqueada</option>
+          </select>
         </label>
       </div>
 

@@ -1,0 +1,1 @@
+ALTER TABLE "QuestaoProva" ALTER COLUMN "ordem" SET DEFAULT 0;

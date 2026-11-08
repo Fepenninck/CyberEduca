@@ -14,6 +14,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { AdminDashboardService } from './admin-dashboard.service';
 import { AdminGuard } from './admin.guard';
 import { AdminUsuariosService } from './admin-usuarios.service';
+import { AdminService } from './admin.service';
 import { CriarAulaAdminDto } from './dto/criar-aula-admin.dto';
 import { AtualizarTrilhaAdminDto } from './dto/atualizar-trilha-admin.dto';
 import { CriarTrilhaAdminDto } from './dto/criar-trilha-admin.dto';
@@ -22,20 +23,36 @@ import { AtualizarProvaDto } from './dto/atualizar-prova.dto';
 import { CriarQuestaoProvaDto } from './dto/criar-questao-prova.dto';
 import { CriarAlternativaProvaDto } from './dto/criar-alternativa-prova.dto';
 import { AlterarStatusProvaDto } from './dto/alterar-status-prova.dto';
+import { CriarSimulacaoDto } from './dto/criar-simulacao.dto';
+import { AtualizarSimulacaoDto } from './dto/atualizar-simulacao.dto';
+import { CriarCategoriaSimulacaoDto } from './dto/criar-categoria-simulacao.dto';
+import { SimulacoesService } from '../simulacoes/simulacoes.service';
 
 @Controller('admin')
 @UseGuards(JwtAuthGuard, AdminGuard)
 export class AdminController {
   constructor(
     private readonly dashboardService: AdminDashboardService,
+    private readonly adminService: AdminService,
     private readonly usuariosService: AdminUsuariosService,
     private readonly aprendizagemService: AprendizagemService,
     private readonly provasService: ProvasService,
+    private readonly simulacoesService: SimulacoesService,
   ) {}
 
   @Get('dashboard')
   buscarResumoDashboard() {
     return this.dashboardService.buscarResumoDashboard();
+  }
+
+  @Get('resultados/provas')
+  listarResultadosProvas() {
+    return this.adminService.listarResultadosProvas();
+  }
+
+  @Get('resultados/simulacoes')
+  listarResultadosSimulacoes() {
+    return this.adminService.listarResultadosSimulacoes();
   }
 
   @Get('usuarios')
@@ -156,5 +173,48 @@ export class AdminController {
     @Body() dados: CriarAlternativaProvaDto,
   ) {
     return this.provasService.adicionarAlternativa(provaId, questaoId, dados);
+  }
+
+  @Get('simulacoes')
+  listarSimulacoes() {
+    return this.simulacoesService.listarAdmin();
+  }
+
+  @Get('categorias-simulacao')
+  listarCategoriasSimulacao() {
+    return this.simulacoesService.listarCategoriasAdmin();
+  }
+
+  @Post('categorias-simulacao')
+  criarCategoriaSimulacao(@Body() dados: CriarCategoriaSimulacaoDto) {
+    return this.simulacoesService.criarCategoria(dados);
+  }
+
+  @Delete('categorias-simulacao/:id')
+  excluirCategoriaSimulacao(@Param('id') id: string) {
+    return this.simulacoesService.excluirCategoria(id);
+  }
+
+  @Get('simulacoes/:id')
+  buscarSimulacao(@Param('id') id: string) {
+    return this.simulacoesService.buscarAdmin(id);
+  }
+
+  @Post('simulacoes')
+  criarSimulacao(@Body() dados: CriarSimulacaoDto) {
+    return this.simulacoesService.criar(dados);
+  }
+
+  @Patch('simulacoes/:id')
+  atualizarSimulacao(
+    @Param('id') id: string,
+    @Body() dados: AtualizarSimulacaoDto,
+  ) {
+    return this.simulacoesService.atualizar(id, dados);
+  }
+
+  @Delete('simulacoes/:id')
+  excluirSimulacao(@Param('id') id: string) {
+    return this.simulacoesService.excluir(id);
   }
 }

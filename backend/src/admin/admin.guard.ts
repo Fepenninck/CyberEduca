@@ -7,8 +7,7 @@ import {
 import type { Request } from 'express';
 
 type UsuarioAutenticado = {
-  papel?: string;
-  role?: string;
+  papel: string;
 };
 
 type RequisicaoAdmin = Request & {
@@ -21,7 +20,7 @@ export class AdminGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<RequisicaoAdmin>();
     const usuario = request.user;
 
-    if ((usuario?.papel ?? usuario?.role) !== 'ADMIN') {
+    if (usuario?.papel !== 'ADMIN') {
       throw new ForbiddenException('Acesso restrito a administradores.');
     }
 

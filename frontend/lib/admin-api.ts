@@ -54,6 +54,7 @@ export type QuizAdminInput = {
 }
 
 export type StatusPublicacao = 'RASCUNHO' | 'PUBLICADO' | 'ARQUIVADO'
+export type StatusProvaAdmin = StatusPublicacao | 'PUBLICADA'
 
 export type QuizAdmin = QuizAdminInput & {
   id: string
@@ -69,6 +70,36 @@ export type CenarioPhishingInput = {
 
 export type CenarioPhishingAdmin = CenarioPhishingInput & {
   id: string
+}
+
+export type AlternativaSimulacaoInput = {
+  texto: string
+  isCorreta: boolean
+}
+
+export type QuestaoSimulacaoInput = {
+  enunciado: string
+  alternativas: AlternativaSimulacaoInput[]
+}
+
+export type SimulacaoInput = {
+  titulo: string
+  descricao: string
+  categoriaId: string
+  questoes: QuestaoSimulacaoInput[]
+}
+
+export type SimulacaoAdmin = SimulacaoInput & {
+  id: string
+  criadoEm: string
+  categoria?: CategoriaSimulacaoAdmin
+}
+
+export type CategoriaSimulacaoInput = { nome: string; descricao: string }
+export type CategoriaSimulacaoAdmin = CategoriaSimulacaoInput & {
+  id: string
+  criadoEm: string
+  simulacoes?: SimulacaoAdmin[]
 }
 
 export type ProvaInput = {
@@ -101,10 +132,29 @@ export type QuestaoProvaAdmin = Omit<QuestaoProvaInput, 'alternativas'> & {
   alternativas?: AlternativaProvaAdmin[]
 }
 
-export type ProvaAdmin = Omit<ProvaInput, 'questoes'> & {
+export type ProvaAdmin = Omit<ProvaInput, 'questoes' | 'status'> & {
   id: string
+  status: StatusProvaAdmin
   trilha?: { id: string; titulo: string }
   questoes?: QuestaoProvaAdmin[]
+}
+
+export type ResultadoProvaAdmin = {
+  id: string
+  acertos: number
+  totalQuestoes: number
+  criadoEm: string
+  usuario: { id: string; nome: string; email: string }
+  prova: { id: string; titulo: string }
+}
+
+export type ResultadoSimulacaoAdmin = {
+  id: string
+  acertos: number
+  totalQuestoes: number
+  criadoEm: string
+  usuario: { id: string; nome: string; email: string }
+  simulacao: { id: string; titulo: string }
 }
 
 async function requestJson<T>(path: string, options?: RequestInit): Promise<T> {
@@ -132,6 +182,14 @@ async function requestJson<T>(path: string, options?: RequestInit): Promise<T> {
 
 export function buscarResumoDashboard(): Promise<ResumoDashboard> {
   return requestJson('/admin/dashboard')
+}
+
+export function listarResultadosProvas(): Promise<ResultadoProvaAdmin[]> {
+  return requestJson('/admin/resultados/provas')
+}
+
+export function listarResultadosSimulacoes(): Promise<ResultadoSimulacaoAdmin[]> {
+  return requestJson('/admin/resultados/simulacoes')
 }
 
 export function listarUsuarios(): Promise<AdminUsuario[]> {
@@ -230,6 +288,43 @@ export function criarCenarioAdmin(dados: CenarioPhishingInput): Promise<CenarioP
   })
 }
 
+export function listarSimulacoes(): Promise<SimulacaoAdmin[]> {
+  return requestJson('/admin/simulacoes')
+}
+
+export function listarCategoriasSimulacao(): Promise<CategoriaSimulacaoAdmin[]> {
+  return requestJson('/admin/categorias-simulacao')
+}
+
+export function criarCategoriaSimulacao(dados: CategoriaSimulacaoInput): Promise<CategoriaSimulacaoAdmin> {
+  return requestJson('/admin/categorias-simulacao', {
+    method: 'POST',
+    body: JSON.stringify(dados),
+  })
+}
+
+export function excluirCategoriaSimulacao(id: string): Promise<void> {
+  return requestJson(`/admin/categorias-simulacao/${encodeURIComponent(id)}`, { method: 'DELETE' })
+}
+
+export function criarSimulacao(dados: SimulacaoInput): Promise<SimulacaoAdmin> {
+  return requestJson('/admin/simulacoes', {
+    method: 'POST',
+    body: JSON.stringify(dados),
+  })
+}
+
+export function editarSimulacao(id: string, dados: SimulacaoInput): Promise<SimulacaoAdmin> {
+  return requestJson(`/admin/simulacoes/${encodeURIComponent(id)}`, {
+    method: 'PATCH',
+    body: JSON.stringify(dados),
+  })
+}
+
+export function excluirSimulacao(id: string): Promise<void> {
+  return requestJson(`/admin/simulacoes/${encodeURIComponent(id)}`, { method: 'DELETE' })
+}
+
 export function listarProvasAdmin(): Promise<ProvaAdmin[]> {
   return requestJson('/admin/provas')
 }
@@ -272,7 +367,7 @@ export function adicionarAlternativaProva(
   )
 }
 
-export function alterarStatusProva(id: string, status: StatusPublicacao): Promise<ProvaAdmin> {
+export function alterarStatusProva(id: string, status: StatusProvaAdmin): Promise<ProvaAdmin> {
   return requestJson(`/admin/provas/${encodeURIComponent(id)}/status`, {
     method: 'PATCH',
     body: JSON.stringify({ status }),

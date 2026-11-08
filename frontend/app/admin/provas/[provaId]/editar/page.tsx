@@ -135,7 +135,10 @@ export default function EditarProvaPage() {
               <FormularioProva
                 key={prova.id}
                 trilhas={trilhas}
-                initialValues={prova}
+                initialValues={{
+                  ...prova,
+                  status: prova.status === 'PUBLICADA' ? 'PUBLICADO' : prova.status,
+                }}
                 permitirQuestoes={false}
                 submitLabel="Salvar dados da prova"
                 onSubmit={salvarDadosProva}
