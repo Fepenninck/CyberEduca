@@ -1,6 +1,5 @@
-import { LessonStudy } from '@/app/aulas/[slug]/lesson-study-markdown'
-
+import TrackModulePage from "@/app/trilhas/[slug]/page";
 export default async function ModuleLessonPage({ params }: { params: Promise<{ slug: string; lesson: string }> }) {
-  const { slug, lesson } = await params
-  return <LessonStudy lessonId={lesson} moduleId={slug} />
+  const { slug, lesson } = await params;
+  return <TrackModulePage params={Promise.resolve({ slug, lesson })} />;
 }

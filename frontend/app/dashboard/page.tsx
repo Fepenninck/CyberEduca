@@ -54,7 +54,6 @@ export default function DashboardPage() {
   }, [selectedTrack])
 
   const currentLesson = lessons.find((lesson) => !lesson.concluida) ?? lessons.at(-1)
-  const lessonHref = currentLesson && selectedTrack ? `/aulas/modulo/${selectedTrack.id}/aula/${currentLesson.id}` : selectedTrack ? `/aulas/modulo/${selectedTrack.id}` : '/aulas'
   const trackHref = selectedTrack ? `/aulas/modulo/${selectedTrack.id}` : '/aulas'
   const nextTrack = selectedTrack ? tracks.find((track) => track.id !== selectedTrack.id && track.percentual < 100 && !track.bloqueada) : undefined
 
@@ -129,7 +128,7 @@ export default function DashboardPage() {
             <div className="learning-card-footer">
               <div className="continue-actions">
                 <Link className="dashboard-button-secondary module-link" href={trackHref}>Ver módulo completo</Link>
-                <Link className="dashboard-button-primary" href={moduleCompleted ? nextTrack ? `/aulas/modulo/${nextTrack.id}` : '/aulas' : lessonHref}>{moduleCompleted ? nextTrack ? 'Continuar próxima trilha' : 'Ver trilhas' : 'Continuar aprendendo'}</Link>
+                <Link className="dashboard-button-primary" href={moduleCompleted ? nextTrack ? `/aulas/modulo/${nextTrack.id}` : '/aulas' : trackHref}>{moduleCompleted ? nextTrack ? 'Continuar próxima trilha' : 'Ver trilhas' : 'Continuar aprendendo'}</Link>
               </div>
             </div>
           </article>
