@@ -1,81 +1,59 @@
-"use client";
+'use client'
 
-import { BookOpen, GraduationCap, Users } from "lucide-react";
-import { useEffect, useState } from "react";
-import { buscarResumoDashboard, type ResumoDashboard } from "@/lib/admin-api";
+import { BookOpen, GraduationCap, Users } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { buscarResumoDashboard, type ResumoDashboard } from '@/lib/admin-api'
 
 const cards = [
   {
-    key: "totalQuizzes",
-    label: "Quizzes",
-    detail: "Atividades educativas",
-    icon: BookOpen,
-  },
-  {
-    key: "totalSimulacoes",
-    label: "Cenários de phishing",
-    detail: "Simulações educativas",
-    icon: BookOpen,
-  },
-  {
-    key: "totalProvas",
-    label: "Provas",
-    detail: "Avaliações das trilhas",
-    icon: GraduationCap,
-  },
-  {
-    key: "totalUsuarios",
-    label: "Total de usuários",
-    detail: "Contas cadastradas na plataforma",
+    key: 'totalUsuarios',
+    label: 'Total de usuários',
+    detail: 'Contas cadastradas na plataforma',
     icon: Users,
   },
   {
-    key: "totalTrilhas",
-    label: "Total de trilhas",
-    detail: "Trilhas de aprendizagem disponíveis",
+    key: 'totalTrilhas',
+    label: 'Total de trilhas',
+    detail: 'Trilhas de aprendizagem disponíveis',
     icon: GraduationCap,
   },
   {
-    key: "totalAulas",
-    label: "Total de aulas",
-    detail: "Aulas cadastradas nas trilhas",
+    key: 'totalAulas',
+    label: 'Total de aulas',
+    detail: 'Aulas cadastradas nas trilhas',
     icon: BookOpen,
   },
-] as const;
+] as const
 
 export default function AdminDashboardPage() {
-  const [resumo, setResumo] = useState<ResumoDashboard | null>(null);
-  const [erro, setErro] = useState<string | null>(null);
-  const [carregando, setCarregando] = useState(true);
-  const [tentativa, setTentativa] = useState(0);
+  const [resumo, setResumo] = useState<ResumoDashboard | null>(null)
+  const [erro, setErro] = useState<string | null>(null)
+  const [carregando, setCarregando] = useState(true)
+  const [tentativa, setTentativa] = useState(0)
 
   useEffect(() => {
-    let ativo = true;
+    let ativo = true
 
-    setCarregando(true);
-    setErro(null);
+    setCarregando(true)
+    setErro(null)
 
     buscarResumoDashboard()
       .then((dados) => {
-        if (ativo) setResumo(dados);
+        if (ativo) setResumo(dados)
       })
       .catch((erroBusca: unknown) => {
         if (ativo) {
-          setErro(
-            erroBusca instanceof Error
-              ? erroBusca.message
-              : "Não foi possível carregar o dashboard.",
-          );
+          setErro(erroBusca instanceof Error ? erroBusca.message : 'Não foi possível carregar o dashboard.')
         }
       })
       .finally(() => {
-        if (ativo) setCarregando(false);
-      });
+        if (ativo) setCarregando(false)
+      })
 
     return () => {
-      ativo = false;
-    };
-  }, [tentativa]);
+      ativo = false
+    }
+  }, [tentativa])
 
   return (
     <section>
@@ -92,10 +70,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {erro && (
-        <div
-          role="alert"
-          className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-sm text-rose-100"
-        >
+        <div role="alert" className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-sm text-rose-100">
           <span>{erro}</span>
           <button
             type="button"
@@ -119,20 +94,15 @@ export default function AdminDashboardPage() {
                 <p className="text-sm font-medium text-slate-300">{label}</p>
                 <p className="mt-5 text-4xl font-semibold tracking-tight text-white">
                   {carregando ? (
-                    <span
-                      className="inline-block h-10 w-20 animate-pulse rounded-md bg-white/10"
-                      aria-label="Carregando"
-                    />
+                    <span className="inline-block h-10 w-20 animate-pulse rounded-md bg-white/10" aria-label="Carregando" />
                   ) : erro ? (
-                    "—"
+                    '—'
                   ) : (
-                    (resumo?.[key] ?? 0).toLocaleString("pt-BR")
+                    (resumo?.[key] ?? 0).toLocaleString('pt-BR')
                   )}
                 </p>
               </div>
-              <span
-                className={`grid size-12 shrink-0 place-items-center rounded-xl ${index === 0 ? "bg-sky-400/10 text-sky-300" : index === 1 ? "bg-violet-400/10 text-violet-300" : "bg-[#b2ff00]/10 text-[#b2ff00]"}`}
-              >
+              <span className={`grid size-12 shrink-0 place-items-center rounded-xl ${index === 0 ? 'bg-sky-400/10 text-sky-300' : index === 1 ? 'bg-violet-400/10 text-violet-300' : 'bg-[#b2ff00]/10 text-[#b2ff00]'}`}>
                 <Icon aria-hidden="true" size={22} />
               </span>
             </div>
@@ -143,5 +113,5 @@ export default function AdminDashboardPage() {
         ))}
       </div>
     </section>
-  );
+  )
 }

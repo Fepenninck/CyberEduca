@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { DesempenhoModule } from '../desempenho/desempenho.module';
 import { AprendizagemService } from '../aprendizagem/aprendizagem.service';
 import { AuthModule } from '../auth/auth.module';
 import { AuditoriaModule } from '../auditoria.module';
@@ -13,13 +12,7 @@ import { AdminService } from './admin.service';
 import { AdminUsuariosService } from './admin-usuarios.service';
 
 @Module({
-  imports: [
-    AuthModule,
-    AuditoriaModule,
-    ProvasModule,
-    SimulacoesModule,
-    DesempenhoModule,
-  ],
+  imports: [AuthModule, AuditoriaModule, ProvasModule, SimulacoesModule],
   controllers: [AdminController],
   providers: [
     AdminGuard,

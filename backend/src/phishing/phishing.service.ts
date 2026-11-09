@@ -46,7 +46,10 @@ export class PhishingService {
     throw new ConflictException('Não foi possível concluir a operação.');
   }
 
-  private async exigirAula(tx: Prisma.TransactionClient, aulaId: string) {
+  private async exigirAula(
+    tx: Prisma.TransactionClient,
+    aulaId: string,
+  ) {
     const aula = await tx.aula.findUnique({
       where: { id: aulaId },
       select: { id: true },
@@ -112,7 +115,10 @@ export class PhishingService {
     });
   }
 
-  atualizarCenario(cenarioId: string, dto: AtualizarCenarioDto) {
+  atualizarCenario(
+    cenarioId: string,
+    dto: AtualizarCenarioDto,
+  ) {
     return this.executarTransacao(async (tx) => {
       await this.exigirRascunho(tx, cenarioId);
 
@@ -263,7 +269,8 @@ export class PhishingService {
         throw new NotFoundException('Cenário não encontrado.');
       }
 
-      const acertou = dto.respostaEhPhishing === cenario.ehPhishing;
+      const acertou =
+        dto.respostaEhPhishing === cenario.ehPhishing;
 
       const tentativa = await tx.tentativaPhishing.create({
         data: {
@@ -282,19 +289,6 @@ export class PhishingService {
         progressoAtualizado: false,
         explicacao: cenario.explicacao,
       };
-    });
-  }
-
-  retornarRascunho(cenarioId: string) {
-    return this.executarTransacao(async (tx) => {
-      const item = await tx.cenarioPhishing.findUnique({
-        where: { id: cenarioId },
-      });
-      if (!item) throw new NotFoundException('Atividade não encontrada.');
-      return tx.cenarioPhishing.update({
-        where: { id: cenarioId },
-        data: { status: 'RASCUNHO' },
-      });
     });
   }
 }

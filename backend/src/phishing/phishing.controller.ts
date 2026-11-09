@@ -54,7 +54,11 @@ export class PhishingController {
     cenarioId: string,
     @Body() dto: ResponderCenarioDto,
   ) {
-    return this.service.responderCenario(request.user.id, cenarioId, dto);
+    return this.service.responderCenario(
+      request.user.id,
+      cenarioId,
+      dto,
+    );
   }
 }
 
@@ -92,8 +96,6 @@ export class AdminPhishingController {
       return this.service.publicarCenario(cenarioId);
     }
 
-    if (dto.status === 'RASCUNHO')
-      return this.service.retornarRascunho(cenarioId);
     return this.service.arquivarCenario(cenarioId);
   }
 }

@@ -13,7 +13,10 @@ export class AvaliacoesController {
   }
 
   @Get('tentativas/:tentativaId')
-  resultado(@Param('tentativaId') tentativaId: string, @Request() req: any) {
+  resultado(
+    @Param('tentativaId') tentativaId: string,
+    @Request() req: any,
+  ) {
     return this.service.buscarResultadoProva(tentativaId, req.user.id);
   }
 }

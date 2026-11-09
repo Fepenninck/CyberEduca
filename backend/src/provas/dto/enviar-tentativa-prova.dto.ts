@@ -1,26 +1,12 @@
 import { Type } from 'class-transformer';
-import {
-  ArrayMinSize,
-  IsArray,
-  IsUUID,
-  IsOptional,
-  IsString,
-  MaxLength,
-  ValidateNested,
-} from 'class-validator';
+import { ArrayMinSize, IsArray, IsUUID, ValidateNested } from 'class-validator';
 
 export class RespostaTentativaDto {
   @IsUUID('4', { message: 'Informe uma questao valida.' })
   questaoId: string;
 
-  @IsOptional()
   @IsUUID('4', { message: 'Informe uma alternativa valida.' })
-  alternativaId?: string;
-
-  @IsOptional()
-  @IsString()
-  @MaxLength(5000)
-  respostaTexto?: string;
+  alternativaId: string;
 }
 
 export class EnviarTentativaProvaDto {

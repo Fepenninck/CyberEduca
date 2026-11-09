@@ -59,7 +59,10 @@ export class QuizzesService {
     throw new ConflictException('Não foi possível concluir a operação.');
   }
 
-  private async exigirAula(tx: Prisma.TransactionClient, aulaId: string) {
+  private async exigirAula(
+    tx: Prisma.TransactionClient,
+    aulaId: string,
+  ) {
     const aula = await tx.aula.findUnique({
       where: { id: aulaId },
       select: { id: true },
@@ -70,7 +73,10 @@ export class QuizzesService {
     }
   }
 
-  private async exigirRascunho(tx: Prisma.TransactionClient, quizId: string) {
+  private async exigirRascunho(
+    tx: Prisma.TransactionClient,
+    quizId: string,
+  ) {
     const quiz = await tx.quiz.findUnique({
       where: { id: quizId },
     });
@@ -194,7 +200,9 @@ export class QuizzesService {
       });
 
       if (!questao) {
-        throw new NotFoundException('Questão não encontrada neste quiz.');
+        throw new NotFoundException(
+          'Questão não encontrada neste quiz.',
+        );
       }
 
       return tx.alternativaQuiz.create({
@@ -331,7 +339,11 @@ export class QuizzesService {
 
   // CORREÇÃO E REGISTRO DA TENTATIVA
 
-  responderQuiz(usuarioId: string, quizId: string, dto: ResponderQuizDto) {
+  responderQuiz(
+    usuarioId: string,
+    quizId: string,
+    dto: ResponderQuizDto,
+  ) {
     return this.executarTransacao(async (tx) => {
       const quiz = await tx.quiz.findFirst({
         where: {
@@ -385,7 +397,9 @@ export class QuizzesService {
           );
         }
 
-        const corretas = questao.alternativas.filter((item) => item.correta);
+        const corretas = questao.alternativas.filter(
+          (item) => item.correta,
+        );
 
         if (corretas.length !== 1) {
           throw new ConflictException(
@@ -431,17 +445,6 @@ export class QuizzesService {
         progressoAtualizado: false,
         feedback,
       };
-    });
-  }
-
-  retornarRascunho(quizId: string) {
-    return this.executarTransacao(async (tx) => {
-      const item = await tx.quiz.findUnique({ where: { id: quizId } });
-      if (!item) throw new NotFoundException('Atividade não encontrada.');
-      return tx.quiz.update({
-        where: { id: quizId },
-        data: { status: 'RASCUNHO' },
-      });
     });
   }
 }

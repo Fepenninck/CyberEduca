@@ -21,12 +21,6 @@ const items = [
   },
   { key: "quizzes", href: "/quizzes", label: "Quizzes", icon: ListChecks },
   {
-    key: "desempenho",
-    href: "/desempenho",
-    label: "Desempenho",
-    icon: ClipboardCheck,
-  },
-  {
     key: "avaliacoes",
     href: "/avaliacoes",
     label: "Avaliações",
@@ -49,8 +43,7 @@ export function DashboardNavigation({
     | "avaliacoes"
     | "verificador"
     | "perfil"
-    | "inicio"
-    | "desempenho";
+    | "inicio";
 }) {
   const settings = (event: React.MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();

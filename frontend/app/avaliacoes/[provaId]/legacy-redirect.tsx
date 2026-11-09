@@ -1,4 +1,2 @@
 import { redirect } from "next/navigation";
-export default function AvaliacaoPage() {
-  redirect("/avaliacoes");
-}
+export default function AvaliacaoPage() { redirect("/avaliacoes"); }

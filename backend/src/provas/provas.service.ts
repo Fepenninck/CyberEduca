@@ -1,5 +1,3 @@
-import { CriarProvaDto as CriarProvaAdminDto } from '../admin/dto/criar-prova.dto';
-import { AtualizarProvaDto as AtualizarProvaAdminDto } from '../admin/dto/atualizar-prova.dto';
 import { RespostaQuestaoDto } from './dto/responder-prova.dto';
 import { FinalizarProvaDto } from './dto/finalizar-prova.dto';
 import {
@@ -26,7 +24,6 @@ type AlternativaPublica = {
 };
 
 type QuestaoPublica = {
-  tipo: TipoQuestao;
   id: string;
   enunciado: string;
   ordem: number;
@@ -173,20 +170,14 @@ export class ProvasService {
   ) {
     const questao = await this.prisma.questaoProva.findUnique({
       where: { id: questaoId },
-      include: {
-        alternativas: { select: { id: true, isCorreta: true, ordem: true } },
-      },
+      include: { alternativas: { select: { id: true, isCorreta: true, ordem: true } } },
     });
 
     if (!questao || questao.provaId !== provaId) {
       throw new NotFoundException('Questao nao encontrada nesta prova.');
     }
 
-    if (
-      questao.alternativas.some(
-        (a: { ordem: number }) => a.ordem === dados.ordem,
-      )
-    ) {
+    if (questao.alternativas.some((a: { ordem: number }) => a.ordem === dados.ordem)) {
       throw new BadRequestException(
         `Ja existe uma alternativa na ordem ${dados.ordem} nesta questao.`,
       );
@@ -222,7 +213,7 @@ export class ProvasService {
     return alternativa;
   }
 
-  // Publicar exige que toda questao tenha ao menos duas alternativas e uma correta.
+  // Publicar exige que toda questao tenha ao menos duas alternativas e uma isCorreta.
   async publicarProva(provaId: string, atorId: string) {
     const prova = await this.prisma.prova.findUnique({
       where: { id: provaId },
@@ -244,27 +235,30 @@ export class ProvasService {
     }
 
     const invalida = prova.questoes.find(
-      (q) =>
-        q.tipo !== TipoQuestao.DISSERTATIVA &&
-        (q.alternativas.length < 2 ||
-          q.alternativas.filter((a) => a.isCorreta).length !== 1),
+      (q: { alternativas: { isCorreta: boolean }[] }) =>
+        q.alternativas.length < 2 ||
+        !q.alternativas.some((a: { isCorreta: boolean }) => a.isCorreta),
     );
 
     if (invalida) {
       throw new BadRequestException(
-        'Cada questao precisa de pelo menos duas alternativas e uma correta.',
+        'Cada questao precisa de pelo menos duas alternativas e uma isCorreta.',
       );
     }
 
-    return this.alterarStatus(provaId, StatusProva.PUBLICADA, atorId);
+    return this.alterarStatusProva(provaId, StatusProva.PUBLICADA, atorId);
   }
 
   async arquivarProva(provaId: string, atorId: string) {
     await this.garantirProvaExiste(provaId);
-    return this.alterarStatus(provaId, StatusProva.ARQUIVADA, atorId);
+    return this.alterarStatusProva(provaId, StatusProva.ARQUIVADA, atorId);
   }
 
-  async alterarStatus(provaId: string, status: StatusProva, atorId?: string) {
+  async alterarStatusProva(
+    provaId: string,
+    status: StatusProva,
+    atorId: string,
+  ) {
     const prova = await this.prisma.prova.update({
       where: { id: provaId },
       data: { status },
@@ -335,10 +329,7 @@ export class ProvasService {
       throw new NotFoundException('Prova nao encontrada.');
     }
 
-    if (
-      prova.status !== StatusProva.PUBLICADA &&
-      prova.status !== StatusProva.PUBLICADO
-    ) {
+    if (prova.status !== StatusProva.PUBLICADA && prova.status !== StatusProva.PUBLICADO) {
       throw new ForbiddenException('Esta prova nao esta disponivel.');
     }
 
@@ -348,13 +339,14 @@ export class ProvasService {
       descricao: prova.descricao,
       trilha: prova.trilha,
       totalQuestoes: prova.questoes.length,
-      questoes: prova.questoes.map((q: QuestaoPublica): QuestaoPublica => ({
-        id: q.id,
-        enunciado: q.enunciado,
-        ordem: q.ordem,
-        tipo: (q as QuestaoPublica & { tipo: TipoQuestao }).tipo,
-        alternativas: q.alternativas,
-      })),
+      questoes: prova.questoes.map(
+        (q: QuestaoPublica): QuestaoPublica => ({
+          id: q.id,
+          enunciado: q.enunciado,
+          ordem: q.ordem,
+          alternativas: q.alternativas,
+        }),
+      ),
     };
   }
 
@@ -374,10 +366,7 @@ export class ProvasService {
       throw new NotFoundException('Prova nao encontrada.');
     }
 
-    if (
-      prova.status !== StatusProva.PUBLICADA &&
-      prova.status !== StatusProva.PUBLICADO
-    ) {
+    if (prova.status !== StatusProva.PUBLICADA && prova.status !== StatusProva.PUBLICADO) {
       throw new ForbiddenException('Esta prova nao esta disponivel.');
     }
 
@@ -452,15 +441,11 @@ export class ProvasService {
         where: { usuarioId_provaId: { usuarioId, provaId: id } },
         select: { id: true },
       });
-      if (concluida)
-        throw new ConflictException('Você já concluiu esta avaliação.');
+      if (concluida) throw new ConflictException('Você já concluiu esta avaliação.');
     }
 
     const prova = await this.prisma.prova.findFirst({
-      where: {
-        id,
-        status: { in: [StatusProva.PUBLICADO, StatusProva.PUBLICADA] },
-      },
+      where: { id, status: { in: [StatusProva.PUBLICADO, StatusProva.PUBLICADA] } },
       select: {
         id: true,
         titulo: true,
@@ -480,8 +465,7 @@ export class ProvasService {
       },
     });
 
-    if (!prova)
-      throw new NotFoundException('Prova não encontrada ou não publicada.');
+    if (!prova) throw new NotFoundException('Prova não encontrada ou não publicada.');
     return prova;
   }
 
@@ -500,10 +484,7 @@ export class ProvasService {
       for (const questao of dados.questoes ?? []) {
         if (questao.tipo === TipoQuestao.MULTIPLA_ESCOLHA) {
           const alternativas = questao.alternativas ?? [];
-          if (
-            alternativas.length < 2 ||
-            alternativas.filter((item) => item.isCorreta).length !== 1
-          ) {
+          if (alternativas.length < 2 || alternativas.filter((item) => item.isCorreta).length !== 1) {
             throw new BadRequestException(
               'Questões de múltipla escolha precisam de pelo menos duas alternativas e exatamente uma correta.',
             );
@@ -524,23 +505,21 @@ export class ProvasService {
           ...(dados.questoes?.length
             ? {
                 questoes: {
-                  create: dados.questoes.map((questao, indice) => ({
-                    enunciado: questao.enunciado,
-                    ordem: indice + 1,
-                    tipo: questao.tipo,
-                    ...(questao.alternativas?.length
-                      ? {
-                          alternativas: {
-                            create: questao.alternativas.map(
-                              (alternativa, alternativaIndice) => ({
-                                ...alternativa,
-                                ordem: alternativaIndice + 1,
-                              }),
-                            ),
-                          },
-                        }
-                      : {}),
-                  })),
+                      create: dados.questoes.map((questao, indice) => ({
+                        enunciado: questao.enunciado,
+                        ordem: indice + 1,
+                        tipo: questao.tipo,
+                        ...(questao.alternativas?.length
+                          ? {
+                              alternativas: {
+                                create: questao.alternativas.map((alternativa, alternativaIndice) => ({
+                                  ...alternativa,
+                                  ordem: alternativaIndice + 1,
+                                })),
+                              },
+                            }
+                          : {}),
+                      })),
                 },
               }
             : {}),
@@ -556,15 +535,12 @@ export class ProvasService {
     }
   }
 
-  async atualizar(
-    id: string,
-    dados: {
-      titulo?: string;
-      descricao?: string;
-      trilhaId?: string;
-      status?: StatusProva;
-    },
-  ) {
+  async atualizar(id: string, dados: {
+    titulo?: string;
+    descricao?: string;
+    trilhaId?: string;
+    status?: StatusProva;
+  }) {
     try {
       return await this.prisma.prova.update({
         where: { id },
@@ -580,7 +556,7 @@ export class ProvasService {
     }
   }
 
-  async alterarStatusLegado(id: string, status: StatusProva) {
+  async alterarStatus(id: string, status: StatusProva) {
     return this.atualizar(id, { status });
   }
 
@@ -598,8 +574,7 @@ export class ProvasService {
     dados: { enunciado: string; tipo?: TipoQuestao },
   ) {
     try {
-      const ordem =
-        (await this.prisma.questaoProva.count({ where: { provaId } })) + 1;
+      const ordem = await this.prisma.questaoProva.count({ where: { provaId } }) + 1;
       return await this.prisma.questaoProva.create({
         data: { provaId, ...dados, ordem },
         include: { alternativas: { orderBy: { ordem: 'asc' } } },
@@ -619,8 +594,7 @@ export class ProvasService {
       where: { id: questaoId, provaId },
       select: { id: true, _count: { select: { alternativas: true } } },
     });
-    if (!questao)
-      throw new NotFoundException('Questão não encontrada nesta prova.');
+    if (!questao) throw new NotFoundException('Questão não encontrada nesta prova.');
 
     try {
       return await this.prisma.alternativaProva.create({
@@ -642,29 +616,22 @@ export class ProvasService {
         where: { usuarioId_provaId: { usuarioId, provaId } },
         select: { id: true },
       });
-      if (concluida)
-        throw new ConflictException('Você já concluiu esta avaliação.');
+      if (concluida) throw new ConflictException('Você já concluiu esta avaliação.');
     }
 
     const prova = await this.prisma.prova.findFirst({
-      where: {
-        id: provaId,
-        status: { in: [StatusProva.PUBLICADO, StatusProva.PUBLICADA] },
-      },
+      where: { id: provaId, status: { in: [StatusProva.PUBLICADO, StatusProva.PUBLICADA] } },
       select: {
         questoes: {
           select: {
             id: true,
             tipo: true,
-            alternativas: {
-              select: { id: true, texto: true, isCorreta: true },
-            },
+            alternativas: { select: { id: true, texto: true, isCorreta: true } },
           },
         },
       },
     });
-    if (!prova)
-      throw new NotFoundException('Prova não encontrada ou não publicada.');
+    if (!prova) throw new NotFoundException('Prova não encontrada ou não publicada.');
 
     const respostaPorQuestao = new Map(
       respostas.map((resposta) => [resposta.questaoId, resposta]),
@@ -672,9 +639,7 @@ export class ProvasService {
     const resultado = prova.questoes.map((questao) => {
       const resposta = respostaPorQuestao.get(questao.id);
       const alternativaEscolhidaId = resposta?.alternativaId ?? null;
-      const alternativaCorreta = questao.alternativas.find(
-        (alternativa) => alternativa.isCorreta,
-      );
+      const alternativaCorreta = questao.alternativas.find((alternativa) => alternativa.isCorreta);
       const alternativaEscolhida = questao.alternativas.find(
         (alternativa) => alternativa.id === alternativaEscolhidaId,
       );
@@ -682,12 +647,8 @@ export class ProvasService {
       return {
         questaoId: questao.id,
         tipo: questao.tipo,
-        correta:
-          questao.tipo === TipoQuestao.MULTIPLA_ESCOLHA &&
-          Boolean(
-            alternativaCorreta &&
-            alternativaCorreta.id === alternativaEscolhidaId,
-          ),
+        correta: questao.tipo === TipoQuestao.MULTIPLA_ESCOLHA
+          && Boolean(alternativaCorreta && alternativaCorreta.id === alternativaEscolhidaId),
         avaliacaoManual: questao.tipo === TipoQuestao.DISSERTATIVA,
         respostaTexto: resposta?.respostaTexto ?? null,
         alternativaEscolhidaId,
@@ -698,16 +659,12 @@ export class ProvasService {
     });
 
     const acertos = resultado.filter((item) => item.correta).length;
-    const totalQuestoes = resultado.filter(
-      (item) => !item.avaliacaoManual,
-    ).length;
+    const totalQuestoes = resultado.filter((item) => !item.avaliacaoManual).length;
 
     return {
       acertos,
       totalQuestoes,
-      percentual: totalQuestoes
-        ? Math.round((acertos / totalQuestoes) * 100)
-        : 0,
+      percentual: totalQuestoes ? Math.round((acertos / totalQuestoes) * 100) : 0,
       resultado,
     };
   }
@@ -756,25 +713,13 @@ export class ProvasService {
       };
     }
 
-    const corrigido = await this.corrigirRespostas(
-      provaId,
-      dados.respostas,
-      usuarioId,
-    );
-    if (
-      dados.acertos !== corrigido.acertos ||
-      dados.totalQuestoes !== corrigido.totalQuestoes
-    ) {
-      throw new BadRequestException(
-        'O resultado enviado não corresponde às respostas da avaliação.',
-      );
+    const corrigido = await this.corrigirRespostas(provaId, dados.respostas, usuarioId);
+    if (dados.acertos !== corrigido.acertos || dados.totalQuestoes !== corrigido.totalQuestoes) {
+      throw new BadRequestException('O resultado enviado não corresponde às respostas da avaliação.');
     }
 
     const [prova, resultado] = await Promise.all([
-      this.prisma.prova.findUnique({
-        where: { id: provaId },
-        select: { titulo: true },
-      }),
+      this.prisma.prova.findUnique({ where: { id: provaId }, select: { titulo: true } }),
       this.prisma.resultadoProva.upsert({
         where: { usuarioId_provaId: { usuarioId, provaId } },
         update: {},
@@ -789,109 +734,10 @@ export class ProvasService {
     ]);
     if (!prova) throw new NotFoundException('Prova não encontrada.');
 
-    return {
-      ...corrigido,
-      ...resultado,
-      titulo: prova.titulo,
-      jaConcluida: false,
-    };
+    return { ...corrigido, ...resultado, titulo: prova.titulo, jaConcluida: false };
   }
 
   private mensagemErro(error: unknown) {
-    return error instanceof Error
-      ? error.message
-      : 'Não foi possível concluir a operação da prova.';
-  }
-  async criarProvaIntegrada(dados: CriarProvaAdminDto, atorId: string) {
-    const { status, ...conteudo } = dados;
-    const prova = await this.criar({
-      ...conteudo,
-      status: StatusProva.RASCUNHO,
-    });
-    await this.auditoria.registrar({
-      acao: AcaoAuditoria.CRIAR,
-      entidade: 'Prova',
-      entidadeId: prova.id,
-      atorId,
-    });
-    if (status && status !== StatusProva.RASCUNHO)
-      await this.definirStatusIntegrado(prova.id, status, atorId);
-    return this.prisma.prova.findUniqueOrThrow({
-      where: { id: prova.id },
-      include: { questoes: { include: { alternativas: true } }, trilha: true },
-    });
-  }
-  async atualizarProvaIntegrada(
-    id: string,
-    dados: AtualizarProvaAdminDto,
-    atorId: string,
-  ) {
-    const { status, ...conteudo } = dados;
-    await this.atualizarProva(id, conteudo, atorId);
-    if (status) await this.definirStatusIntegrado(id, status, atorId);
-    return this.prisma.prova.findUniqueOrThrow({
-      where: { id },
-      include: { questoes: { include: { alternativas: true } }, trilha: true },
-    });
-  }
-  async definirStatusIntegrado(
-    id: string,
-    status: StatusProva,
-    atorId: string,
-  ) {
-    if (status === StatusProva.PUBLICADO || status === StatusProva.PUBLICADA) {
-      await this.publicarProva(id, atorId);
-      if (status === StatusProva.PUBLICADO)
-        return this.alterarStatus(id, status, atorId);
-      return this.prisma.prova.findUniqueOrThrow({ where: { id } });
-    }
-    return this.alterarStatus(id, status, atorId);
-  }
-  async criarQuestaoIntegrada(
-    provaId: string,
-    dados: { enunciado: string; tipo?: TipoQuestao; ordem?: number },
-    atorId: string,
-  ) {
-    const ultima = await this.prisma.questaoProva.aggregate({
-      where: { provaId },
-      _max: { ordem: true },
-    });
-    const ordem = dados.ordem ?? (ultima._max.ordem ?? 0) + 1;
-    await this.criarQuestao(
-      provaId,
-      { enunciado: dados.enunciado, ordem },
-      atorId,
-    );
-    return this.prisma.questaoProva.update({
-      where: { provaId_ordem: { provaId, ordem } },
-      data: { tipo: dados.tipo ?? TipoQuestao.MULTIPLA_ESCOLHA },
-      include: { alternativas: true },
-    });
-  }
-  async criarAlternativaIntegrada(
-    provaId: string,
-    questaoId: string,
-    dados: {
-      texto: string;
-      isCorreta?: boolean;
-      correta?: boolean;
-      ordem?: number;
-    },
-    atorId: string,
-  ) {
-    const ultima = await this.prisma.alternativaProva.aggregate({
-      where: { questaoId },
-      _max: { ordem: true },
-    });
-    return this.criarAlternativa(
-      provaId,
-      questaoId,
-      {
-        texto: dados.texto,
-        correta: dados.correta ?? dados.isCorreta ?? false,
-        ordem: dados.ordem ?? (ultima._max.ordem ?? 0) + 1,
-      },
-      atorId,
-    );
+    return error instanceof Error ? error.message : 'Não foi possível concluir a operação da prova.';
   }
 }

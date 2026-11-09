@@ -1,133 +1,78 @@
-"use client";
-import { useState, type FormEvent } from "react";
-import type { AdminAula, CenarioPhishingInput } from "@/lib/admin-api";
+'use client'
 
-export function FormularioCenarioPhishing({
-  aulas,
-  inicial,
-  onSubmit,
-}: {
-  aulas: AdminAula[];
-  inicial?: CenarioPhishingInput;
-  onSubmit: (dados: CenarioPhishingInput) => Promise<void>;
-}) {
-  const [dados, setDados] = useState<CenarioPhishingInput>(
-    inicial ?? {
-      titulo: "",
-      descricao: "",
-      conteudoMensagem: "",
-      tipo: "EMAIL",
-      ehPhishing: true,
-      explicacao: "",
-      aulaId: "",
-    },
-  );
-  const [erro, setErro] = useState(""),
-    [salvando, setSalvando] = useState(false);
-  async function enviar(event: FormEvent) {
-    event.preventDefault();
-    setSalvando(true);
-    setErro("");
+import { useState, type FormEvent } from 'react'
+import type { CenarioPhishingInput } from '@/lib/admin-api'
+
+type Dificuldade = 'FACIL' | 'MEDIO' | 'DIFICIL'
+
+type FormularioCenarioPhishingProps = {
+  onSubmit: (dados: CenarioPhishingInput) => Promise<void>
+}
+
+const campoClass = 'mt-2 w-full rounded-lg border border-[#35465c] bg-[#091321] px-3 py-2.5 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-[#b2ff00]'
+
+const dificuldades: Array<{ valor: Dificuldade; label: string }> = [
+  { valor: 'FACIL', label: 'Fácil' },
+  { valor: 'MEDIO', label: 'Médio' },
+  { valor: 'DIFICIL', label: 'Difícil' },
+]
+
+export function FormularioCenarioPhishing({ onSubmit }: FormularioCenarioPhishingProps) {
+  const [titulo, setTitulo] = useState('')
+  const [conteudoEmail, setConteudoEmail] = useState('')
+  const [remetenteFalso, setRemetenteFalso] = useState('')
+  const [dificuldade, setDificuldade] = useState<Dificuldade>('FACIL')
+  const [salvando, setSalvando] = useState(false)
+  const [erro, setErro] = useState<string | null>(null)
+
+  async function enviar(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setSalvando(true)
+    setErro(null)
+
     try {
-      await onSubmit(dados);
-    } catch (error) {
-      setErro(
-        error instanceof Error ? error.message : "Não foi possível salvar.",
-      );
+      await onSubmit({ titulo: titulo.trim(), conteudoEmail, remetenteFalso: remetenteFalso.trim(), dificuldade })
+      setTitulo('')
+      setConteudoEmail('')
+      setRemetenteFalso('')
+      setDificuldade('FACIL')
+    } catch (erroEnvio) {
+      setErro(erroEnvio instanceof Error ? erroEnvio.message : 'Não foi possível criar o cenário.')
     } finally {
-      setSalvando(false);
+      setSalvando(false)
     }
   }
-  const campo =
-    "block mt-2 w-full rounded-lg border border-slate-600 bg-slate-950 p-3 text-white";
+
   return (
-    <form
-      onSubmit={enviar}
-      className="my-6 grid gap-4 rounded-xl border border-slate-700 p-5"
-    >
-      {(["titulo", "descricao", "conteudoMensagem", "explicacao"] as const).map(
-        (key) => (
-          <label key={key}>
-            {
-              {
-                titulo: "Título",
-                descricao: "Descrição",
-                conteudoMensagem: "Mensagem simulada",
-                explicacao: "Explicação após a resposta",
-              }[key]
-            }
-            <textarea
-              className={campo}
-              required
-              maxLength={
-                key === "titulo"
-                  ? 160
-                  : key === "descricao"
-                    ? 2000
-                    : key === "explicacao"
-                      ? 5000
-                      : 20000
-              }
-              value={dados[key]}
-              onChange={(event) =>
-                setDados({ ...dados, [key]: event.target.value })
-              }
-            />
-          </label>
-        ),
-      )}
-      <label>
-        Aula
-        <select
-          className={campo}
-          required
-          value={dados.aulaId}
-          onChange={(event) =>
-            setDados({ ...dados, aulaId: event.target.value })
-          }
-        >
-          <option value="">Selecione</option>
-          {aulas.map((aula) => (
-            <option key={aula.id} value={aula.id}>
-              {aula.trilha.titulo} · {aula.titulo}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label>
-        Tipo
-        <select
-          className={campo}
-          value={dados.tipo}
-          onChange={(event) =>
-            setDados({
-              ...dados,
-              tipo: event.target.value as CenarioPhishingInput["tipo"],
-            })
-          }
-        >
-          {["EMAIL", "SMS", "SITE", "REDE_SOCIAL"].map((tipo) => (
-            <option key={tipo}>{tipo}</option>
-          ))}
-        </select>
-      </label>
-      <label>
-        <input
-          type="checkbox"
-          checked={dados.ehPhishing}
-          onChange={(event) =>
-            setDados({ ...dados, ehPhishing: event.target.checked })
-          }
-        />{" "}
-        Esta mensagem é phishing
-      </label>
-      {erro && <p role="alert">{erro}</p>}
-      <button
-        className="rounded-lg bg-[#b2ff00] p-3 font-semibold text-black"
-        disabled={salvando || !aulas.length}
-      >
-        {salvando ? "Salvando…" : "Salvar cenário"}
-      </button>
+    <form onSubmit={enviar} className="rounded-2xl border border-[#34465d] bg-[#101b2a] p-5 sm:p-6">
+      <div className="grid gap-5 sm:grid-cols-2">
+        <label className="text-sm font-medium text-slate-200 sm:col-span-2">
+          Título do cenário
+          <input className={campoClass} value={titulo} onChange={(event) => setTitulo(event.target.value)} required maxLength={160} />
+        </label>
+        <label className="text-sm font-medium text-slate-200 sm:col-span-2">
+          Conteúdo do e-mail
+          <textarea className={`${campoClass} min-h-48 resize-y`} value={conteudoEmail} onChange={(event) => setConteudoEmail(event.target.value)} required />
+        </label>
+        <label className="text-sm font-medium text-slate-200">
+          Remetente falso
+          <input className={campoClass} value={remetenteFalso} onChange={(event) => setRemetenteFalso(event.target.value)} required maxLength={254} placeholder="exemplo@dominio-falso.com" />
+        </label>
+        <label className="text-sm font-medium text-slate-200">
+          Dificuldade
+          <select className={campoClass} value={dificuldade} onChange={(event) => setDificuldade(event.target.value as Dificuldade)}>
+            {dificuldades.map((opcao) => <option key={opcao.valor} value={opcao.valor}>{opcao.label}</option>)}
+          </select>
+        </label>
+      </div>
+
+      {erro && <p role="alert" className="mt-4 text-sm text-rose-300">{erro}</p>}
+
+      <div className="mt-6 flex justify-end">
+        <button type="submit" disabled={salvando} className="rounded-lg bg-[#b2ff00] px-4 py-2.5 text-sm font-semibold text-[#132000] transition hover:bg-[#c7ff4b] disabled:cursor-wait disabled:opacity-60">
+          {salvando ? 'Salvando…' : 'Criar cenário'}
+        </button>
+      </div>
     </form>
-  );
+  )
 }

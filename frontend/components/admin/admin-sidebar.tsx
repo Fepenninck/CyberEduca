@@ -1,48 +1,36 @@
-"use client";
+'use client'
 
-import {
-  BookOpen,
-  ClipboardList,
-  FileCheck2,
-  GraduationCap,
-  LayoutDashboard,
-  LogOut,
-  ShieldAlert,
-  Users,
-} from "lucide-react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
-import { apiFetch } from "@/lib/api";
+import { BookOpen, ClipboardList, FileCheck2, GraduationCap, LayoutDashboard, LogOut, ShieldAlert, Users } from 'lucide-react'
+import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { apiFetch } from '@/lib/api'
 
 const links = [
-  { href: "/admin/quizzes", label: "Quizzes", icon: ClipboardList },
-  { href: "/admin/phishing", label: "Phishing", icon: ShieldAlert },
-  { href: "/admin/relatorios", label: "Relatórios", icon: ClipboardList },
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/trilhas", label: "Trilhas", icon: GraduationCap },
-  { href: "/admin/aulas", label: "Aulas", icon: BookOpen },
-  { href: "/admin/simulacoes", label: "Simulações", icon: ShieldAlert },
-  { href: "/admin/provas", label: "Provas", icon: FileCheck2 },
-  { href: "/admin/resultados", label: "Resultados", icon: ClipboardList },
-  { href: "/admin/usuarios", label: "Usuários", icon: Users },
-];
+  { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/admin/trilhas', label: 'Trilhas', icon: GraduationCap },
+  { href: '/admin/aulas', label: 'Aulas', icon: BookOpen },
+  { href: '/admin/simulacoes', label: 'Simulações', icon: ShieldAlert },
+  { href: '/admin/provas', label: 'Provas', icon: FileCheck2 },
+  { href: '/admin/resultados', label: 'Resultados', icon: ClipboardList },
+  { href: '/admin/usuarios', label: 'Usuários', icon: Users },
+]
 
 export function AdminSidebar() {
-  const pathname = usePathname();
-  const router = useRouter();
-  const [saindo, setSaindo] = useState(false);
+  const pathname = usePathname()
+  const router = useRouter()
+  const [saindo, setSaindo] = useState(false)
 
   async function sair() {
-    setSaindo(true);
+    setSaindo(true)
     try {
-      await apiFetch("/auth/logout", { method: "POST" });
+      await apiFetch('/auth/logout', { method: 'POST' })
     } catch {
       // Ainda encaminha para o login se a API de logout estiver indisponível.
     } finally {
-      setSaindo(false);
-      router.push("/login");
-      router.refresh();
+      setSaindo(false)
+      router.push('/login')
+      router.refresh()
     }
   }
 
@@ -58,30 +46,25 @@ export function AdminSidebar() {
         </div>
       </div>
 
-      <nav
-        aria-label="Navegação administrativa"
-        className="grid grid-cols-2 gap-1 p-3 md:flex md:flex-col"
-      >
+      <nav aria-label="Navegação administrativa" className="grid grid-cols-2 gap-1 p-3 md:flex md:flex-col">
         {links.map(({ href, label, icon: Icon }) => {
-          const ativo =
-            pathname === href ||
-            (href !== "/admin" && pathname.startsWith(`${href}/`));
+          const ativo = pathname === href || (href !== '/admin' && pathname.startsWith(`${href}/`))
 
           return (
             <Link
               key={href}
               href={href}
-              aria-current={ativo ? "page" : undefined}
+              aria-current={ativo ? 'page' : undefined}
               className={`flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm transition-colors ${
                 ativo
-                  ? "bg-[#b2ff00]/10 font-semibold text-[#b2ff00]"
-                  : "text-slate-300 hover:bg-white/5 hover:text-white"
+                  ? 'bg-[#b2ff00]/10 font-semibold text-[#b2ff00]'
+                  : 'text-slate-300 hover:bg-white/5 hover:text-white'
               }`}
             >
               <Icon aria-hidden="true" size={18} />
               {label}
             </Link>
-          );
+          )
         })}
       </nav>
       <div className="p-3 md:absolute md:inset-x-0 md:bottom-0">
@@ -92,9 +75,9 @@ export function AdminSidebar() {
           className="flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-sm text-slate-300 transition-colors hover:bg-rose-400/10 hover:text-rose-200 disabled:opacity-60"
         >
           <LogOut aria-hidden="true" size={18} />
-          {saindo ? "Saindo…" : "Sair"}
+          {saindo ? 'Saindo…' : 'Sair'}
         </button>
       </div>
     </aside>
-  );
+  )
 }

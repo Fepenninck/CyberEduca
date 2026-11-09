@@ -1,441 +1,346 @@
-import { apiFetch } from "@/lib/api";
+import { apiFetch } from '@/lib/api'
 
 export type ResumoDashboard = {
-  totalUsuarios: number;
-  totalTrilhas: number;
-  totalAulas: number;
-  totalQuizzes: number;
-  totalSimulacoes: number;
-  totalProvas: number;
-};
+  totalUsuarios: number
+  totalTrilhas: number
+  totalAulas: number
+}
 
 export type AdminUsuario = {
-  id: string;
-  nome: string;
-  email: string;
-  foto: string | null;
-  papel: string;
-  criadoEm: string;
-  atualizadoEm: string;
-};
+  id: string
+  nome: string
+  email: string
+  foto: string | null
+  papel: string
+  criadoEm: string
+  atualizadoEm: string
+}
 
-export type AtualizacaoUsuario = Pick<AdminUsuario, "nome" | "email">;
+export type AtualizacaoUsuario = Pick<AdminUsuario, 'nome' | 'email'>
 
 export type TrilhaInput = {
-  titulo: string;
-  descricao: string;
-  bloqueada?: boolean;
-  ordem: number;
-  nivel: "BASICO" | "INTERMEDIARIO" | "AVANCADO";
-};
+  titulo: string
+  descricao: string
+  bloqueada?: boolean
+  ordem: number
+  nivel: 'BASICO' | 'INTERMEDIARIO' | 'AVANCADO'
+}
 
-export type TrilhaUpdate = Partial<TrilhaInput>;
+export type TrilhaUpdate = Partial<TrilhaInput>
 
 export type AdminTrilha = TrilhaInput & {
-  id: string;
-  totalAulas: number;
-};
+  id: string
+  totalAulas: number
+}
 
 export type AulaInput = {
-  titulo: string;
-  conteudo: string;
-  ordem: number;
-  trilhaId: string;
-};
+  titulo: string
+  conteudo: string
+  ordem: number
+  trilhaId: string
+}
 
-export type AulaUpdate = Partial<AulaInput>;
+export type AulaUpdate = Partial<AulaInput>
 
 export type AdminAula = AulaInput & {
-  id: string;
-  trilha: { id: string; titulo: string };
-};
+  id: string
+  trilha: { id: string; titulo: string }
+}
 
 export type QuizAdminInput = {
-  titulo: string;
-  descricao: string;
-  aulaId: string;
-};
+  titulo: string
+  descricao: string
+  aulaId: string
+}
 
-export type StatusPublicacao = "RASCUNHO" | "PUBLICADO" | "ARQUIVADO";
-export type StatusProvaAdmin = StatusPublicacao | "PUBLICADA" | "ARQUIVADA";
+export type StatusPublicacao = 'RASCUNHO' | 'PUBLICADO' | 'ARQUIVADO'
+export type StatusProvaAdmin = StatusPublicacao | 'PUBLICADA'
 
 export type QuizAdmin = QuizAdminInput & {
-  id: string;
-  status: StatusPublicacao;
-  questoes: Array<{
-    id: string;
-    enunciado: string;
-    explicacao: string;
-    ordem: number;
-    alternativas: Array<{
-      id: string;
-      texto: string;
-      correta: boolean;
-      ordem: number;
-    }>;
-  }>;
-};
+  id: string
+  status: StatusPublicacao
+}
 
 export type CenarioPhishingInput = {
-  titulo: string;
-  descricao: string;
-  conteudoMensagem: string;
-  tipo: "EMAIL" | "SMS" | "SITE" | "REDE_SOCIAL";
-  ehPhishing: boolean;
-  explicacao: string;
-  aulaId: string;
-};
+  titulo: string
+  conteudoEmail: string
+  remetenteFalso: string
+  dificuldade: string
+}
 
 export type CenarioPhishingAdmin = CenarioPhishingInput & {
-  id: string;
-  status: StatusPublicacao;
-};
+  id: string
+}
 
 export type AlternativaSimulacaoInput = {
-  texto: string;
-  isCorreta: boolean;
-};
+  texto: string
+  isCorreta: boolean
+}
 
 export type QuestaoSimulacaoInput = {
-  enunciado: string;
-  alternativas: AlternativaSimulacaoInput[];
-};
+  enunciado: string
+  alternativas: AlternativaSimulacaoInput[]
+}
 
 export type SimulacaoInput = {
-  titulo: string;
-  descricao: string;
-  categoriaId: string;
-  questoes: QuestaoSimulacaoInput[];
-};
+  titulo: string
+  descricao: string
+  categoriaId: string
+  questoes: QuestaoSimulacaoInput[]
+}
 
 export type SimulacaoAdmin = SimulacaoInput & {
-  id: string;
-  criadoEm: string;
-  categoria?: CategoriaSimulacaoAdmin;
-};
+  id: string
+  criadoEm: string
+  categoria?: CategoriaSimulacaoAdmin
+}
 
-export type CategoriaSimulacaoInput = { nome: string; descricao: string };
+export type CategoriaSimulacaoInput = { nome: string; descricao: string }
 export type CategoriaSimulacaoAdmin = CategoriaSimulacaoInput & {
-  id: string;
-  criadoEm: string;
-  simulacoes?: SimulacaoAdmin[];
-};
+  id: string
+  criadoEm: string
+  simulacoes?: SimulacaoAdmin[]
+}
 
 export type ProvaInput = {
-  titulo: string;
-  descricao: string;
-  trilhaId: string;
-  status: StatusPublicacao;
-  questoes?: QuestaoProvaInput[];
-};
+  titulo: string
+  descricao: string
+  trilhaId: string
+  status: StatusPublicacao
+  questoes?: QuestaoProvaInput[]
+}
 
-export type ProvaUpdate = Partial<ProvaInput>;
+export type ProvaUpdate = Partial<ProvaInput>
 
 export type QuestaoProvaInput = {
-  enunciado: string;
-  tipo: "MULTIPLA_ESCOLHA" | "DISSERTATIVA";
-  alternativas?: AlternativaProvaInput[];
-};
+  enunciado: string
+  tipo: 'MULTIPLA_ESCOLHA' | 'DISSERTATIVA'
+  alternativas?: AlternativaProvaInput[]
+}
 
 export type AlternativaProvaInput = {
-  texto: string;
-  isCorreta: boolean;
-};
+  texto: string
+  isCorreta: boolean
+}
 
 export type AlternativaProvaAdmin = AlternativaProvaInput & {
-  id: string;
-};
+  id: string
+}
 
-export type QuestaoProvaAdmin = Omit<QuestaoProvaInput, "alternativas"> & {
-  id: string;
-  alternativas?: AlternativaProvaAdmin[];
-};
+export type QuestaoProvaAdmin = Omit<QuestaoProvaInput, 'alternativas'> & {
+  id: string
+  alternativas?: AlternativaProvaAdmin[]
+}
 
-export type ProvaAdmin = Omit<ProvaInput, "questoes" | "status"> & {
-  id: string;
-  status: StatusProvaAdmin;
-  trilha?: { id: string; titulo: string };
-  questoes?: QuestaoProvaAdmin[];
-};
+export type ProvaAdmin = Omit<ProvaInput, 'questoes' | 'status'> & {
+  id: string
+  status: StatusProvaAdmin
+  trilha?: { id: string; titulo: string }
+  questoes?: QuestaoProvaAdmin[]
+}
 
 export type ResultadoProvaAdmin = {
-  id: string;
-  acertos: number;
-  totalQuestoes: number;
-  criadoEm: string;
-  usuario: { id: string; nome: string; email: string };
-  prova: { id: string; titulo: string };
-};
+  id: string
+  acertos: number
+  totalQuestoes: number
+  criadoEm: string
+  usuario: { id: string; nome: string; email: string }
+  prova: { id: string; titulo: string }
+}
 
 export type ResultadoSimulacaoAdmin = {
-  id: string;
-  acertos: number;
-  totalQuestoes: number;
-  criadoEm: string;
-  usuario: { id: string; nome: string; email: string };
-  simulacao: { id: string; titulo: string };
-};
+  id: string
+  acertos: number
+  totalQuestoes: number
+  criadoEm: string
+  usuario: { id: string; nome: string; email: string }
+  simulacao: { id: string; titulo: string }
+}
 
 async function requestJson<T>(path: string, options?: RequestInit): Promise<T> {
-  const headers = new Headers(options?.headers);
-  if (options?.body && !headers.has("Content-Type")) {
-    headers.set("Content-Type", "application/json");
+  const headers = new Headers(options?.headers)
+  if (options?.body && !headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json')
   }
 
-  const response = await apiFetch(path, { ...options, headers });
-  const resultado = (await response.json().catch(() => null)) as
-    (T & { message?: string | string[] }) | null;
+  const response = await apiFetch(path, { ...options, headers })
+  const resultado = await response.json().catch(() => null) as
+    | (T & { message?: string | string[] })
+    | null
 
   if (!response.ok) {
-    const mensagem = resultado?.message;
+    const mensagem = resultado?.message
     throw new Error(
       Array.isArray(mensagem)
-        ? mensagem.join(" ")
-        : mensagem || "Não foi possível concluir a solicitação administrativa.",
-    );
+        ? mensagem.join(' ')
+        : mensagem || 'Não foi possível concluir a solicitação administrativa.',
+    )
   }
 
-  return resultado as T;
+  return resultado as T
 }
 
 export function buscarResumoDashboard(): Promise<ResumoDashboard> {
-  return requestJson("/admin/dashboard");
+  return requestJson('/admin/dashboard')
 }
 
 export function listarResultadosProvas(): Promise<ResultadoProvaAdmin[]> {
-  return requestJson("/admin/resultados/provas");
+  return requestJson('/admin/resultados/provas')
 }
 
-export function listarResultadosSimulacoes(): Promise<
-  ResultadoSimulacaoAdmin[]
-> {
-  return requestJson("/admin/resultados/simulacoes");
+export function listarResultadosSimulacoes(): Promise<ResultadoSimulacaoAdmin[]> {
+  return requestJson('/admin/resultados/simulacoes')
 }
 
 export function listarUsuarios(): Promise<AdminUsuario[]> {
-  return requestJson("/admin/usuarios");
+  return requestJson('/admin/usuarios')
 }
 
 export function buscarUsuario(id: string): Promise<AdminUsuario> {
-  return requestJson(`/admin/usuarios/${encodeURIComponent(id)}`);
+  return requestJson(`/admin/usuarios/${encodeURIComponent(id)}`)
 }
 
-export function atualizarUsuario(
-  id: string,
-  dados: AtualizacaoUsuario,
-): Promise<AdminUsuario> {
+export function atualizarUsuario(id: string, dados: AtualizacaoUsuario): Promise<AdminUsuario> {
   return requestJson(`/admin/usuarios/${encodeURIComponent(id)}`, {
-    method: "PATCH",
+    method: 'PATCH',
     body: JSON.stringify(dados),
-  });
+  })
 }
 
 export function excluirUsuario(id: string): Promise<void> {
-  return requestJson(`/admin/usuarios/${encodeURIComponent(id)}`, {
-    method: "DELETE",
-  });
+  return requestJson(`/admin/usuarios/${encodeURIComponent(id)}`, { method: 'DELETE' })
 }
 
 export function listarTrilhas(): Promise<AdminTrilha[]> {
-  return requestJson("/admin/trilhas");
+  return requestJson('/admin/trilhas')
 }
 
 export function listarAulas(): Promise<AdminAula[]> {
-  return requestJson("/admin/aulas");
+  return requestJson('/admin/aulas')
 }
 
 export function criarTrilha(dados: TrilhaInput) {
-  return requestJson("/admin/trilhas", {
-    method: "POST",
+  return requestJson('/admin/trilhas', {
+    method: 'POST',
     body: JSON.stringify(dados),
-  });
+  })
 }
 
 export function editarTrilha(id: string, dados: TrilhaUpdate) {
   return requestJson(`/admin/trilhas/${encodeURIComponent(id)}`, {
-    method: "PATCH",
+    method: 'PATCH',
     body: JSON.stringify(dados),
-  });
+  })
 }
 
 export function excluirTrilha(id: string): Promise<void> {
-  return requestJson(`/admin/trilhas/${encodeURIComponent(id)}`, {
-    method: "DELETE",
-  });
+  return requestJson(`/admin/trilhas/${encodeURIComponent(id)}`, { method: 'DELETE' })
 }
 
 export function criarAula(dados: AulaInput) {
-  return requestJson("/admin/aulas", {
-    method: "POST",
+  return requestJson('/admin/aulas', {
+    method: 'POST',
     body: JSON.stringify(dados),
-  });
+  })
 }
 
 export function editarAula(id: string, dados: AulaUpdate) {
   return requestJson(`/admin/aulas/${encodeURIComponent(id)}`, {
-    method: "PATCH",
+    method: 'PATCH',
     body: JSON.stringify(dados),
-  });
+  })
 }
 
 export function excluirAula(id: string): Promise<void> {
-  return requestJson(`/admin/aulas/${encodeURIComponent(id)}`, {
-    method: "DELETE",
-  });
+  return requestJson(`/admin/aulas/${encodeURIComponent(id)}`, { method: 'DELETE' })
 }
 
 export function listarQuizzesAdmin(): Promise<QuizAdmin[]> {
-  return requestJson("/admin/quizzes");
+  return requestJson('/admin/quizzes')
 }
 
 export function criarQuizAdmin(dados: QuizAdminInput): Promise<QuizAdmin> {
-  return requestJson("/admin/quizzes", {
-    method: "POST",
+  return requestJson('/admin/quizzes', {
+    method: 'POST',
     body: JSON.stringify(dados),
-  });
+  })
 }
 
-export function alterarStatusQuiz(
-  id: string,
-  status: StatusPublicacao,
-): Promise<QuizAdmin> {
+export function alterarStatusQuiz(id: string, status: StatusPublicacao): Promise<QuizAdmin> {
   return requestJson(`/admin/quizzes/${encodeURIComponent(id)}/status`, {
-    method: "PATCH",
+    method: 'PATCH',
     body: JSON.stringify({ status }),
-  });
+  })
 }
 
 export function excluirQuiz(id: string): Promise<void> {
-  return alterarStatusQuiz(id, "ARQUIVADO").then(() => undefined);
-}
-
-export function atualizarQuizAdmin(
-  id: string,
-  dados: QuizAdminInput,
-): Promise<QuizAdmin> {
-  return requestJson(`/admin/quizzes/${encodeURIComponent(id)}`, {
-    method: "PATCH",
-    body: JSON.stringify(dados),
-  });
-}
-export function adicionarQuestaoQuiz(
-  id: string,
-  dados: { enunciado: string; explicacao: string; ordem: number },
-): Promise<QuizAdmin["questoes"][number]> {
-  return requestJson(`/admin/quizzes/${encodeURIComponent(id)}/questoes`, {
-    method: "POST",
-    body: JSON.stringify(dados),
-  });
-}
-export function adicionarAlternativaQuiz(
-  id: string,
-  questaoId: string,
-  dados: { texto: string; correta: boolean; ordem: number },
-) {
-  return requestJson(
-    `/admin/quizzes/${encodeURIComponent(id)}/questoes/${encodeURIComponent(questaoId)}/alternativas`,
-    { method: "POST", body: JSON.stringify(dados) },
-  );
-}
-export function atualizarCenarioAdmin(
-  id: string,
-  dados: CenarioPhishingInput,
-): Promise<CenarioPhishingAdmin> {
-  return requestJson(`/admin/phishing/cenarios/${encodeURIComponent(id)}`, {
-    method: "PATCH",
-    body: JSON.stringify(dados),
-  });
-}
-export function alterarStatusCenario(
-  id: string,
-  status: StatusPublicacao,
-): Promise<CenarioPhishingAdmin> {
-  return requestJson(
-    `/admin/phishing/cenarios/${encodeURIComponent(id)}/status`,
-    { method: "PATCH", body: JSON.stringify({ status }) },
-  );
+  return requestJson(`/admin/quizzes/${encodeURIComponent(id)}`, { method: 'DELETE' })
 }
 
 export function listarCenariosAdmin(): Promise<CenarioPhishingAdmin[]> {
-  return requestJson("/admin/phishing/cenarios");
+  return requestJson('/admin/phishing/cenarios')
 }
 
-export function criarCenarioAdmin(
-  dados: CenarioPhishingInput,
-): Promise<CenarioPhishingAdmin> {
-  return requestJson("/admin/phishing/cenarios", {
-    method: "POST",
+export function criarCenarioAdmin(dados: CenarioPhishingInput): Promise<CenarioPhishingAdmin> {
+  return requestJson('/admin/phishing/cenarios', {
+    method: 'POST',
     body: JSON.stringify(dados),
-  });
+  })
 }
 
 export function listarSimulacoes(): Promise<SimulacaoAdmin[]> {
-  return requestJson("/admin/simulacoes");
+  return requestJson('/admin/simulacoes')
 }
 
-export function listarCategoriasSimulacao(): Promise<
-  CategoriaSimulacaoAdmin[]
-> {
-  return requestJson("/admin/categorias-simulacao");
+export function listarCategoriasSimulacao(): Promise<CategoriaSimulacaoAdmin[]> {
+  return requestJson('/admin/categorias-simulacao')
 }
 
-export function criarCategoriaSimulacao(
-  dados: CategoriaSimulacaoInput,
-): Promise<CategoriaSimulacaoAdmin> {
-  return requestJson("/admin/categorias-simulacao", {
-    method: "POST",
+export function criarCategoriaSimulacao(dados: CategoriaSimulacaoInput): Promise<CategoriaSimulacaoAdmin> {
+  return requestJson('/admin/categorias-simulacao', {
+    method: 'POST',
     body: JSON.stringify(dados),
-  });
+  })
 }
 
 export function excluirCategoriaSimulacao(id: string): Promise<void> {
-  return requestJson(`/admin/categorias-simulacao/${encodeURIComponent(id)}`, {
-    method: "DELETE",
-  });
+  return requestJson(`/admin/categorias-simulacao/${encodeURIComponent(id)}`, { method: 'DELETE' })
 }
 
 export function criarSimulacao(dados: SimulacaoInput): Promise<SimulacaoAdmin> {
-  return requestJson("/admin/simulacoes", {
-    method: "POST",
+  return requestJson('/admin/simulacoes', {
+    method: 'POST',
     body: JSON.stringify(dados),
-  });
+  })
 }
 
-export function editarSimulacao(
-  id: string,
-  dados: SimulacaoInput,
-): Promise<SimulacaoAdmin> {
+export function editarSimulacao(id: string, dados: SimulacaoInput): Promise<SimulacaoAdmin> {
   return requestJson(`/admin/simulacoes/${encodeURIComponent(id)}`, {
-    method: "PATCH",
+    method: 'PATCH',
     body: JSON.stringify(dados),
-  });
+  })
 }
 
 export function excluirSimulacao(id: string): Promise<void> {
-  return requestJson(`/admin/simulacoes/${encodeURIComponent(id)}`, {
-    method: "DELETE",
-  });
+  return requestJson(`/admin/simulacoes/${encodeURIComponent(id)}`, { method: 'DELETE' })
 }
 
 export function listarProvasAdmin(): Promise<ProvaAdmin[]> {
-  return requestJson("/admin/provas");
+  return requestJson('/admin/provas')
 }
 
 export function criarProvaAdmin(dados: ProvaInput): Promise<ProvaAdmin> {
-  return requestJson("/admin/provas", {
-    method: "POST",
+  return requestJson('/admin/provas', {
+    method: 'POST',
     body: JSON.stringify(dados),
-  });
+  })
 }
 
-export function atualizarProvaAdmin(
-  id: string,
-  dados: ProvaUpdate,
-): Promise<ProvaAdmin> {
+export function atualizarProvaAdmin(id: string, dados: ProvaUpdate): Promise<ProvaAdmin> {
   return requestJson(`/admin/provas/${encodeURIComponent(id)}`, {
-    method: "PATCH",
+    method: 'PATCH',
     body: JSON.stringify(dados),
-  });
+  })
 }
 
 export function adicionarQuestaoProva(
@@ -443,9 +348,9 @@ export function adicionarQuestaoProva(
   dados: QuestaoProvaInput,
 ): Promise<QuestaoProvaAdmin> {
   return requestJson(`/admin/provas/${encodeURIComponent(provaId)}/questoes`, {
-    method: "POST",
+    method: 'POST',
     body: JSON.stringify(dados),
-  });
+  })
 }
 
 export function adicionarAlternativaProva(
@@ -456,24 +361,19 @@ export function adicionarAlternativaProva(
   return requestJson(
     `/admin/provas/${encodeURIComponent(provaId)}/questoes/${encodeURIComponent(questaoId)}/alternativas`,
     {
-      method: "POST",
+      method: 'POST',
       body: JSON.stringify(dados),
     },
-  );
+  )
 }
 
-export function alterarStatusProva(
-  id: string,
-  status: StatusProvaAdmin,
-): Promise<ProvaAdmin> {
+export function alterarStatusProva(id: string, status: StatusProvaAdmin): Promise<ProvaAdmin> {
   return requestJson(`/admin/provas/${encodeURIComponent(id)}/status`, {
-    method: "PATCH",
+    method: 'PATCH',
     body: JSON.stringify({ status }),
-  });
+  })
 }
 
 export function excluirProva(id: string): Promise<void> {
-  return requestJson(`/admin/provas/${encodeURIComponent(id)}`, {
-    method: "DELETE",
-  });
+  return requestJson(`/admin/provas/${encodeURIComponent(id)}`, { method: 'DELETE' })
 }

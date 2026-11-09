@@ -85,7 +85,7 @@ export class AdminProvasController {
       return this.service.arquivarProva(provaId, req.user.id);
     }
 
-    return this.service.alterarStatus(provaId, 'RASCUNHO', req.user.id);
+    return this.service.alterarStatusProva(provaId, 'RASCUNHO', req.user.id);
   }
 }
 
