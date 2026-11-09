@@ -8,6 +8,7 @@ datasource db {
 }
 
 model Usuario {
+<<<<<<< HEAD
   id                       String              @id @default(uuid())
   nome                     String
   email                    String              @unique
@@ -24,6 +25,23 @@ model Usuario {
   tentativasQuiz           TentativaQuiz[]
   tentativasPhishing       TentativaPhishing[]
   consultasSeguranca       ConsultaSeguranca[]
+=======
+  id                       String               @id @default(uuid())
+  nome                     String
+  email                    String               @unique
+  senhaHash                String?
+  googleId                 String?              @unique
+  foto                     String?
+  papel                    String               @default("USUARIO")
+  criadoEm                 DateTime             @default(now())
+  atualizadoEm             DateTime             @default(now()) @updatedAt
+  tokenRecuperacaoHash     String?              @unique
+  tokenRecuperacaoExpiraEm DateTime?
+  progressos               ProgressoAula[]
+  auditorias               LogAuditoria[]
+  resultadosSimulacoes     ResultadoSimulacao[]
+  resultadosProvas         ResultadoProva[]
+>>>>>>> origin/feature/caio-admin
 }
 
 model Trilha {
@@ -34,6 +52,7 @@ model Trilha {
   bloqueada Boolean     @default(false)
   ordem     Int
   aulas     Aula[]
+  provas    Prova[]
 }
 
 enum NivelTrilha {
@@ -54,6 +73,111 @@ model Aula {
   cenariosPhishing CenarioPhishing[]
 
   @@unique([trilhaId, ordem])
+}
+
+enum StatusProva {
+  RASCUNHO
+  PUBLICADO
+  PUBLICADA
+  ARQUIVADO
+}
+
+model Prova {
+  id           String           @id @default(uuid())
+  titulo       String
+  descricao    String
+  trilhaId     String
+  status       StatusProva      @default(RASCUNHO)
+  criadoEm     DateTime         @default(now())
+  atualizadoEm DateTime         @default(now()) @updatedAt
+  trilha       Trilha           @relation(fields: [trilhaId], references: [id], onDelete: Cascade)
+  questoes     QuestaoProva[]
+  resultados   ResultadoProva[]
+}
+
+model QuestaoProva {
+  id           String             @id @default(uuid())
+  enunciado    String
+  ordem        Int                @default(0)
+  tipo         TipoQuestao        @default(MULTIPLA_ESCOLHA)
+  provaId      String
+  prova        Prova              @relation(fields: [provaId], references: [id], onDelete: Cascade)
+  alternativas AlternativaProva[]
+}
+
+enum TipoQuestao {
+  MULTIPLA_ESCOLHA
+  DISSERTATIVA
+}
+
+model AlternativaProva {
+  id        String       @id @default(uuid())
+  texto     String
+  isCorreta Boolean      @default(false) @map("correta")
+  ordem     Int          @default(0)
+  questaoId String
+  questao   QuestaoProva @relation(fields: [questaoId], references: [id], onDelete: Cascade)
+}
+
+model Simulacao {
+  id          String               @id @default(uuid())
+  titulo      String
+  descricao   String
+  criadoEm    DateTime             @default(now())
+  categoriaId String
+  categoria   CategoriaSimulacao   @relation(fields: [categoriaId], references: [id], onDelete: Restrict)
+  questoes    QuestaoSimulacao[]
+  resultados  ResultadoSimulacao[]
+}
+
+model CategoriaSimulacao {
+  id         String      @id @default(uuid())
+  nome       String      @unique
+  descricao  String
+  criadoEm   DateTime    @default(now())
+  simulacoes Simulacao[]
+}
+
+model ResultadoSimulacao {
+  id            String    @id @default(uuid())
+  usuarioId     String
+  simulacaoId   String
+  acertos       Int
+  totalQuestoes Int
+  criadoEm      DateTime  @default(now())
+  usuario       Usuario   @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  simulacao     Simulacao @relation(fields: [simulacaoId], references: [id], onDelete: Cascade)
+
+  @@unique([usuarioId, simulacaoId])
+}
+
+model ResultadoProva {
+  id            String   @id @default(uuid())
+  usuarioId     String
+  provaId       String
+  acertos       Int
+  totalQuestoes Int
+  criadoEm      DateTime @default(now())
+  usuario       Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  prova         Prova    @relation(fields: [provaId], references: [id], onDelete: Cascade)
+
+  @@unique([usuarioId, provaId])
+}
+
+model QuestaoSimulacao {
+  id           String                 @id @default(uuid())
+  enunciado    String
+  simulacaoId  String
+  simulacao    Simulacao              @relation(fields: [simulacaoId], references: [id], onDelete: Cascade)
+  alternativas AlternativaSimulacao[]
+}
+
+model AlternativaSimulacao {
+  id        String           @id @default(uuid())
+  texto     String
+  isCorreta Boolean          @default(false)
+  questaoId String
+  questao   QuestaoSimulacao @relation(fields: [questaoId], references: [id], onDelete: Cascade)
 }
 
 model ProgressoAula {

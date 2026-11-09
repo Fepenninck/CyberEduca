@@ -12,6 +12,12 @@ import { AuthService } from '../src/auth/auth.service';
 import { JwtAuthGuard } from '../src/auth/jwt-auth.guard';
 import { PrismaService } from '../src/prisma.service';
 
+type UsuarioMock = {
+  id: string;
+  email: string;
+  senhaHash: string;
+};
+
 describe('POST /auth/login - integração', () => {
   let app: INestApplication<App>;
 
@@ -19,11 +25,13 @@ describe('POST /auth/login - integração', () => {
     const senhaHash = await bcrypt.hash('Senha123!', 4);
     const prisma = {
       usuario: {
-        findUnique: jest.fn().mockResolvedValue({
-          id: 'usuario-integracao',
-          email: 'aluno@exemplo.com',
-          senhaHash,
-        }),
+        findUnique: jest
+          .fn<(args: { where: { email: string } }) => Promise<UsuarioMock | null>>()
+          .mockResolvedValue({
+            id: 'usuario-integracao',
+            email: 'aluno@exemplo.com',
+            senhaHash,
+          }),
         create: jest.fn(),
       },
     };
@@ -31,7 +39,7 @@ describe('POST /auth/login - integração', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
       imports: [
-        PassportModule.register(),
+        PassportModule.register({}),
         JwtModule.register({ secret: 'segredo-de-teste' }),
       ],
       providers: [

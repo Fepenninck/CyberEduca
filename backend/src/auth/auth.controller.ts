@@ -9,7 +9,6 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { JwtService } from '@nestjs/jwt';
 import type { Request, Response } from 'express';
 import { AuthService } from './auth.service';
@@ -18,6 +17,7 @@ import { LoginDto } from './dto/login.dto';
 import { AcaoAuditoria } from '@prisma/client';
 import { AuditoriaService } from '../auditoria.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import { GoogleAuthGuard } from './google-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -76,14 +76,14 @@ export class AuthController {
 
   // Inicia o fluxo: redireciona o usuario para a tela do Google
   @Get('google')
-  @UseGuards(AuthGuard('google'))
+  @UseGuards(GoogleAuthGuard)
   async google() {
     // o guard cuida do redirecionamento
   }
 
   // O Google retorna aqui depois que o usuario autoriza
   @Get('google/callback')
-  @UseGuards(AuthGuard('google'))
+  @UseGuards(GoogleAuthGuard)
   async googleCallback(@Req() req: any, @Res() res: Response) {
     const payload = { sub: req.user.id, email: req.user.email };
     const token = this.jwtService.sign(payload);

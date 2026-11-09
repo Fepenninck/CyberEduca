@@ -8,26 +8,46 @@ import { AuditoriaService } from '../auditoria.service';
 import { PrismaService } from '../prisma.service';
 import { AuthService } from './auth.service';
 
+type UsuarioMock = {
+  id: string;
+  email?: string;
+  senhaHash?: string | null;
+};
+
+type FindUniqueArgs = { where: { email: string } };
+
 describe('AuthService', () => {
   let service: AuthService;
   let prisma: {
     usuario: {
-      findUnique: jest.Mock;
-      create: jest.Mock;
+      findUnique: jest.Mock<(args: FindUniqueArgs) => Promise<UsuarioMock | null>>;
+      create: jest.Mock<
+        (args: { data: { nome: string; email: string; senhaHash: string } }) => Promise<UsuarioMock>
+      >;
     };
   };
-  let jwtService: { sign: jest.Mock };
-  let auditoria: { registrar: jest.Mock };
+  let jwtService: {
+    sign: jest.Mock<(payload: { sub: string; email: string }) => string>;
+  };
+  let auditoria: { registrar: jest.Mock<(dados: unknown) => Promise<void>> };
 
   beforeEach(async () => {
     prisma = {
       usuario: {
-        findUnique: jest.fn(),
-        create: jest.fn(),
+        findUnique: jest.fn<(args: FindUniqueArgs) => Promise<UsuarioMock | null>>(),
+        create: jest.fn<
+          (args: { data: { nome: string; email: string; senhaHash: string } }) => Promise<UsuarioMock>
+        >(),
       },
     };
-    jwtService = { sign: jest.fn().mockReturnValue('jwt-de-teste') };
-    auditoria = { registrar: jest.fn().mockResolvedValue(undefined) };
+    jwtService = {
+      sign: jest
+        .fn<(payload: { sub: string; email: string }) => string>()
+        .mockReturnValue('jwt-de-teste'),
+    };
+    auditoria = {
+      registrar: jest.fn<(dados: unknown) => Promise<void>>().mockResolvedValue(undefined),
+    };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
