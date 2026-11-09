@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-import Link from "next/link";
-import { ActivityShell } from "@/components/activities/activity-shell";
-export default function AvaliacoesPage() {
-  return <ActivityShell section="avaliacoes" title="Avaliações" description="As provas serão disponibilizadas pelo módulo de avaliações.">
-    <p>Enquanto isso, pratique com os <Link href="/quizzes">quizzes educativos</Link>. Suas tentativas são registradas na sua conta.</p>
-  </ActivityShell>;
-=======
 'use client'
 
 import { ArrowRight, ClipboardCheck } from 'lucide-react'
@@ -48,6 +40,7 @@ export default function AvaliacoesPage() {
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400 sm:text-base">Escolha uma prova publicada e responda às questões no seu ritmo.</p>
         </div>
 
+        <p className="mb-6 text-slate-400">Pratique tamb?m com os <Link href="/quizzes" className="underline">quizzes educativos</Link>.</p>
         {erro && <p role="alert" className="mb-6 rounded-xl border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-sm text-rose-200">{erro}</p>}
 
         {carregando ? (
@@ -85,5 +78,4 @@ export default function AvaliacoesPage() {
       </section>
     </main>
   )
->>>>>>> origin/feature/caio-admin
 }

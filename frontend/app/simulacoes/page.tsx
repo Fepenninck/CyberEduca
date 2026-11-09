@@ -1,5 +1,7 @@
-<<<<<<< HEAD
 "use client";
+import { ArrowRight, FolderOpen, MonitorPlay } from 'lucide-react'
+import { useEffect } from 'react'
+import { listarCategoriasSimulacao, type CategoriaSimulacaoDisponivel } from '@/lib/simulacoes-api'
 import Link from "next/link";
 import { useCallback, useState } from "react";
 import { ArrowUpRight, Mail, MessageSquare, Globe, Users } from "lucide-react";
@@ -41,6 +43,7 @@ export default function SimulacoesPage() {
       title="Um olhar atento faz a diferença."
       description="E-mail, SMS, sites e redes sociais: pratique como reconhecer tentativas de phishing em um ambiente de aprendizagem."
     >
+      <CategoriasSimulacao />
       <div className="activity-section-label">
         <h2>Cenários publicados na sua conta</h2>
       </div>
@@ -106,16 +109,12 @@ export default function SimulacoesPage() {
       )}
     </ActivityShell>
   );
-=======
-'use client'
+}
 
-import { ArrowRight, FolderOpen, MonitorPlay } from 'lucide-react'
-import Link from 'next/link'
-import { useEffect, useState } from 'react'
-import { DashboardNavigation } from '@/components/dashboard-navigation'
-import { listarCategoriasSimulacao, type CategoriaSimulacaoDisponivel } from '@/lib/simulacoes-api'
 
-export default function SimulacoesPage() {
+
+
+function CategoriasSimulacao() {
   const [categorias, setCategorias] = useState<CategoriaSimulacaoDisponivel[]>([])
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState<string | null>(null)
@@ -130,8 +129,8 @@ export default function SimulacoesPage() {
   }, [])
 
   return (
-    <main className="app-shell dashboard-page min-h-screen">
-      <DashboardNavigation active="simulacoes" />
+    <div>
+      
       <section className="mx-auto max-w-6xl px-5 py-8 sm:px-8 lg:py-12">
         <header className="mb-8">
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#b2ff00]">Pratique no seu ritmo</p>
@@ -161,7 +160,6 @@ export default function SimulacoesPage() {
           </div>
         )}
       </section>
-    </main>
+    </div>
   )
->>>>>>> origin/feature/caio-admin
 }

@@ -8,7 +8,6 @@ datasource db {
 }
 
 model Usuario {
-<<<<<<< HEAD
   id                       String              @id @default(uuid())
   nome                     String
   email                    String              @unique
@@ -25,23 +24,8 @@ model Usuario {
   tentativasQuiz           TentativaQuiz[]
   tentativasPhishing       TentativaPhishing[]
   consultasSeguranca       ConsultaSeguranca[]
-=======
-  id                       String               @id @default(uuid())
-  nome                     String
-  email                    String               @unique
-  senhaHash                String?
-  googleId                 String?              @unique
-  foto                     String?
-  papel                    String               @default("USUARIO")
-  criadoEm                 DateTime             @default(now())
-  atualizadoEm             DateTime             @default(now()) @updatedAt
-  tokenRecuperacaoHash     String?              @unique
-  tokenRecuperacaoExpiraEm DateTime?
-  progressos               ProgressoAula[]
-  auditorias               LogAuditoria[]
-  resultadosSimulacoes     ResultadoSimulacao[]
-  resultadosProvas         ResultadoProva[]
->>>>>>> origin/feature/caio-admin
+  resultadosSimulacoes ResultadoSimulacao[]
+  resultadosProvas ResultadoProva[]
 }
 
 model Trilha {
