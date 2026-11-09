@@ -1,3 +1,5 @@
+import { AvaliacoesModule } from './avaliacoes/avaliacoes.module';
+import { DesempenhoModule } from './desempenho/desempenho.module';
 import { Module } from '@nestjs/common';
 import { AprendizagemModule } from './aprendizagem/aprendizagem.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
@@ -12,6 +14,8 @@ import { SimulacoesModule } from './simulacoes/simulacoes.module';
 
 @Module({
   imports: [
+    AvaliacoesModule,
+    DesempenhoModule,
     AuditoriaModule,
     AprendizagemModule,
     UsuariosModule,

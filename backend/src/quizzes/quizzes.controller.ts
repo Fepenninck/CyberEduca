@@ -56,11 +56,7 @@ export class QuizzesController {
     quizId: string,
     @Body() dto: ResponderQuizDto,
   ) {
-    return this.service.responderQuiz(
-      request.user.id,
-      quizId,
-      dto,
-    );
+    return this.service.responderQuiz(request.user.id, quizId, dto);
   }
 }
 
@@ -105,11 +101,7 @@ export class AdminQuizzesController {
     questaoId: string,
     @Body() dto: CriarAlternativaDto,
   ) {
-    return this.service.criarAlternativa(
-      quizId,
-      questaoId,
-      dto,
-    );
+    return this.service.criarAlternativa(quizId, questaoId, dto);
   }
 
   @Patch(':quizId/status')
@@ -122,6 +114,7 @@ export class AdminQuizzesController {
       return this.service.publicarQuiz(quizId);
     }
 
+    if (dto.status === 'RASCUNHO') return this.service.retornarRascunho(quizId);
     return this.service.arquivarQuiz(quizId);
   }
 }

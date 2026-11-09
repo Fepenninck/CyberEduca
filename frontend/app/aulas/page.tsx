@@ -7,8 +7,8 @@ import { BookOpen, LockKeyhole } from "lucide-react";
 import { DashboardNavigation } from "@/components/dashboard-navigation";
 import { apiFetch, type TrackSummary } from "@/lib/api";
 import { CourseCarousel } from "@/components/course-carousel";
-import { unlockedLearningCourses } from '@/lib/course-access';
-import { courseButtonLabel } from '@/lib/course-status';
+import { unlockedLearningCourses } from "@/lib/course-access";
+import { courseButtonLabel } from "@/lib/course-status";
 
 const levels = [
   {
@@ -44,11 +44,21 @@ export default function AulasPage() {
     const controller = new AbortController();
     apiFetch("/trilhas", { signal: controller.signal })
       .then(async (response) => {
-        if (!response.ok) throw new Error("Entre na sua conta para carregar as aulas.");
+        if (!response.ok)
+          throw new Error("Entre na sua conta para carregar as aulas.");
         setTracks(await response.json());
       })
-      .catch((cause) => { if (!controller.signal.aborted) setError(cause instanceof Error ? cause.message : "Não foi possível carregar as aulas."); })
-      .finally(() => { if (!controller.signal.aborted) setLoading(false); });
+      .catch((cause) => {
+        if (!controller.signal.aborted)
+          setError(
+            cause instanceof Error
+              ? cause.message
+              : "Não foi possível carregar as aulas.",
+          );
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
     return () => controller.abort();
   }, []);
 
@@ -97,13 +107,26 @@ export default function AulasPage() {
                         </span>
                       ) : (
                         <Link href={`/aulas/modulo/${track.id}`}>
-                          {courseButtonLabel(track.percentual, track.percentual > 0)}
+                          {courseButtonLabel(
+                            track.percentual,
+                            track.percentual > 0,
+                          )}
                         </Link>
                       )}
                     </div>
                   </article>
                 ))}
-            {!loading && !error && !tracks.some(track => track.nivel === level.key) && <article className="learning-path-card learning-path-soon"><div className="learning-path-body"><span>EM BREVE</span><h2>Nova trilha</h2><p>Novos conte?dos ser?o disponibilizados em breve.</p></div></article>}
+              {!loading &&
+                !error &&
+                !tracks.some((track) => track.nivel === level.key) && (
+                  <article className="learning-path-card learning-path-soon">
+                    <div className="learning-path-body">
+                      <span>EM BREVE</span>
+                      <h2>Nova trilha</h2>
+                      <p>Novos conteúdos serão disponibilizados em breve.</p>
+                    </div>
+                  </article>
+                )}
             </CourseCarousel>
           </section>
         ))}

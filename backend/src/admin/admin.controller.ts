@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { AprendizagemService } from '../aprendizagem/aprendizagem.service';
 import { ProvasService } from '../provas/provas.service';
@@ -27,6 +28,7 @@ import { CriarSimulacaoDto } from './dto/criar-simulacao.dto';
 import { AtualizarSimulacaoDto } from './dto/atualizar-simulacao.dto';
 import { CriarCategoriaSimulacaoDto } from './dto/criar-categoria-simulacao.dto';
 import { SimulacoesService } from '../simulacoes/simulacoes.service';
+import { DesempenhoService } from '../desempenho/desempenho.service';
 
 @Controller('admin')
 @UseGuards(JwtAuthGuard, AdminGuard)
@@ -38,11 +40,22 @@ export class AdminController {
     private readonly aprendizagemService: AprendizagemService,
     private readonly provasService: ProvasService,
     private readonly simulacoesService: SimulacoesService,
+    private readonly desempenhoService: DesempenhoService,
   ) {}
 
   @Get('dashboard')
   buscarResumoDashboard() {
     return this.dashboardService.buscarResumoDashboard();
+  }
+
+  @Get('relatorios')
+  async relatorios() {
+    const usuarios = await this.usuariosService.listarUsuarios();
+    return Promise.all(
+      usuarios.map((usuario) =>
+        this.desempenhoService.buscarDesempenhoUsuario(usuario.id),
+      ),
+    );
   }
 
   @Get('resultados/provas')
@@ -136,21 +149,33 @@ export class AdminController {
   }
 
   @Post('provas')
-  criarProva(@Body() dados: CriarProvaDto) {
-    return this.provasService.criar(dados);
+  criarProva(
+    @Body() dados: CriarProvaDto,
+    @Req() req: { user: { id: string } },
+  ) {
+    return this.provasService.criarProvaIntegrada(dados, req.user.id);
   }
 
   @Patch('provas/:id')
-  atualizarProva(@Param('id') id: string, @Body() dados: AtualizarProvaDto) {
-    return this.provasService.atualizar(id, dados);
+  atualizarProva(
+    @Param('id') id: string,
+    @Body() dados: AtualizarProvaDto,
+    @Req() req: { user: { id: string } },
+  ) {
+    return this.provasService.atualizarProvaIntegrada(id, dados, req.user.id);
   }
 
   @Patch('provas/:id/status')
   alterarStatusProva(
     @Param('id') id: string,
     @Body() dados: AlterarStatusProvaDto,
+    @Req() req: { user: { id: string } },
   ) {
-    return this.provasService.alterarStatus(id, dados.status);
+    return this.provasService.definirStatusIntegrado(
+      id,
+      dados.status,
+      req.user.id,
+    );
   }
 
   @Delete('provas/:id')
@@ -162,8 +187,13 @@ export class AdminController {
   adicionarQuestao(
     @Param('provaId') provaId: string,
     @Body() dados: CriarQuestaoProvaDto,
+    @Req() req: { user: { id: string } },
   ) {
-    return this.provasService.adicionarQuestao(provaId, dados);
+    return this.provasService.criarQuestaoIntegrada(
+      provaId,
+      dados,
+      req.user.id,
+    );
   }
 
   @Post('provas/:provaId/questoes/:questaoId/alternativas')
@@ -171,8 +201,14 @@ export class AdminController {
     @Param('provaId') provaId: string,
     @Param('questaoId') questaoId: string,
     @Body() dados: CriarAlternativaProvaDto,
+    @Req() req: { user: { id: string } },
   ) {
-    return this.provasService.adicionarAlternativa(provaId, questaoId, dados);
+    return this.provasService.criarAlternativaIntegrada(
+      provaId,
+      questaoId,
+      dados,
+      req.user.id,
+    );
   }
 
   @Get('simulacoes')

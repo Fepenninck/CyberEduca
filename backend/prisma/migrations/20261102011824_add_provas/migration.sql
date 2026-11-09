@@ -1,8 +1,13 @@
 -- CreateEnum
-CREATE TYPE "StatusProva" AS ENUM ('RASCUNHO', 'PUBLICADO', 'ARQUIVADO');
+DO $$ BEGIN
+  CREATE TYPE "StatusProva" AS ENUM ('RASCUNHO', 'PUBLICADO', 'ARQUIVADO');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+ALTER TYPE "StatusProva" ADD VALUE IF NOT EXISTS 'PUBLICADO';
+ALTER TYPE "StatusProva" ADD VALUE IF NOT EXISTS 'ARQUIVADO';
 
 -- CreateTable
-CREATE TABLE "Prova" (
+CREATE TABLE IF NOT EXISTS "Prova" (
     "id" TEXT NOT NULL,
     "titulo" TEXT NOT NULL,
     "descricao" TEXT NOT NULL,
@@ -15,7 +20,7 @@ CREATE TABLE "Prova" (
 );
 
 -- CreateTable
-CREATE TABLE "QuestaoProva" (
+CREATE TABLE IF NOT EXISTS "QuestaoProva" (
     "id" TEXT NOT NULL,
     "enunciado" TEXT NOT NULL,
     "provaId" TEXT NOT NULL,
@@ -24,7 +29,7 @@ CREATE TABLE "QuestaoProva" (
 );
 
 -- CreateTable
-CREATE TABLE "AlternativaProva" (
+CREATE TABLE IF NOT EXISTS "AlternativaProva" (
     "id" TEXT NOT NULL,
     "texto" TEXT NOT NULL,
     "isCorreta" BOOLEAN NOT NULL DEFAULT false,
@@ -34,10 +39,19 @@ CREATE TABLE "AlternativaProva" (
 );
 
 -- AddForeignKey
-ALTER TABLE "Prova" ADD CONSTRAINT "Prova_trilhaId_fkey" FOREIGN KEY ("trilhaId") REFERENCES "Trilha"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$ BEGIN
+  ALTER TABLE "Prova" ADD CONSTRAINT "Prova_trilhaId_fkey" FOREIGN KEY ("trilhaId") REFERENCES "Trilha"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- AddForeignKey
-ALTER TABLE "QuestaoProva" ADD CONSTRAINT "QuestaoProva_provaId_fkey" FOREIGN KEY ("provaId") REFERENCES "Prova"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$ BEGIN
+  ALTER TABLE "QuestaoProva" ADD CONSTRAINT "QuestaoProva_provaId_fkey" FOREIGN KEY ("provaId") REFERENCES "Prova"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- AddForeignKey
-ALTER TABLE "AlternativaProva" ADD CONSTRAINT "AlternativaProva_questaoId_fkey" FOREIGN KEY ("questaoId") REFERENCES "QuestaoProva"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+DO $$ BEGIN
+  ALTER TABLE "AlternativaProva" ADD CONSTRAINT "AlternativaProva_questaoId_fkey" FOREIGN KEY ("questaoId") REFERENCES "QuestaoProva"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
