@@ -612,6 +612,10 @@ export class ProvasService {
     usuarioId?: string,
   ) {
     if (usuarioId) {
+      const tentativa = await this.prisma.tentativaProva.findFirst({
+        where: { usuarioId, provaId, concluidoEm: { not: null } }, select: { id: true },
+      });
+      if (tentativa) throw new ConflictException('Você já concluiu esta avaliação.');
       const concluida = await this.prisma.resultadoProva.findUnique({
         where: { usuarioId_provaId: { usuarioId, provaId } },
         select: { id: true },
@@ -680,10 +684,14 @@ export class ProvasService {
       where: { usuarioId_provaId: { usuarioId, provaId } },
       select: { acertos: true, totalQuestoes: true, criadoEm: true },
     });
-    return {
-      concluida: Boolean(resultado),
-      resultado: resultado ? { ...resultado, titulo: prova.titulo } : null,
-    };
+    const tentativa = !resultado ? await this.prisma.tentativaProva.findFirst({
+      where: { usuarioId, provaId, concluidoEm: { not: null } },
+      orderBy: { concluidoEm: 'desc' },
+    }) : null;
+    const salvo = resultado ?? (tentativa ? {
+      acertos: tentativa.totalAcertos, totalQuestoes: tentativa.totalQuestoes, criadoEm: tentativa.concluidoEm,
+    } : null);
+    return { concluida: Boolean(salvo), resultado: salvo ? { ...salvo, titulo: prova.titulo } : null };
   }
 
   async finalizarParaAluno(
@@ -691,6 +699,17 @@ export class ProvasService {
     usuarioId: string,
     dados: FinalizarProvaDto,
   ) {
+    const tentativa = await this.prisma.tentativaProva.findFirst({
+      where: { usuarioId, provaId, concluidoEm: { not: null } }, orderBy: { concluidoEm: 'desc' },
+    });
+    if (tentativa) {
+      const prova = await this.prisma.prova.findUnique({ where: { id: provaId }, select: { titulo: true } });
+      if (!prova) throw new NotFoundException('Prova não encontrada.');
+      return { acertos: tentativa.totalAcertos, totalQuestoes: tentativa.totalQuestoes,
+        criadoEm: tentativa.concluidoEm, titulo: prova.titulo,
+        percentual: tentativa.totalQuestoes ? Math.round(tentativa.totalAcertos / tentativa.totalQuestoes * 100) : 0,
+        resultado: [], jaConcluida: true };
+    }
     const existente = await this.prisma.resultadoProva.findUnique({
       where: { usuarioId_provaId: { usuarioId, provaId } },
       select: { acertos: true, totalQuestoes: true, criadoEm: true },

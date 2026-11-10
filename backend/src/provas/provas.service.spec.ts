@@ -3,6 +3,8 @@ import { BadRequestException } from '@nestjs/common';
 import { StatusProva, TipoQuestao } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
 import { ProvasService } from './provas.service';
+import { AuditoriaService } from '../auditoria.service';
+import { AvaliacoesService } from '../avaliacoes/avaliacoes.service';
 
 describe('ProvasService', () => {
   const prismaMock = {
@@ -15,7 +17,11 @@ describe('ProvasService', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-    service = new ProvasService(prismaMock as unknown as PrismaService);
+    service = new ProvasService(
+      prismaMock as unknown as PrismaService,
+      {} as AuditoriaService,
+      {} as AvaliacoesService,
+    );
   });
 
   it('lista provas administrativas com questões e trilha', async () => {

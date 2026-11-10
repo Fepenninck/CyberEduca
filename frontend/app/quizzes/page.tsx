@@ -23,7 +23,7 @@ export default function QuizzesPage() {
     <ActivityShell
       section="quizzes"
       title="Conhecimento que vira prática."
-      description="Revise o que aprendeu nas aulas. Responda no seu ritmo e entenda cada escolha com um feedback explicado."
+      description="Revise o conteúdo de cada aula com atividades curtas e feedback explicado. Sua conclusão fica salva. As avaliações finais de cada nível estão na área Avaliações."
     >
       <div className="activity-section-label">
         <h2>Quizzes publicados na sua conta</h2>

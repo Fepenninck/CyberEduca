@@ -15,8 +15,9 @@ export function QuizCard({ quiz }: { quiz: QuizResumo }) {
         {quiz._count.questoes === 1 ? "questão" : "questões"}
       </div>
       <span className="activity-lesson">{quiz.aula.titulo}</span>
+      {!!quiz.tentativas?.length && <span className="activity-kicker">Concluído · {quiz.tentativas[0].totalAcertos} de {quiz.tentativas[0].totalQuestoes} acertos</span>}
       <Link className="activity-card-link" href={`/quizzes/${quiz.id}`}>
-        Responder quiz <ArrowUpRight size={18} />
+        {quiz.tentativas?.length ? 'Ver resultado' : 'Responder quiz'} <ArrowUpRight size={18} />
         <span className="sr-only">: {quiz.titulo}</span>
       </Link>
     </article>

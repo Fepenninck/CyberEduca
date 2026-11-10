@@ -93,7 +93,7 @@ export class SimulacoesService {
     });
   }
 
-  async buscarCategoriaParaAluno(id: string) {
+  async buscarCategoriaParaAluno(id: string, usuarioId?: string) {
     const categoria = await this.prisma.categoriaSimulacao.findUnique({
       where: { id },
       select: {
@@ -107,7 +107,12 @@ export class SimulacoesService {
       },
     });
     if (!categoria) throw new NotFoundException('Categoria de simulação não encontrada.');
-    return categoria;
+    const resultados = usuarioId ? await this.prisma.resultadoSimulacao.findMany({
+      where: { usuarioId, simulacaoId: { in: categoria.simulacoes.map((simulacao) => simulacao.id) } },
+      select: { simulacaoId: true },
+    }) : [];
+    const concluidas = new Set(resultados.map((resultado) => resultado.simulacaoId));
+    return { ...categoria, simulacoes: categoria.simulacoes.map((simulacao) => ({ ...simulacao, concluida: concluidas.has(simulacao.id) })) };
   }
 
   async buscarParaAluno(id: string, usuarioId?: string) {

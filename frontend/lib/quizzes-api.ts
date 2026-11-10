@@ -5,6 +5,7 @@ import {
 } from "./activities-api";
 
 export type QuizResumo = {
+  tentativas?: Array<{ id: string; totalAcertos: number; totalQuestoes: number }>;
   id: string;
   titulo: string;
   descricao: string;
@@ -19,6 +20,7 @@ export type QuestaoQuiz = {
   alternativas: { id: string; texto: string; ordem: number }[];
 };
 export type QuizDetalhe = Omit<QuizResumo, "_count"> & {
+  resultado?: ResultadoQuiz | null;
   questoes: QuestaoQuiz[];
 };
 export type RespostaQuiz = { questaoId: string; alternativaId: string };

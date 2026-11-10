@@ -4,11 +4,9 @@ import type { QuizDetalhe, ResultadoQuiz } from "@/lib/quizzes-api";
 export function QuizResult({
   quiz,
   resultado,
-  restart,
 }: {
   quiz: QuizDetalhe;
   resultado: ResultadoQuiz;
-  restart: () => void;
 }) {
   return (
     <section className="activity-panel" aria-labelledby="quiz-result-title">
@@ -67,9 +65,6 @@ export function QuizResult({
         })}
       </div>
       <div className="activity-actions">
-        <button className="dashboard-button-primary" onClick={restart}>
-          Praticar novamente
-        </button>
         <Link
           className="dashboard-button-secondary"
           href="/quizzes"

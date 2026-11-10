@@ -12,6 +12,7 @@ export const nomesTipos: Record<TipoCenario, string> = {
   REDE_SOCIAL: "Rede social",
 };
 export type CenarioResumo = {
+  tentativas?: Array<{ id: string; acertou: boolean }>;
   id: string;
   titulo: string;
   descricao: string;
@@ -19,8 +20,9 @@ export type CenarioResumo = {
   aulaId: string;
   aula: AulaAtividade;
 };
-export type CenarioDetalhe = CenarioResumo & { conteudoMensagem: string };
+export type CenarioDetalhe = CenarioResumo & { conteudoMensagem: string; resultado?: ResultadoPhishing | null };
 export type ResultadoPhishing = {
+  respostaEhPhishing?: boolean;
   tentativaId: string;
   cenarioId: string;
   acertou: boolean;

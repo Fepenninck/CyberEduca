@@ -35,18 +35,20 @@ export class QuizzesController {
 
   @Get()
   listar(
+    @Req() request: RequestAutenticada,
     @Query('aulaId', new ParseUUIDPipe({ optional: true }))
     aulaId?: string,
   ) {
-    return this.service.listarQuizzes(aulaId);
+    return this.service.listarQuizzes(aulaId, request.user.id);
   }
 
   @Get(':quizId')
   buscar(
+    @Req() request: RequestAutenticada,
     @Param('quizId', new ParseUUIDPipe())
     quizId: string,
   ) {
-    return this.service.buscarQuiz(quizId);
+    return this.service.buscarQuiz(quizId, request.user.id);
   }
 
   @Post(':quizId/tentativas')

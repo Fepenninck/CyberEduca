@@ -31,12 +31,14 @@ export type ProvaDetalhe = {
 }
 
 export type ResultadoTentativa = {
+  provaTitulo?: string
   tentativaId: string
   provaId: string
   nota: number
   totalQuestoes: number
   totalAcertos: number
   concluido: boolean
+  feedback?: Array<{ questaoId: string; enunciado: string; explicacao: string; correta: boolean; respostaCorreta: string }>
 }
 
 export type TentativaHistorico = ResultadoTentativa & {
@@ -79,6 +81,12 @@ export async function enviarTentativa(
 export async function listarMinhasTentativas(): Promise<TentativaHistorico[]> {
   const response = await apiFetch('/avaliacoes/tentativas')
   if (!response.ok) throw new Error(await lerErro(response, 'Não foi possível carregar seu histórico.'))
+  return response.json()
+}
+
+export async function buscarResultadoTentativa(tentativaId: string): Promise<ResultadoTentativa> {
+  const response = await apiFetch(`/avaliacoes/tentativas/${encodeURIComponent(tentativaId)}`)
+  if (!response.ok) throw new Error(await lerErro(response, 'Não foi possível carregar seu resultado.'))
   return response.json()
 }
 

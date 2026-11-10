@@ -13,7 +13,7 @@ export type CategoriaSimulacaoDisponivel = {
   nome: string
   descricao: string
   criadoEm?: string
-  simulacoes: Array<Pick<SimulacaoDisponivel, 'id' | 'titulo' | 'descricao' | 'criadoEm'>>
+  simulacoes: Array<Pick<SimulacaoDisponivel, 'id' | 'titulo' | 'descricao' | 'criadoEm'> & { concluida?: boolean }>
 }
 
 export type QuestaoTreino = {

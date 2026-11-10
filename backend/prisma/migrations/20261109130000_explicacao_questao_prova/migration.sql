@@ -1,0 +1,1 @@
+ALTER TABLE "QuestaoProva" ADD COLUMN "explicacao" TEXT NOT NULL DEFAULT '';

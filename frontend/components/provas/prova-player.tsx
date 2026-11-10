@@ -50,16 +50,13 @@ export function ProvaPlayer({ prova }: { prova: ProvaDetalhe }) {
   }
 
   return (
-    <div className="prova-player">
-      <header>
-        <h1>{prova.titulo}</h1>
-        {prova.descricao && <p>{prova.descricao}</p>}
-      </header>
+    <div className="activity-panel">
 
-      <div className="prova-progresso">
+      <div className="quiz-progress">
         <span>{prova.trilha.titulo}</span>
         <span>{totalRespondidas} de {prova.questoes.length} respondidas</span>
       </div>
+      <progress className="activity-progress" value={totalRespondidas} max={prova.questoes.length} aria-label="Questões respondidas" />
 
       {prova.questoes.map((questao, indice) => (
         <ProvaQuestion
@@ -76,9 +73,9 @@ export function ProvaPlayer({ prova }: { prova: ProvaDetalhe }) {
       <div className="prova-acoes">
         <button
           type="button"
-          className="prova-submit"
+          className="dashboard-button-primary"
           onClick={finalizar}
-          disabled={enviando}
+          disabled={enviando || !todasRespondidas}
         >
           {enviando ? 'Enviando...' : 'Finalizar avaliação'}
         </button>

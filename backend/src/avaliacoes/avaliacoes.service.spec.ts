@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
-import { NotFoundException } from '@nestjs/common';
+import { ConflictException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { AvaliacoesService } from './avaliacoes.service';
 import { CorrecaoProvaService } from './correcao-prova.service';
@@ -8,6 +8,7 @@ describe('AvaliacoesService', () => {
   const prismaMock = {
     questaoProva: { findMany: jest.fn<(...args: any[]) => Promise<any>>() },
     tentativaProva: {
+      findFirst: jest.fn<(...args: any[]) => Promise<any>>(),
       create: jest.fn<(...args: any[]) => Promise<any>>(),
       findUnique: jest.fn<(...args: any[]) => Promise<any>>(),
       findMany: jest.fn<(...args: any[]) => Promise<any>>(),
@@ -20,6 +21,8 @@ describe('AvaliacoesService', () => {
   beforeEach(() => {
     jest.resetAllMocks();
     prismaMock.$transaction.mockImplementation(async (callback: any) => callback({
+      $executeRaw: async () => 1,
+      resultadoProva: { findUnique: async () => null, upsert: async () => ({}) },
       tentativaProva: prismaMock.tentativaProva,
       respostaProva: prismaMock.respostaProva,
     }));
@@ -70,5 +73,47 @@ describe('AvaliacoesService', () => {
       tentativaId: 't1', provaId: 'p1', provaTitulo: 'Fundamentos', nota: 8,
       totalQuestoes: 5, totalAcertos: 4, concluidoEm: null,
     }]);
+  });
+});
+
+describe('AvaliacoesService', () => {
+  it('corrige no servidor, salva a tentativa e retorna explicação após o envio', async () => {
+    const create = jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue({ id: 'tentativa' });
+    const createMany = jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue({ count: 1 });
+    const prisma = {
+      questaoProva: { findMany: async () => [{
+        id: 'questao', enunciado: 'Como proteger a conta?', explicacao: 'Use uma senha única.',
+        alternativas: [
+          { id: 'certa', texto: 'Senha única', isCorreta: true },
+          { id: 'errada', texto: 'Reutilizar senhas', isCorreta: false },
+        ],
+      }] },
+      $transaction: async (callback: (tx: unknown) => Promise<unknown>) => callback({
+        $executeRaw: async () => 1,
+        resultadoProva: { findUnique: async () => null, upsert: async () => ({}) },
+        tentativaProva: { create, findFirst: async () => null }, respostaProva: { createMany },
+      }),
+    };
+    const service = new AvaliacoesService(prisma as unknown as PrismaService, new CorrecaoProvaService());
+    const resultado = await service.salvarTentativaProva('usuario', 'prova', [{ questaoId: 'questao', alternativaId: 'errada' }]);
+    expect(resultado.nota).toBe(0);
+    expect(create).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ usuarioId: 'usuario', provaId: 'prova', totalAcertos: 0 }) }));
+    expect(createMany).toHaveBeenCalled();
+    expect(resultado.feedback).toEqual([{ questaoId: 'questao', enunciado: 'Como proteger a conta?', explicacao: 'Use uma senha única.', correta: false, respostaCorreta: 'Senha única' }]);
+  });
+
+  it('bloqueia novo envio quando a conta já concluiu a prova', async () => {
+    const create = jest.fn();
+    const prisma = {
+      questaoProva: { findMany: async () => [{ id: 'q', enunciado: 'Pergunta', explicacao: '', alternativas: [{ id: 'a', texto: 'A', isCorreta: true }] }] },
+      $transaction: async (callback: (tx: unknown) => Promise<unknown>) => callback({
+        $executeRaw: async () => 1,
+        resultadoProva: { findUnique: async () => null },
+        tentativaProva: { findFirst: async () => ({ id: 'salva' }), create },
+      }),
+    };
+    const service = new AvaliacoesService(prisma as unknown as PrismaService, new CorrecaoProvaService());
+    await expect(service.salvarTentativaProva('usuario', 'prova', [{ questaoId: 'q', alternativaId: 'a' }])).rejects.toThrow(ConflictException);
+    expect(create).not.toHaveBeenCalled();
   });
 });

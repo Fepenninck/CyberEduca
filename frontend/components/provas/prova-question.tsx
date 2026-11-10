@@ -11,15 +11,15 @@ type Props = {
 
 export function ProvaQuestion({ questao, numero, selecionada, onSelecionar }: Props) {
   return (
-    <fieldset className="prova-questao">
-      <legend className="prova-questao-enunciado">
+    <fieldset className="quiz-question">
+      <legend className="quiz-enunciado">
         {numero}. {questao.enunciado}
       </legend>
-      <div className="prova-alternativas">
+      <div className="quiz-options">
         {questao.alternativas.map((alternativa) => (
           <label
             key={alternativa.id}
-            className={`prova-alternativa${selecionada === alternativa.id ? ' is-selected' : ''}`}
+            className={`quiz-option${selecionada === alternativa.id ? ' is-selected' : ''}`}
           >
             <input
               type="radio"

@@ -33,18 +33,20 @@ export class PhishingController {
 
   @Get()
   listar(
+    @Req() request: RequestAutenticada,
     @Query('aulaId', new ParseUUIDPipe({ optional: true }))
     aulaId?: string,
   ) {
-    return this.service.listarCenarios(aulaId);
+    return this.service.listarCenarios(aulaId, request.user.id);
   }
 
   @Get(':cenarioId')
   buscar(
+    @Req() request: RequestAutenticada,
     @Param('cenarioId', new ParseUUIDPipe())
     cenarioId: string,
   ) {
-    return this.service.buscarCenario(cenarioId);
+    return this.service.buscarCenario(cenarioId, request.user.id);
   }
 
   @Post(':cenarioId/tentativas')

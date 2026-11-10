@@ -88,6 +88,7 @@ model Prova {
 model QuestaoProva {
   id           String             @id @default(uuid())
   enunciado    String
+  explicacao   String             @default("")
   ordem        Int                @default(0)
   tipo         TipoQuestao        @default(MULTIPLA_ESCOLHA)
   provaId      String

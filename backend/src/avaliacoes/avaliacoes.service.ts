@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import {
   CorrecaoProvaService,
@@ -23,7 +23,9 @@ export class AvaliacoesService {
       where: { provaId },
       select: {
         id: true,
-        alternativas: { select: { id: true, isCorreta: true } },
+        enunciado: true,
+        explicacao: true,
+        alternativas: { select: { id: true, texto: true, isCorreta: true } },
       },
     });
 
@@ -50,6 +52,18 @@ export class AvaliacoesService {
     const concluidoEm = new Date();
 
     const tentativa = await this.prisma.$transaction(async (tx) => {
+      // Serializa envios da mesma conta/prova, inclusive em abas diferentes.
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${usuarioId}), hashtext(${provaId}))`;
+      const existente = await tx.tentativaProva.findFirst({
+        where: { usuarioId, provaId, concluidoEm: { not: null } },
+        select: { id: true },
+      });
+      const legado = await tx.resultadoProva.findUnique({
+        where: { usuarioId_provaId: { usuarioId, provaId } }, select: { id: true },
+      });
+      if (existente || legado) {
+        throw new ConflictException('Você já concluiu esta avaliação. Consulte seu resultado.');
+      }
       const criada = await tx.tentativaProva.create({
         data: {
           usuarioId,
@@ -70,6 +84,12 @@ export class AvaliacoesService {
         })),
       });
 
+      // Mantém o status consistente também nas rotas antigas e no painel administrativo.
+      await tx.resultadoProva.upsert({
+        where: { usuarioId_provaId: { usuarioId, provaId } }, update: {},
+        create: { usuarioId, provaId, acertos: resultado.totalAcertos, totalQuestoes: resultado.totalQuestoes },
+      });
+
       return criada;
     });
 
@@ -80,6 +100,13 @@ export class AvaliacoesService {
       totalQuestoes: resultado.totalQuestoes,
       totalAcertos: resultado.totalAcertos,
       concluido: true,
+      feedback: questoes.map((questao) => ({
+        questaoId: questao.id,
+        enunciado: questao.enunciado,
+        explicacao: questao.explicacao,
+        correta: resultado.respostas.find((resposta) => resposta.questaoId === questao.id)?.acertou ?? false,
+        respostaCorreta: questao.alternativas.find((alternativa) => alternativa.isCorreta)?.texto ?? '',
+      })),
     };
   }
 
@@ -89,7 +116,13 @@ export class AvaliacoesService {
       include: {
         prova: { select: { id: true, titulo: true } },
         respostas: {
-          select: { questaoId: true, alternativaId: true, acertou: true },
+          select: {
+            questaoId: true, alternativaId: true, acertou: true,
+            questao: { select: {
+              enunciado: true, explicacao: true,
+              alternativas: { where: { isCorreta: true }, select: { texto: true } },
+            } },
+          },
         },
       },
     });
@@ -108,6 +141,13 @@ export class AvaliacoesService {
       concluido: tentativa.concluidoEm !== null,
       concluidoEm: tentativa.concluidoEm,
       respostas: tentativa.respostas,
+      feedback: tentativa.respostas.map((resposta) => ({
+        questaoId: resposta.questaoId,
+        enunciado: resposta.questao.enunciado,
+        explicacao: resposta.questao.explicacao,
+        correta: resposta.acertou,
+        respostaCorreta: resposta.questao.alternativas[0]?.texto ?? '',
+      })),
     };
   }
 

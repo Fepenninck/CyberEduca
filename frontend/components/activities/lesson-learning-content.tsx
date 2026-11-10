@@ -231,7 +231,7 @@ export function LessonLearningContent({
         </div>
       )}
       <h2>Teste sua compreensão</h2>
-      <Link className="lesson-review-button" href={`/quizzes?aulaId=${encodeURIComponent(aulaId)}`}>Responder o quiz desta aula</Link>
+      <Link className="lesson-review-button" href={`/quizzes?aulaId=${encodeURIComponent(aulaId)}`}>Ver quiz e resultado desta aula</Link>
       <h2>Referências e leitura guiada</h2>
       <p>
         Explicações e casos didáticos originais do CyberEduca+. Os materiais

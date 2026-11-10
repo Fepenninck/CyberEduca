@@ -14,8 +14,8 @@ import { PhishingSite } from "./phishing-site";
 import { PhishingSocial } from "./phishing-social";
 import { PhishingFeedback } from "./phishing-feedback";
 export function PhishingSimulator({ cenario }: { cenario: CenarioDetalhe }) {
-  const [escolha, setEscolha] = useState<boolean | null>(null);
-  const [resultado, setResultado] = useState<ResultadoPhishing | null>(null);
+  const [escolha, setEscolha] = useState<boolean | null>(cenario.resultado?.respostaEhPhishing ?? null);
+  const [resultado, setResultado] = useState<ResultadoPhishing | null>(cenario.resultado ?? null);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const lock = useRef(false);
@@ -65,11 +65,6 @@ export function PhishingSimulator({ cenario }: { cenario: CenarioDetalhe }) {
           <PhishingFeedback
             resultado={resultado}
             escolha={escolha}
-            restart={() => {
-              setResultado(null);
-              setEscolha(null);
-              setError(null);
-            }}
           />
         ) : (
           <form className="activity-panel" onSubmit={submit}>

@@ -4,11 +4,9 @@ import type { ResultadoPhishing } from "@/lib/phishing-api";
 export function PhishingFeedback({
   resultado,
   escolha,
-  restart,
 }: {
   resultado: ResultadoPhishing;
   escolha: boolean;
-  restart: () => void;
 }) {
   return (
     <section
@@ -36,9 +34,6 @@ export function PhishingFeedback({
         <Link className="dashboard-button-primary" href="/simulacoes">
           Explorar outras simulações
         </Link>
-        <button className="dashboard-button-secondary" onClick={restart}>
-          Praticar novamente
-        </button>
       </div>
       <p className="activity-footnote">
         Tentativa registrada. O progresso da aula não foi alterado.

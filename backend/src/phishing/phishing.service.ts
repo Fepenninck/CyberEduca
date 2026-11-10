@@ -193,7 +193,7 @@ export class PhishingService {
 
   // CONSULTA DO ALUNO
 
-  listarCenarios(aulaId?: string) {
+  listarCenarios(aulaId?: string, usuarioId?: string) {
     return this.prisma.cenarioPhishing.findMany({
       where: {
         status: 'PUBLICADO',
@@ -201,6 +201,7 @@ export class PhishingService {
       },
       orderBy: { criadoEm: 'desc' },
       select: {
+        tentativas: { where: { usuarioId: usuarioId ?? '' }, orderBy: { concluidoEm: 'desc' }, take: 1, select: { id: true, acertou: true } },
         id: true,
         titulo: true,
         descricao: true,
@@ -216,13 +217,14 @@ export class PhishingService {
     });
   }
 
-  async buscarCenario(cenarioId: string) {
+  async buscarCenario(cenarioId: string, usuarioId?: string) {
     const cenario = await this.prisma.cenarioPhishing.findFirst({
       where: {
         id: cenarioId,
         status: 'PUBLICADO',
       },
       select: {
+        tentativas: { where: { usuarioId: usuarioId ?? '' }, orderBy: { concluidoEm: 'desc' }, take: 1, select: { id: true, acertou: true } },
         id: true,
         titulo: true,
         descricao: true,
@@ -242,7 +244,7 @@ export class PhishingService {
       throw new NotFoundException('Cenário não encontrado.');
     }
 
-    return cenario;
+    return { ...cenario, resultado: await this.resultadoDoAluno(cenarioId, usuarioId) };
   }
 
   // CORREÇÃO E REGISTRO DA TENTATIVA
@@ -253,6 +255,8 @@ export class PhishingService {
     dto: ResponderCenarioDto,
   ) {
     return this.executarTransacao(async (tx) => {
+      const concluida = await tx.tentativaPhishing.findFirst({ where: { usuarioId, cenarioId } });
+      if (concluida) throw new ConflictException('Atividade já concluída. Consulte seu resultado.');
       const cenario = await tx.cenarioPhishing.findFirst({
         where: {
           id: cenarioId,
@@ -291,4 +295,14 @@ export class PhishingService {
       };
     });
   }
+  async resultadoDoAluno(cenarioId: string, usuarioId?: string) {
+    if (!usuarioId) return null;
+    const t = await this.prisma.tentativaPhishing.findFirst({
+      where: { usuarioId, cenarioId }, orderBy: { concluidoEm: 'desc' },
+      include: { cenario: { select: { explicacao: true } } },
+    });
+    return t ? { tentativaId: t.id, cenarioId, acertou: t.acertou, respostaEhPhishing: t.respostaEhPhishing,
+      concluido: true, progressoAtualizado: false, explicacao: t.cenario.explicacao } : null;
+  }
+
 }

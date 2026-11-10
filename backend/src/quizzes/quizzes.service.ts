@@ -275,7 +275,7 @@ export class QuizzesService {
 
   // CONSULTA DO ALUNO
 
-  listarQuizzes(aulaId?: string) {
+  listarQuizzes(aulaId?: string, usuarioId?: string) {
     return this.prisma.quiz.findMany({
       where: {
         status: 'PUBLICADO',
@@ -283,6 +283,7 @@ export class QuizzesService {
       },
       orderBy: { criadoEm: 'desc' },
       select: {
+        tentativas: { where: { usuarioId: usuarioId ?? '' }, orderBy: { concluidoEm: 'desc' }, take: 1, select: { id: true, totalAcertos: true, totalQuestoes: true } },
         id: true,
         titulo: true,
         descricao: true,
@@ -297,13 +298,14 @@ export class QuizzesService {
     });
   }
 
-  async buscarQuiz(quizId: string) {
+  async buscarQuiz(quizId: string, usuarioId?: string) {
     const quiz = await this.prisma.quiz.findFirst({
       where: {
         id: quizId,
         status: 'PUBLICADO',
       },
       select: {
+        tentativas: { where: { usuarioId: usuarioId ?? '' }, orderBy: { concluidoEm: 'desc' }, take: 1, select: { id: true, totalAcertos: true, totalQuestoes: true } },
         id: true,
         titulo: true,
         descricao: true,
@@ -334,7 +336,7 @@ export class QuizzesService {
       throw new NotFoundException('Quiz não encontrado.');
     }
 
-    return quiz;
+    return { ...quiz, resultado: await this.resultadoDoAluno(quizId, usuarioId) };
   }
 
   // CORREÇÃO E REGISTRO DA TENTATIVA
@@ -345,6 +347,8 @@ export class QuizzesService {
     dto: ResponderQuizDto,
   ) {
     return this.executarTransacao(async (tx) => {
+      const concluida = await tx.tentativaQuiz.findFirst({ where: { usuarioId, quizId } });
+      if (concluida) throw new ConflictException('Atividade já concluída. Consulte seu resultado.');
       const quiz = await tx.quiz.findFirst({
         where: {
           id: quizId,
@@ -447,4 +451,19 @@ export class QuizzesService {
       };
     });
   }
+  async resultadoDoAluno(quizId: string, usuarioId?: string) {
+    if (!usuarioId) return null;
+    const t = await this.prisma.tentativaQuiz.findFirst({
+      where: { usuarioId, quizId }, orderBy: { concluidoEm: 'desc' },
+      include: { respostas: { include: { questao: { include: { alternativas: true } } } } },
+    });
+    if (!t) return null;
+    return { tentativaId: t.id, quizId, totalQuestoes: t.totalQuestoes, totalAcertos: t.totalAcertos,
+      concluido: true, progressoAtualizado: false,
+      feedback: t.respostas.map(r => ({ questaoId: r.questaoId, alternativaId: r.alternativaId,
+        alternativaCorretaId: r.questao.alternativas.find(a => a.correta)?.id ?? '',
+        acertou: r.acertou, explicacao: r.questao.explicacao })),
+    };
+  }
+
 }

@@ -39,7 +39,8 @@ export default function CategoriaSimulacaoPage() {
               {categoria.simulacoes.map((simulacao) => (
                 <article key={simulacao.id} className="flex flex-col rounded-2xl border border-[#29394f] bg-[#101b2a] p-5 sm:p-6">
                   <div className="flex-1"><span className="inline-flex rounded-full bg-[#b2ff00]/10 px-3 py-1 text-xs font-medium text-[#d5ff86]">Treino sem nota</span><h2 className="mt-4 text-xl font-semibold text-white">{simulacao.titulo}</h2><p className="mt-2 text-sm leading-6 text-slate-400">{simulacao.descricao}</p></div>
-                  <Link href={`/simulacoes/treino/${encodeURIComponent(simulacao.id)}`} className="mt-6 inline-flex items-center justify-center gap-2 rounded-lg bg-[#b2ff00] px-4 py-2.5 text-sm font-semibold text-[#132000] transition hover:bg-[#c7ff4b]">Iniciar treino <ArrowRight size={16} /></Link>
+                  {simulacao.concluida && <p className="mt-4 text-sm text-[#b2ff00]">Treino concluído</p>}
+                  <Link href={`/simulacoes/treino/${encodeURIComponent(simulacao.id)}`} className="mt-6 inline-flex items-center justify-center gap-2 rounded-lg bg-[#b2ff00] px-4 py-2.5 text-sm font-semibold text-[#132000] transition hover:bg-[#c7ff4b]">{simulacao.concluida ? 'Ver resultado' : 'Iniciar treino'} <ArrowRight size={16} /></Link>
                 </article>
               ))}
             </div> : <div className="rounded-2xl border border-dashed border-[#35465c] px-6 py-12 text-center"><MonitorPlay className="mx-auto text-slate-500" size={30} /><p className="mt-3 font-medium text-white">Ainda não há simulações nesta categoria</p><p className="mt-1 text-sm text-slate-400">Volte mais tarde para conferir novos treinos.</p></div>}

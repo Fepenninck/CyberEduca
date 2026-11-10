@@ -10,7 +10,7 @@ import { QuizQuestion } from "./quiz-question";
 import { QuizResult } from "./quiz-result";
 export function QuizPlayer({ quiz }: { quiz: QuizDetalhe }) {
   const [respostas, setRespostas] = useState<Record<string, string>>({});
-  const [resultado, setResultado] = useState<ResultadoQuiz | null>(null);
+  const [resultado, setResultado] = useState<ResultadoQuiz | null>(quiz.resultado ?? null);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const lock = useRef(false);
@@ -50,11 +50,6 @@ export function QuizPlayer({ quiz }: { quiz: QuizDetalhe }) {
       <QuizResult
         quiz={quiz}
         resultado={resultado}
-        restart={() => {
-          setResultado(null);
-          setRespostas({});
-          setError(null);
-        }}
       />
     );
   if (!quiz.questoes.length)

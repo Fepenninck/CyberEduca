@@ -20,8 +20,8 @@ export class SimulacoesController {
   }
 
   @Get('categorias/:id')
-  buscarCategoria(@Param('id') id: string) {
-    return this.simulacoesService.buscarCategoriaParaAluno(id);
+  buscarCategoria(@Param('id') id: string, @Req() request: { user: { id: string } }) {
+    return this.simulacoesService.buscarCategoriaParaAluno(id, request.user.id);
   }
 
   @Get(':id')
