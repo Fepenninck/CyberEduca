@@ -348,6 +348,8 @@ export class AprendizagemService {
     const anteriores = await this.prisma.trilha.findMany({
       where: {
         ordem: { lt: trilha.ordem },
+        // Trilhas sem aulas não podem ser concluídas e não são pré-requisitos.
+        aulas: { some: {} },
       },
       select: { id: true },
     });

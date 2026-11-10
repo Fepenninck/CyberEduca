@@ -41,7 +41,7 @@ export default function AulasPage() {
   const [error, setError] = useState("");
   useEffect(() => {
     const controller = new AbortController();
-    apiFetch("/trilhas", { signal: controller.signal })
+    apiFetch("/trilhas", { signal: controller.signal, cache: 'no-store' })
       .then(async (response) => {
         if (!response.ok) throw new Error("Entre na sua conta para carregar as aulas.");
         setTracks(await response.json());

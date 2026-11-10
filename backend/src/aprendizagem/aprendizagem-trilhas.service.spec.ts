@@ -120,6 +120,28 @@ describe('AprendizagemService - trilhas', () => {
     expect(prismaMock.progressoAula.count).not.toHaveBeenCalled();
   });
 
+  it('libera a próxima trilha quando as anteriores com aulas foram concluídas, sem exigir trilhas vazias', async () => {
+    prismaMock.trilha.findMany.mockResolvedValue([{ id: 'basico-concluido' }]);
+    prismaMock.aula.count.mockResolvedValue(6);
+    prismaMock.progressoAula.count.mockResolvedValue(6);
+
+    const bloqueada = await (service as any).estaBloqueada({ bloqueada: true, ordem: 4 }, usuarioId);
+
+    expect(bloqueada).toBe(false);
+    expect(prismaMock.trilha.findMany).toHaveBeenCalledWith({
+      where: { ordem: { lt: 4 }, aulas: { some: {} } },
+      select: { id: true },
+    });
+  });
+
+  it('mantém o bloqueio quando uma trilha anterior com conteúdo está incompleta', async () => {
+    prismaMock.trilha.findMany.mockResolvedValue([{ id: 'basico-incompleto' }]);
+    prismaMock.aula.count.mockResolvedValue(6);
+    prismaMock.progressoAula.count.mockResolvedValue(5);
+
+    await expect((service as any).estaBloqueada({ bloqueada: true, ordem: 4 }, usuarioId)).resolves.toBe(true);
+  });
+
   // TESTE PARAMETRIZADO
   it.each([
     [0, 0, 0],
