@@ -13,11 +13,17 @@ export function SiteFooter({ className = '' }: { className?: string }) {
             <nav aria-label="Navegação">
               <h2>Navegação</h2>
               <Link href="/">Início</Link>
-              <Link href="/trilhas">Trilhas</Link>
+              <Link href="/#home-intro-panel">Conheça a plataforma</Link>
+              <Link href="/sobre">Sobre nós</Link>
+              <Link href="/login">Área do aluno</Link>
+              <Link href="/cadastro">Comece sua jornada</Link>
             </nav>
-            <nav aria-label="Conteúdos públicos">
+            <nav aria-label="Conteúdos">
               <h2>Conteúdos</h2>
-              <Link href="/dicas">Dicas de segurança</Link>
+              <Link href="/login?next=/aulas">Trilhas e aulas</Link>
+              <Link href="/login?next=/simulacoes">Simulações</Link>
+              <Link href="/login?next=/quizzes">Quizzes</Link>
+              <Link href="/login?next=/avaliacoes">Avaliações</Link>
               <Link href="/#noticias">Notícias</Link>
             </nav>
             <nav aria-label="Privacidade">

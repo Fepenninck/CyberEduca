@@ -50,7 +50,10 @@ export default function LoginPage() {
     }
 
     const usuario = await getCurrentUser()
-    router.push(usuario.papel === 'ADMIN' ? '/admin' : '/dashboard')
+    const requestedPage = new URLSearchParams(window.location.search).get('next')
+    const studentPages = ['/aulas', '/simulacoes', '/quizzes', '/avaliacoes', '/verificador']
+    const destination = requestedPage && studentPages.includes(requestedPage) ? requestedPage : '/dashboard'
+    router.push(usuario.papel === 'ADMIN' ? '/admin' : destination)
   } catch {
     setApiError('Erro de conexão com o servidor.')
   } finally {

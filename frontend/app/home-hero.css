@@ -60,3 +60,7 @@
 @media(max-width:600px){.home-mobile-accordions{align-items:center}.home-mobile-accordions details{margin:0;background:#101927}.home-mobile-accordion-features>div{border:0;background:#0b1321 url('/accordion-card-background.jpg') center/100% 100% no-repeat}}
 .cyber-news{margin-bottom:42px}
 @media(max-width:600px){.cyber-news{margin-bottom:32px}}
+
+/* Keep the home footer closer to the news cards. */
+.home-page > .article-footer { padding-top:56px; }
+@media(max-width:700px) { .home-page > .article-footer { padding-top:42px; } }

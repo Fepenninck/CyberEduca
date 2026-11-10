@@ -10,7 +10,6 @@ import { SiteFooter } from '@/components/site-footer'
 
 const navigation = [
   { label: 'Início', href: '/' },
-  { label: 'Trilhas', href: '/trilhas' },
 ]
 const panels = [
   { title: 'Aprenda a se proteger', heading: 'Conheça as ameaças. Proteja sua vida digital.', description: 'Explore trilhas e aulas sobre segurança digital. Entenda os riscos, conheça boas práticas e desenvolva hábitos para proteger suas informações.', features: [['Reconheça ameaças digitais', 'Aprenda a identificar golpes, fraudes e comportamentos suspeitos.'], ['Proteja suas informações', 'Adote práticas simples para manter contas e dados pessoais seguros.'], ['Navegue com mais segurança', 'Tome decisões mais conscientes em sua rotina digital.']] },
@@ -33,8 +32,8 @@ export default function Page() {
       <div className="reference-header-inner">
         <a href="#top" className="reference-brand" aria-label="CyberEduca+ início"><img className="reference-logo" src="/cybereduca-logo.png" alt="CyberEduca+" /></a>
         <nav className="reference-nav" aria-label="Navegação principal"><a href="#top" className="nav-item">Início</a><button type="button" className={`nav-item platform-menu-toggle ${platformOpen ? 'active' : ''}`} onMouseEnter={() => setPlatformOpen(true)} onFocus={() => setPlatformOpen(true)} aria-expanded={platformOpen}>Plataforma</button>{navigation.slice(1).map((item) => <a key={item.label} href={item.href} className="nav-item">{item.label}</a>)}<Link href="/ajuda" className="nav-item">Ajuda</Link></nav>
-        <div className="reference-actions"><a href="/em-breve" className="nav-item">Sobre</a><a href="/login" className="reference-cta">Acessar</a></div>
-        <details className="reference-mobile-menu"><summary className="reference-mobile-button" aria-label="Abrir menu"><Menu className="mobile-menu-icon" preserveAspectRatio="none" /></summary><nav className="reference-mobile-nav">{navigation.map((item) => <a key={item.label} href={item.href} className="nav-item">{item.label}</a>)}<a href="/trilhas" className="reference-cta">Começar agora</a></nav></details>
+        <div className="reference-actions"><a href="/sobre" className="nav-item">Sobre</a><a href="/login" className="reference-cta">Acessar</a></div>
+        <details className="reference-mobile-menu"><summary className="reference-mobile-button" aria-label="Abrir menu"><Menu className="mobile-menu-icon" preserveAspectRatio="none" /></summary><nav className="reference-mobile-nav">{navigation.map((item) => <a key={item.label} href={item.href} className="nav-item">{item.label}</a>)}<Link href="/sobre" className="nav-item">Sobre</Link><a href="/login" className="reference-cta">Começar agora</a></nav></details>
       </div>
       {platformOpen && <PlatformMegaMenu />}
     </header>
@@ -42,7 +41,7 @@ export default function Page() {
     <section id="top" className="home-intro">
       <div className="home-intro-background" aria-hidden="true"><div className="home-intro-shape" /><div className="home-intro-photo" /><div className="home-intro-photo home-intro-photo-lower" /><div className="home-intro-line home-intro-line-top" /><div className="home-intro-line home-intro-line-bottom" /><div className="home-intro-dots" /></div>
       <div className="home-intro-inner">
-        <div className="home-intro-copy"><h1>Aprenda a se proteger<br className="home-title-break" /> no mundo digital</h1><p>Desenvolva conhecimentos e boas práticas de segurança digital com trilhas e aulas que ajudam você a reconhecer ameaças e proteger suas informações.</p><div className="home-intro-actions"><Link href="/login" className="home-intro-primary">Começar agora</Link><Link href="/dicas" className="home-intro-secondary">Ver dicas</Link></div></div>
+        <div className="home-intro-copy"><h1>Aprenda a se proteger<br className="home-title-break" /> no mundo digital</h1><p>Desenvolva conhecimentos e boas práticas de segurança digital com trilhas e aulas que ajudam você a reconhecer ameaças e proteger suas informações.</p><div className="home-intro-actions"><Link href="/login" className="home-intro-primary">Começar agora</Link><Link href="#noticias" className="home-intro-secondary">Ver notícias</Link></div></div>
         <div className="home-intro-tabs" aria-label="Conheça a aprendizagem">{panels.map((item, index) => <button key={item.title} onPointerUp={(event) => { event.preventDefault(); togglePanel(index) }} aria-pressed={activePanel === index} aria-controls="home-intro-panel">{item.title}</button>)}</div>
         <div className="home-mobile-accordions" aria-label="Conheça a aprendizagem">{panels.map((item, index) => <details key={item.title}><summary>{item.title}</summary><div className="home-mobile-accordion-body"><div className="home-mobile-accordion-content"><h2>{item.heading}</h2><p>{item.description}</p><div className="home-mobile-accordion-features">{item.features.map(([title, description]) => <div key={title}><strong>{title}</strong><span>{description}</span></div>)}</div><img src={index === 0 ? '/aprenda-a-se-proteger.png' : index === 1 ? '/desenvolva-seu-conhecimento.png' : '/acompanhe-sua-evolucao.png'} alt="" /></div></div></details>)}</div>
         <article id="home-intro-panel" className={`home-intro-panel${activePanel !== null ? ' is-open' : ''}`}><div className="home-intro-panel-copy"><h2>{panel.heading}</h2><p>{panel.description}</p><div className="home-intro-features">{panel.features.map(([title, description]) => <div className="home-intro-feature" key={title}><strong>{title}</strong><span>{description}</span></div>)}</div></div><div className="home-intro-art" aria-label="Ilustração da seção">{(activePanel ?? 0) === 0 ? <img className="home-intro-art-image" src="/aprenda-a-se-proteger.png" alt="Pessoa usando um notebook protegida por um escudo digital" /> : (activePanel ?? 0) === 1 ? <img className="home-intro-art-image" src="/desenvolva-seu-conhecimento.png" alt="Pessoa estudando conteúdos de cibersegurança" /> : <img className="home-intro-art-image" src="/acompanhe-sua-evolucao.png" alt="Pessoa acompanhando seu progresso em segurança digital" />}</div></article>
@@ -83,19 +82,21 @@ export default function Page() {
               <Link href="/" className="ce-logo" aria-label="CyberEduca+ início"><img src="/cybereduca-logo.png" alt="CyberEduca+" /></Link>
               <p>Educação acessível para uma vida digital mais segura.</p>
             </div>
-            <nav aria-label="Aprendizagem">
-              <h2>Aprendizagem</h2>
-              <Link href="/trilhas">Todas as trilhas</Link>
-              <Link href="/trilhas">Fundamentos</Link>
-              <Link href="/trilhas">Primeira aula</Link>
-              <Link href="/dashboard">Meu dashboard</Link>
+            <nav aria-label="Navegação">
+              <h2>Navegação</h2>
+              <Link href="/">Início</Link>
+              <Link href="/#home-intro-panel">Conheça a plataforma</Link>
+              <Link href="/sobre">Sobre nós</Link>
+              <Link href="/login">Área do aluno</Link>
+              <Link href="/cadastro">Comece sua jornada</Link>
             </nav>
             <nav aria-label="Conteúdos">
               <h2>Conteúdos</h2>
-              <Link href="/trilhas">Explorar conteúdos</Link>
+              <Link href="/login?next=/aulas">Trilhas e aulas</Link>
+              <Link href="/login?next=/simulacoes">Simulações</Link>
+              <Link href="/login?next=/quizzes">Quizzes</Link>
+              <Link href="/login?next=/avaliacoes">Avaliações</Link>
               <Link href="/#noticias">Notícias</Link>
-              <Link href="/em-breve">Recursos</Link>
-              <Link href="/em-breve">Sobre o CyberEduca+</Link>
             </nav>
             <nav aria-label="Privacidade e segurança">
               <h2>Privacidade</h2>
