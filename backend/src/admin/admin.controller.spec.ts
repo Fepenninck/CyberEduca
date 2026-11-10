@@ -13,7 +13,10 @@ const fn = () => jest.fn<(...args: any[]) => any>().mockReturnValue(resultado);
 describe('AdminController', () => {
   it('encaminha as operações administrativas para o service correspondente', () => {
     const dashboardService = { buscarResumoDashboard: fn() };
-    const adminService = { listarResultadosProvas: fn(), listarResultadosSimulacoes: fn() };
+    const adminService = {
+      listarResultadosProvas: fn(), listarResultadosSimulacoes: fn(),
+      obterEstatisticasDificuldade: fn(),
+    };
     const usuariosService = {
       listarUsuarios: fn(), buscarUsuario: fn(), excluirUsuario: fn(), atualizarUsuario: fn(),
     };
@@ -44,6 +47,8 @@ describe('AdminController', () => {
     expect(adminService.listarResultadosProvas).toHaveBeenCalled();
     expect(controller.listarResultadosSimulacoes()).toBe(resultado);
     expect(adminService.listarResultadosSimulacoes).toHaveBeenCalled();
+    expect(controller.obterEstatisticasDificuldade()).toBe(resultado);
+    expect(adminService.obterEstatisticasDificuldade).toHaveBeenCalled();
 
     expect(controller.listarUsuarios()).toBe(resultado);
     expect(usuariosService.listarUsuarios).toHaveBeenCalled();

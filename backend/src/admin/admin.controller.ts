@@ -55,6 +55,11 @@ export class AdminController {
     return this.adminService.listarResultadosSimulacoes();
   }
 
+  @Get('estatisticas/dificuldades')
+  obterEstatisticasDificuldade() {
+    return this.adminService.obterEstatisticasDificuldade();
+  }
+
   @Get('usuarios')
   listarUsuarios() {
     return this.usuariosService.listarUsuarios();

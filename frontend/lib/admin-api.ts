@@ -157,6 +157,14 @@ export type ResultadoSimulacaoAdmin = {
   simulacao: { id: string; titulo: string }
 }
 
+export type EstatisticaDificuldade = {
+  provaId: string
+  titulo: string
+  mediaAcertos: number
+  mediaNota: number
+  totalResultados: number
+}
+
 async function requestJson<T>(path: string, options?: RequestInit): Promise<T> {
   const headers = new Headers(options?.headers)
   if (options?.body && !headers.has('Content-Type')) {
@@ -190,6 +198,10 @@ export function listarResultadosProvas(): Promise<ResultadoProvaAdmin[]> {
 
 export function listarResultadosSimulacoes(): Promise<ResultadoSimulacaoAdmin[]> {
   return requestJson('/admin/resultados/simulacoes')
+}
+
+export function obterEstatisticasDificuldade(): Promise<EstatisticaDificuldade[]> {
+  return requestJson('/admin/estatisticas/dificuldades')
 }
 
 export function listarUsuarios(): Promise<AdminUsuario[]> {

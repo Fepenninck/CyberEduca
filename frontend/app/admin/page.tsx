@@ -3,6 +3,7 @@
 import { BookOpen, GraduationCap, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { buscarResumoDashboard, type ResumoDashboard } from '@/lib/admin-api'
+import GraficoDificuldades from '@/components/admin/grafico-dificuldades'
 
 const cards = [
   {
@@ -112,6 +113,8 @@ export default function AdminDashboardPage() {
           </article>
         ))}
       </div>
+
+      <GraficoDificuldades />
     </section>
   )
 }

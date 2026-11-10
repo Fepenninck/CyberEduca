@@ -45,4 +45,29 @@ describe('AdminService', () => {
       }),
     );
   });
+
+  it('agrupa médias das avaliações e ordena da menor nota para a maior', async () => {
+    prismaMock.resultadoProva.findMany.mockResolvedValue([
+      { provaId: 'p1', acertos: 1, totalQuestoes: 4, prova: { titulo: 'Fundamentos' } },
+      { provaId: 'p2', acertos: 4, totalQuestoes: 4, prova: { titulo: 'Redes' } },
+      { provaId: 'p1', acertos: 3, totalQuestoes: 4, prova: { titulo: 'Fundamentos' } },
+    ]);
+
+    await expect(service.obterEstatisticasDificuldade()).resolves.toEqual([
+      {
+        provaId: 'p1',
+        titulo: 'Fundamentos',
+        mediaAcertos: 2,
+        mediaNota: 50,
+        totalResultados: 2,
+      },
+      {
+        provaId: 'p2',
+        titulo: 'Redes',
+        mediaAcertos: 4,
+        mediaNota: 100,
+        totalResultados: 1,
+      },
+    ]);
+  });
 });
