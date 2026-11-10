@@ -30,4 +30,46 @@ export class AdminService {
       },
     });
   }
+
+  async obterEstatisticasDificuldade() {
+    const resultados = await this.prisma.resultadoProva.findMany({
+      select: {
+        provaId: true,
+        acertos: true,
+        totalQuestoes: true,
+        prova: { select: { titulo: true } },
+      },
+    });
+
+    const porProva = new Map<
+      string,
+      { provaId: string; titulo: string; somaAcertos: number; somaNotas: number; quantidade: number }
+    >();
+
+    for (const resultado of resultados) {
+      const atual = porProva.get(resultado.provaId) ?? {
+        provaId: resultado.provaId,
+        titulo: resultado.prova.titulo,
+        somaAcertos: 0,
+        somaNotas: 0,
+        quantidade: 0,
+      };
+      atual.somaAcertos += resultado.acertos;
+      atual.somaNotas += resultado.totalQuestoes
+        ? (resultado.acertos / resultado.totalQuestoes) * 100
+        : 0;
+      atual.quantidade += 1;
+      porProva.set(resultado.provaId, atual);
+    }
+
+    return Array.from(porProva.values())
+      .map(({ provaId, titulo, somaAcertos, somaNotas, quantidade }) => ({
+        provaId,
+        titulo,
+        mediaAcertos: somaAcertos / quantidade,
+        mediaNota: somaNotas / quantidade,
+        totalResultados: quantidade,
+      }))
+      .sort((a, b) => a.mediaNota - b.mediaNota);
+  }
 }
