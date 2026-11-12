@@ -512,7 +512,7 @@ a, button { cursor: pointer; }
 .help-page,.help-contact { background:#101927!important; }.help-faq-wrap { background:#0f1623!important; }.help-contact { border-bottom:0; }.help-contact .help-form { box-shadow:none!important; }.help-faq-wrap { padding:48px 24px 58px; }.help-faq-wrap .help-faq { width:min(100%,900px); }.help-faq-wrap .help-faq h2 { margin-bottom:22px; font-size:32px; }.help-faq-wrap .help-faq summary { padding:16px 6px; font-size:16px; }.help-faq-wrap .help-faq p { padding:0 6px 16px; font-size:15px; }
 .help-page .ce-footer { background:#101927; }
 .help-page .ce-footer-card { background:#0f1623; border-color:#26364b; }
-.help-kicker { display:block; margin-bottom:14px; color:#ffffff; font-size:14px; font-weight:400; letter-spacing:.08em; text-transform:uppercase; }
+.help-kicker { display:block; margin-bottom:14px; color:#aebbd0; font-size:14px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; }
 @media (min-width:701px) { .help-contact-copy { transform:translateX(-178px); } }
 @media (min-width:701px) { .help-contact-inner { padding:76px 0; }.help-faq-wrap { padding-top:86px; } }
 @media (min-width:701px) { .help-faq-wrap { padding-top:132px; padding-bottom:48px; } }
