@@ -23,7 +23,7 @@ export default function AjudaPage() {
   const submit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const body = `Nome: ${form.name}\nE-mail: ${form.email}\nTelefone: ${form.phone || 'Não informado'}\n\n${form.message}`
-    window.location.href = `mailto:suporte@cybereduca.com?subject=${encodeURIComponent(form.subject)}&body=${encodeURIComponent(body)}`
+    window.location.href = `mailto:cybereduca.oficial@gmail.com?subject=${encodeURIComponent(form.subject)}&body=${encodeURIComponent(body)}`
   }
 
   const field = (key: keyof typeof form) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -38,7 +38,7 @@ export default function AjudaPage() {
         <div className="help-contact-inner">
           <div className="help-contact-copy">
             <span className="help-kicker">Envie sua mensagem</span>
-            <h1>Como podemos ajudar?</h1>
+            <h1>Como podemos ajudar ?</h1>
             <p>Preencha o formulário ao lado e nossa equipe entrará em contato para tirar dúvidas, receber sugestões ou resolver qualquer questão.</p>
           </div>
 

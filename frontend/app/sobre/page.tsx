@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { ArrowDown, ArrowUpRight, BookOpen, ShieldCheck, Target } from 'lucide-react'
 import { CyberHeader } from '@/components/cyber-header'
 import { SiteFooter } from '@/components/site-footer'
 import { FounderCard } from '@/components/founder-card'
@@ -13,30 +12,25 @@ export const metadata: Metadata = {
 }
 
 const founders = [
-  { name: 'Thiago dos Santos', fullName: 'Thiago dos Santos Soares', photo: '/fundadores/thiago.png', bio: 'Thiago dos Santos é um dos criadores do CyberEduca+. Sua história no projeto se conecta ao primeiro passo de quem começa a aprender: transformar dúvidas em conhecimento. Ao lado de Caio e Felipe, faz parte da construção de uma plataforma em que a segurança digital pode ser compreendida com clareza, uma descoberta de cada vez.' },
-  { name: 'Caio Nascimento', fullName: 'Caio Miranda do Nascimento', photo: '/fundadores/caio.png', bio: 'Caio Nascimento faz parte do trio que deu vida ao CyberEduca+. Sua trajetória nessa criação se encontra com a proposta de aprender fazendo: sair da explicação e chegar às situações que aparecem no cotidiano. Junto de Thiago e Felipe, participa de um projeto que aproxima o estudo da identificação de golpes e das escolhas que fazemos online.' },
-  { name: 'Felipe Penninck', fullName: 'Luís Felipe Penninck dos Santos', photo: '/fundadores/felipe.png', bio: 'Felipe Penninck é cofundador e criador do CyberEduca+. Sua participação nessa história faz parte da passagem de uma ideia compartilhada para uma experiência de aprendizagem. Com Thiago e Caio, integra a criação de um espaço que reúne conteúdo, prática e progresso, convidando cada pessoa a continuar evoluindo em sua vida digital.' },
+  { name: 'Thiago dos Santos', fullName: 'Thiago dos Santos Soares', photo: '/fundadores/thiago.png', role: 'Cofundador & Educação Digital', bio: 'Cofundador do CyberEduca+, Thiago dos Santos atua no desenvolvimento de soluções voltadas à aprendizagem e à avaliação de conhecimentos. Sua contribuição fortalece a proposta da plataforma de oferecer uma educação digital interativa, acessível e focada na evolução dos usuários.' },
+  { name: 'Felipe Penninck', fullName: 'Luís Felipe Penninck dos Santos', photo: '/fundadores/felipe.png', role: 'Fundador & Idealizador', bio: 'À frente do CyberEduca+, Felipe Penninck é um dos responsáveis pela visão e desenvolvimento da plataforma. Sua proposta é transformar a educação em cibersegurança, unindo tecnologia, inovação e conhecimento para criar uma experiência de aprendizagem acessível, moderna e preparada para os desafios do mundo digital.' },
+  { name: 'Caio Nascimento', fullName: 'Caio Miranda do Nascimento', photo: '/fundadores/caio.png', role: 'Cofundador & Segurança', bio: 'Cofundador do CyberEduca+, Caio Nascimento atua com foco na segurança digital e na prevenção de ameaças virtuais. Sua contribuição fortalece o compromisso da plataforma em promover conhecimento, conscientização e boas práticas para uma navegação mais segura.' },
 ]
 
 const values = [
-  { icon: BookOpen, number: '01', title: 'Conhecimento acessível', text: 'Explicações claras para quem está começando e uma jornada organizada para continuar aprendendo.' },
-  { icon: ShieldCheck, number: '02', title: 'Prática com propósito', text: 'Simulações e situações do cotidiano que ajudam a reconhecer golpes e tomar decisões mais seguras.' },
-  { icon: Target, number: '03', title: 'Evolução contínua', text: 'Quizzes, avaliações e acompanhamento de progresso para transformar o estudo em aprendizado.' },
+  { title: 'Comunidade', text: 'Conectar pessoas que querem aprender, compartilhar experiências e construir um mundo digital mais seguro.', photo: '/sobre/comunidade.jpg', alt: 'Colegas aprendendo juntos em um notebook' },
+  { title: 'Aprender na prática', text: 'Transformar o aprendizado em experiência com desafios, quizzes e simulações de situações do dia a dia.', photo: '/sobre/pratica.jpg', alt: 'Grupo reunido em torno de um computador para resolver uma atividade' },
+  { title: 'Conteúdo que aproxima', text: 'Tornar a cibersegurança acessível com conteúdos claros e conhecimento que faz diferença na sua vida digital.', photo: '/sobre/conteudo.jpg', alt: 'Duas pessoas compartilhando conhecimentos enquanto usam um notebook' },
 ]
-
 export default function SobrePage() {
   return <main className="about-page">
     <CyberHeader />
 
     <section className="about-hero" aria-labelledby="about-title">
-      <div className="about-hero-grid" aria-hidden="true" />
       <div className="about-container about-hero-content">
-        <p className="about-eyebrow"><span /> CONHEÇA O CYBEREDUCA+</p>
-        <h1 id="about-title">Um mundo digital<br />mais seguro começa<br />com <em>conhecimento.</em></h1>
+        <h1 id="about-title">Um mundo digital mais seguro<br />começa com <em>conhecimento.</em></h1>
         <p className="about-lead">Três criadores. Uma ideia em comum: aproximar a educação em cibersegurança da vida de cada pessoa.</p>
-        <a href="#nossa-historia" className="about-text-link">Conheça nossa história <ArrowDown size={18} /></a>
       </div>
-      <div className="about-orbit" aria-hidden="true"><div /><div /><ShieldCheck strokeWidth={1} /></div>
       <div className="about-container about-facts">
         <div><strong>Educação</strong><span>para entender o mundo digital</span></div>
         <div><strong>Prática</strong><span>para reconhecer ameaças</span></div>
@@ -49,19 +43,21 @@ export default function SobrePage() {
       <div className="about-story-copy"><p>Contas, mensagens, compras e informações pessoais fazem parte da nossa rotina online. Mas reconhecer um golpe ou saber como proteger esses dados ainda pode parecer complicado.</p><p>O CyberEduca+ nasceu para tornar esse aprendizado mais próximo, prático e acessível. A proposta é reunir trilhas, aulas, quizzes, avaliações e simulações de phishing em uma experiência que conecta conhecimento à realidade.</p><p>Criado por Thiago dos Santos, Caio Nascimento e Felipe Penninck, o CyberEduca+ nasceu de uma ideia compartilhada: unir tecnologia e educação para ajudar mais pessoas a navegar com segurança. Juntos, os três transformaram essa proposta em uma plataforma dedicada ao aprendizado e à proteção no mundo digital.</p></div>
     </section>
 
-    <section className="about-mission" aria-labelledby="mission-title">
-      <div className="about-container"><p className="about-eyebrow">NOSSO PROPÓSITO</p><h2 id="mission-title">Transformar informação<br />em <em>proteção no dia a dia.</em></h2><p className="about-section-description">Acreditamos que aprender cibersegurança deve fazer sentido fora da tela de uma aula. Estes são os pilares da nossa plataforma.</p>
-        <div className="about-values">{values.map(({ icon: Icon, number, title, text }) => <article key={number}><div className="about-value-top"><Icon size={30} strokeWidth={1.5} /><span>{number}</span></div><h3>{title}</h3><p>{text}</p></article>)}</div>
+    <section className="about-mission" aria-label="Os pilares do CyberEduca+">
+      <div className="about-container about-values">
+        {values.map(({ title, text, photo, alt }) => <article key={title}>
+          <div className="about-value-copy"><h3>{title}</h3><p>{text}</p></div>
+          <img src={photo} alt={alt} width={1000} height={1120} loading="lazy" />
+        </article>)}
       </div>
     </section>
-
     <section id="criadores" className="about-container about-founders" aria-labelledby="founders-title">
       <div className="about-section-heading"><h2 id="founders-title">Conheça nossos fundadores</h2></div>
       <div className="about-founder-grid">{founders.map(founder => <FounderCard founder={founder} key={founder.name} />)}</div>
       <p className="about-founders-note">Juntos, Thiago, Caio e Felipe criaram o CyberEduca+ para conectar estudo, prática e conscientização sobre segurança digital.</p>
     </section>
 
-    <section className="about-container about-invite"><div><p className="about-eyebrow">O PRÓXIMO PASSO É SEU</p><h2>Faça parte de um futuro<br />digital <em>mais seguro.</em></h2><p>Comece a aprender, pratique e acompanhe sua evolução.</p></div><Link href="/cadastro" className="about-primary-link">Começar minha jornada <ArrowUpRight size={20} /></Link></section>
+    <section className="about-container about-invite"><div><p className="about-eyebrow">O PRÓXIMO PASSO É SEU</p><h2>Faça parte de um futuro<br />digital <em>mais seguro.</em></h2><p>Comece a aprender, pratique e acompanhe sua evolução.</p></div><Link href="/login" className="about-primary-link">Começar minha jornada</Link></section>
     <SiteFooter />
   </main>
 }
