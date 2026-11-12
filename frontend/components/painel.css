@@ -1,0 +1,118 @@
+/* Camada visual das páginas internas da plataforma */
+
+.dashboard-page {
+  position: relative;
+  isolation: isolate;
+  background: #0b1220;
+}
+
+.dashboard-page::before {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  content: '';
+  pointer-events: none;
+  background:
+    radial-gradient(900px 480px at 8% -8%, rgba(178, 255, 0, .09), transparent 70%),
+    radial-gradient(760px 420px at 96% 4%, rgba(36, 180, 255, .08), transparent 70%),
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, .055) 1px, transparent 0) 0 0 / 26px 26px;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, .55) 45%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, .55) 45%, transparent 100%);
+}
+
+.dashboard-page .dashboard-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  border-bottom: 1px solid rgba(255, 255, 255, .06);
+  background: rgba(11, 18, 32, .78);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  backdrop-filter: blur(14px) saturate(140%);
+}
+
+.dashboard-page .dashboard-nav a {
+  position: relative;
+  transition: color .16s ease;
+}
+
+/* Cartões: borda fina com brilho no topo */
+.dashboard-page .profile-card,
+.dashboard-page .activity-card,
+.dashboard-page .activity-panel,
+.dashboard-page .dash-panel {
+  border: 1px solid rgba(255, 255, 255, .07);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .035), rgba(255, 255, 255, 0) 120px),
+    #121c2c;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .04) inset, 0 18px 40px -24px rgba(0, 0, 0, .7);
+}
+
+/* Cabeçalho das páginas de atividades */
+.dashboard-page .activity-heading {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 34px;
+  border: 1px solid rgba(255, 255, 255, .07);
+  border-radius: 10px;
+  padding: 34px 36px;
+  background:
+    radial-gradient(600px 260px at 0% 0%, rgba(178, 255, 0, .09), transparent 70%),
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, .07) 1px, transparent 0) 0 0 / 20px 20px,
+    #111b2b;
+}
+
+.dashboard-page .activity-heading h1 {
+  max-width: 760px;
+  font-size: clamp(30px, 4vw, 44px);
+  letter-spacing: -.035em;
+}
+
+.dashboard-page .activity-heading p {
+  max-width: 680px;
+}
+
+@media (max-width: 700px) {
+  .dashboard-page .activity-heading { padding: 26px 20px; }
+}
+
+.dashboard-page .activity-heading.has-summary { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 32px; }
+.activity-summary { display: flex; gap: 12px; }
+.activity-summary > div { min-width: 120px; border-radius: 10px; padding: 16px 18px; background: rgba(255, 255, 255, .04); }
+.activity-summary strong { display: block; color: #fff; font-size: 30px; font-weight: 600; line-height: 1; letter-spacing: -.03em; }
+.activity-summary > div:first-child strong { color: #b2ff00; }
+.activity-summary span { display: block; margin-top: 8px; color: #93a3b8; font-size: 12px; }
+
+/* Cartões de atividade */
+.dashboard-page .activity-card { display: flex; flex-direction: column; border-radius: 12px; padding: 24px; }
+.dashboard-page .activity-card .activity-card-icon { display: none; }
+.dashboard-page .activity-kicker { color: #8796ab; font-size: 13px; font-weight: 500; letter-spacing: 0; text-transform: none; }
+.dashboard-page .activity-card h2 { margin-top: 10px; }
+.activity-card-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-top: auto; padding-top: 18px; color: #93a3b8; font-size: 13px; }
+.activity-status { border-radius: 999px; padding: 4px 10px; background: rgba(178, 255, 0, .12); color: #c8ff4d; font-size: 12px; font-weight: 600; }
+.activity-status.is-low { background: rgba(255, 70, 84, .12); color: #ff8c94; }
+.dashboard-page .activity-card-link svg { display: none; }
+.dashboard-page .activity-card-link { margin-top: 16px; }
+
+@media (max-width: 800px) {
+  .dashboard-page .activity-heading.has-summary { grid-template-columns: 1fr; }
+}
+
+/* Detalhe da trilha */
+.dashboard-page .track-detail-hero.track-detail-hero-no-image { background: transparent; }
+.dashboard-page .track-detail-hero-no-image .content-wrap { width: min(calc(100% - 64px), 1280px); padding: 28px 0 0; text-align: left; }
+.dashboard-page .track-detail-hero-no-image .back-link { position: static; display: inline-flex; margin-bottom: 18px; }
+.dashboard-page .track-detail-hero-no-image .detail-grid { border: 1px solid #23324a; border-radius: 14px; padding: 36px 40px; background: radial-gradient(600px 260px at 0% 0%, rgba(178, 255, 0, .09), transparent 70%), linear-gradient(180deg, #121c2c, #0f1827); }
+.dashboard-page .track-detail-hero-no-image .detail-grid > div > div { justify-content: flex-start; }
+.dashboard-page .track-detail-hero-no-image .eyebrow { font-size: 13px; font-weight: 500; letter-spacing: 0; text-transform: none; }
+.dashboard-page .track-detail-hero-no-image h1 { margin-top: 10px; font-size: clamp(32px, 3vw, 46px); font-weight: 600; letter-spacing: -.035em; }
+.dashboard-page .track-detail-hero-no-image .detail-grid p { margin: 12px 0 0; }
+.dashboard-page .track-detail-hero-no-image .detail-stats { justify-content: flex-start; }
+.dashboard-page .track-learning .section-heading { display: none; }
+.activity-tag { letter-spacing: 0; text-transform: none; }
+.activity-card-footer { min-height: 46px; }
+@media (max-width: 700px) {
+  .dashboard-page .track-detail-hero-no-image .content-wrap { width: calc(100% - 32px); }
+  .dashboard-page .track-detail-hero-no-image .detail-grid { padding: 24px; }
+}
+.domain-tips li { padding-left: 16px; border-left: 2px solid rgba(178, 255, 0, .35); }
+.domain-tips li:before { content: none; }

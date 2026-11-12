@@ -1,23 +1,18 @@
 import Link from "next/link";
-import { ArrowUpRight, BookOpenCheck, ListChecks } from "lucide-react";
 import type { QuizResumo } from "@/lib/quizzes-api";
 export function QuizCard({ quiz }: { quiz: QuizResumo }) {
+  const tentativa = quiz.tentativas?.[0];
   return (
     <article className="activity-card">
-      <div className="activity-card-icon">
-        <BookOpenCheck size={26} />
-      </div>
-      <span className="activity-kicker">QUIZ EDUCATIVO</span>
+      <span className="activity-kicker">{quiz.aula.titulo}</span>
       <h2>{quiz.titulo}</h2>
       <p>{quiz.descricao}</p>
-      <div className="activity-card-meta">
-        <ListChecks size={16} /> {quiz._count.questoes}{" "}
-        {quiz._count.questoes === 1 ? "questão" : "questões"}
+      <div className="activity-card-footer">
+        <span>{quiz._count.questoes} {quiz._count.questoes === 1 ? "questão" : "questões"}</span>
+        {tentativa && <span className="activity-status">{tentativa.totalAcertos} de {tentativa.totalQuestoes} acertos</span>}
       </div>
-      <span className="activity-lesson">{quiz.aula.titulo}</span>
-      {!!quiz.tentativas?.length && <span className="activity-kicker">Concluído · {quiz.tentativas[0].totalAcertos} de {quiz.tentativas[0].totalQuestoes} acertos</span>}
       <Link className="activity-card-link" href={`/quizzes/${quiz.id}`}>
-        {quiz.tentativas?.length ? 'Ver resultado' : 'Responder quiz'} <ArrowUpRight size={18} />
+        {tentativa ? "Ver resultado" : "Responder quiz"}
         <span className="sr-only">: {quiz.titulo}</span>
       </Link>
     </article>

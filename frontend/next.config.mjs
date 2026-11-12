@@ -2,6 +2,7 @@
 const nextConfig = {
   allowedDevOrigins: ['192.168.0.19'],
   devIndicators: false,
+  agentRules: false,
   typescript: {
     ignoreBuildErrors: true,
   },

@@ -52,7 +52,7 @@ export function PhishingSimulator({ cenario }: { cenario: CenarioDetalhe }) {
       <section className="activity-panel simulation-preview">
         <div className="activity-section-label">
           <h2>{nomesTipos[cenario.tipo]}</h2>
-          <span className="activity-tag">SIMULAÇÃO</span>
+          <span className="activity-tag">Simulação</span>
         </div>
         <Preview conteudo={cenario.conteudoMensagem} />
         <p className="activity-footnote">
@@ -68,7 +68,7 @@ export function PhishingSimulator({ cenario }: { cenario: CenarioDetalhe }) {
           />
         ) : (
           <form className="activity-panel" onSubmit={submit}>
-            <span className="activity-kicker">SUA ANÁLISE</span>
+            <span className="activity-kicker">Sua análise</span>
             <h2>Você identifica phishing?</h2>
             <p className="activity-muted">
               Observe o conteúdo, a urgência e os pedidos da mensagem antes de

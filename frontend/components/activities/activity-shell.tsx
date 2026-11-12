@@ -10,12 +10,14 @@ export function ActivityShell({
   description,
   children,
   back,
+  resumo,
 }: {
   section: "quizzes" | "simulacoes" | "verificador" | "avaliacoes";
   title: string;
   description: string;
   children: ReactNode;
   back?: string;
+  resumo?: ReactNode;
 }) {
   return (
     <main className="app-shell dashboard-page activity-page">
@@ -26,10 +28,12 @@ export function ActivityShell({
             <ArrowLeft size={16} /> Voltar à lista
           </Link>
         )}
-        <header className="dashboard-welcome activity-heading">
-          <span className="dashboard-eyebrow">APRENDA NA PRÁTICA</span>
-          <h1>{title}</h1>
-          <p>{description}</p>
+        <header className={`dashboard-welcome activity-heading${resumo ? " has-summary" : ""}`}>
+          <div>
+            <h1>{title}</h1>
+            <p>{description}</p>
+          </div>
+          {resumo && <div className="activity-summary">{resumo}</div>}
         </header>
         {children}
       </div>

@@ -1,4 +1,15 @@
-import { IsEmail, IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
+import { IsEmail, IsIn, IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
+
+export const AVATARES_DISPONIVEIS = [
+  'escudo',
+  'cadeado',
+  'chave',
+  'digital',
+  'terminal',
+  'radar',
+  'firewall',
+  'bug',
+] as const;
 
 export class UpdateProfileDto {
   @IsOptional()
@@ -18,6 +29,10 @@ export class UpdateProfileDto {
     message: 'A foto de perfil possui um formato inválido.',
   })
   foto?: string | null;
+
+  @IsOptional()
+  @IsIn([...AVATARES_DISPONIVEIS], { message: 'O avatar escolhido não existe.' })
+  avatar?: string | null;
 
   @IsOptional()
   @IsString()

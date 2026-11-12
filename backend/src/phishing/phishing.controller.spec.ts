@@ -24,13 +24,14 @@ describe('PhishingController', () => {
     const admin = new AdminPhishingController(service as unknown as PhishingService);
     const dto = {} as any;
 
-    student.listar('a1'); student.buscar('c1'); student.responder({ user: { id: 'u1' } } as any, 'c1', dto);
+    const req = { user: { id: 'u1' } } as any;
+    student.listar(req, 'a1'); student.buscar(req, 'c1'); student.responder({ user: { id: 'u1' } } as any, 'c1', dto);
     admin.listar(); admin.criar(dto); admin.atualizar('c1', dto);
     admin.atualizarStatus('c1', { status: 'PUBLICADO' } as any);
     admin.atualizarStatus('c1', { status: 'ARQUIVADO' } as any);
 
-    expect(service.listarCenarios).toHaveBeenCalledWith('a1');
-    expect(service.buscarCenario).toHaveBeenCalledWith('c1');
+    expect(service.listarCenarios).toHaveBeenCalledWith('a1', 'u1');
+    expect(service.buscarCenario).toHaveBeenCalledWith('c1', 'u1');
     expect(service.responderCenario).toHaveBeenCalledWith('u1', 'c1', dto);
     expect(service.listarCenariosAdmin).toHaveBeenCalled();
     expect(service.criarCenario).toHaveBeenCalledWith(dto);

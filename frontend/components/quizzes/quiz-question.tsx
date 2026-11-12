@@ -16,7 +16,7 @@ export function QuizQuestion({
     <fieldset className="quiz-question" disabled={disabled}>
       <legend>
         <span className="activity-kicker">
-          QUESTÃO {String(index + 1).padStart(2, "0")}
+          Questão {index + 1}
         </span>
         <span className="quiz-enunciado">{questao.enunciado}</span>
       </legend>

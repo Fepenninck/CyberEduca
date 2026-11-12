@@ -5,8 +5,9 @@ import { Camera, Cog, LockKeyhole, LogOut, ShieldCheck, UserRound, X } from 'luc
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { apiFetch, getCurrentUser, updateCurrentUser } from '@/lib/api'
+import { ProfilePicture } from '@/components/cyber-avatar'
 
-type Profile = { nome: string; email: string; foto?: string | null }
+type Profile = { nome: string; email: string; foto?: string | null; avatar?: string | null }
 
 const defaultProfile: Profile = { nome: '', email: '' }
 
@@ -21,7 +22,7 @@ export function UserMenu() {
 
   useEffect(() => {
     const update = () => getCurrentUser()
-      .then((user) => setProfile({ nome: user.nome, email: user.email, foto: user.foto }))
+      .then((user) => setProfile({ nome: user.nome, email: user.email, foto: user.foto, avatar: user.avatar }))
       .catch(() => setProfile(defaultProfile))
     update()
     window.addEventListener('profile-updated', update)
@@ -41,7 +42,7 @@ export function UserMenu() {
 
   async function saveSettings() {
     const updated = await updateCurrentUser(draftProfile)
-    setProfile({ nome: updated.nome, email: updated.email, foto: updated.foto })
+    setProfile({ nome: updated.nome, email: updated.email, foto: updated.foto, avatar: updated.avatar })
     setSettingsOpen(false)
     window.dispatchEvent(new Event('profile-updated'))
   }
@@ -88,10 +89,10 @@ export function UserMenu() {
 
   return <div className="user-menu" ref={menuRef}>
     <button className="dashboard-user" type="button" aria-label="Abrir perfil" aria-expanded={open} onClick={() => setOpen((value) => !value)}>
-      <span>{profile.foto ? <img src={profile.foto} alt="Foto de perfil" /> : <UserRound size={18} />}</span>
+      <span><ProfilePicture foto={profile.foto} avatar={profile.avatar} /></span>
     </button>
     {open && <div className="user-menu-panel">
-      <div className="user-menu-profile"><div className="user-menu-avatar">{profile.foto ? <img src={profile.foto} alt="" /> : <UserRound size={28} />}</div><div><strong>{profile.nome || 'Conta'}</strong><small>{profile.email || 'Dados indisponíveis'}</small></div></div>
+      <div className="user-menu-profile"><div className="user-menu-avatar"><ProfilePicture foto={profile.foto} avatar={profile.avatar} iconSize={28} alt="" /></div><div><strong>{profile.nome || 'Conta'}</strong><small>{profile.email || 'Dados indisponíveis'}</small></div></div>
       <span className="user-menu-label">Minha conta</span>
       <Link href="/perfil" onClick={() => setOpen(false)}><UserRound size={18} /> Perfil</Link>
       <button className="user-menu-action" type="button" onClick={openSettings}><Cog size={18} /> Configurações</button>

@@ -1,0 +1,44 @@
+.learning-level-header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 14px 28px; margin-bottom: 18px; border-left: 3px solid var(--level-color); padding-left: 16px; }
+.learning-level-header h2 { color: #f4f7fb; font-size: 22px; font-weight: 600; letter-spacing: -.02em; }
+.learning-level-header p { max-width: 560px; margin-top: 5px; color: #9dacbf; font-size: 14px; line-height: 1.55; }
+.learning-level-summary { width: min(100%, 240px); color: #8f9eb2; font-size: 12px; }
+.learning-level-bar { height: 5px; margin-top: 8px; overflow: hidden; border-radius: 999px; background: #26354a; }
+.learning-level-bar span { display: block; height: 100%; border-radius: inherit; background: var(--level-color); }
+
+.learning-path-progress { height: 4px; margin-top: 10px; overflow: hidden; border-radius: 999px; background: #26354a; }
+.learning-path-progress span { display: block; height: 100%; border-radius: inherit; background: var(--level-color); }
+.learning-path-meta strong { display: inline-flex; align-items: center; gap: 4px; }
+.learning-path-card.is-done .learning-path-meta strong { color: var(--level-color); }
+
+@media (max-width: 700px) { .learning-level-summary { width: 100%; } }
+
+.paths-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 520px);
+  align-items: center;
+  gap: 40px;
+  margin-bottom: 48px;
+  border: 1px solid rgba(255, 255, 255, .07);
+  border-radius: 12px;
+  padding: 38px 40px;
+  background:
+    radial-gradient(600px 260px at 0% 0%, rgba(36, 180, 255, .12), transparent 70%),
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, .07) 1px, transparent 0) 0 0 / 20px 20px,
+    #111b2b;
+}
+.paths-hero h1 { color: #fff; font-size: clamp(30px, 3.4vw, 44px); font-weight: 600; line-height: 1.05; letter-spacing: -.035em; }
+.paths-hero p { max-width: 520px; margin-top: 12px; color: #a8b5c9; font-size: 15px; line-height: 1.6; }
+
+.paths-journey { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); list-style: none; }
+.paths-journey::before { position: absolute; top: 14px; right: 16.66%; left: 16.66%; height: 2px; content: ''; background: rgba(255, 255, 255, .1); }
+.paths-journey li { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
+.paths-journey-dot { position: relative; z-index: 1; display: grid; width: 30px; height: 30px; place-items: center; border: 2px solid rgba(255, 255, 255, .18); border-radius: 50%; background: #111b2b; color: #0b1220; }
+.paths-journey li.is-active .paths-journey-dot { border-color: var(--level-color); box-shadow: 0 0 0 5px color-mix(in srgb, var(--level-color) 18%, transparent); }
+.paths-journey li.is-done .paths-journey-dot { border-color: var(--level-color); background: var(--level-color); }
+.paths-journey strong { margin-top: 6px; color: #f4f7fb; font-size: 14px; font-weight: 600; }
+.paths-journey small { color: #8796ab; font-size: 12px; }
+.paths-journey li.is-active small, .paths-journey li.is-done small { color: var(--level-color); }
+
+@media (max-width: 900px) {
+  .paths-hero { grid-template-columns: 1fr; padding: 28px 22px; }
+}
