@@ -102,7 +102,7 @@ describe('Integração HTTP de quizzes, simulador de phishing e perfil', () => {
 
   beforeEach(async () => {
     const email = `${randomUUID()}@cybereduca.test`;
-    await request(url).post('/auth/register').send({ name: 'Aluno de integração', email, password: 'Senha123!' }).expect(500);
+    await request(url).post('/auth/register').send({ name: 'Aluno de integração', email, password: 'Senha123!' }).expect(201);
     const login = await request(url).post('/auth/login').send({ email, password: 'Senha123!' }).expect(200);
     cookie = login.headers['set-cookie'][0].split(';')[0];
   });
