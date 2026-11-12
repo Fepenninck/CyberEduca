@@ -4,7 +4,7 @@
   "extensionsToTreatAsEsm": [".ts"],
   "rootDir": "..",
   "testEnvironment": "node",
-  "testMatch": ["<rootDir>/test/pfc.integracao-spec.ts"],
+  "testMatch": ["<rootDir>/test/*.integracao-spec.ts"],
   "setupFiles": ["<rootDir>/test/setup-test-env.ts"],
   "maxWorkers": 1,
   "testTimeout": 30000,

@@ -12,7 +12,6 @@ jest.unstable_mockModule('@prisma/client', () => ({
 }));
 
 const { ConsultaSegurancaService } = await import('./consulta-seguranca.service');
-const { VirusTotalService } = await import('./virustotal.service');
 const ResultadoConsultaSeguranca = {
   SEM_DADOS: 'SEM_DADOS',
   MALICIOSO: 'MALICIOSO',
