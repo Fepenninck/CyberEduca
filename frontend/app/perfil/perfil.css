@@ -1,0 +1,31 @@
+.profile-page .profile-hero {
+  position: relative;
+  align-items: flex-end;
+  overflow: hidden;
+  margin: 18px 0 28px;
+  border: 1px solid rgba(255, 255, 255, .07);
+  border-radius: 12px;
+  padding: 96px 32px 28px;
+  background: #111b2b;
+}
+.profile-page .profile-hero::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 132px;
+  content: '';
+  background:
+    radial-gradient(420px 200px at 12% 100%, color-mix(in srgb, var(--avatar-color) 30%, transparent), transparent 70%),
+    radial-gradient(520px 220px at 92% 0%, rgba(36, 180, 255, .16), transparent 70%),
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, .09) 1px, transparent 0) 0 0 / 18px 18px,
+    linear-gradient(180deg, #16243a, #111b2b);
+  border-bottom: 1px solid rgba(255, 255, 255, .05);
+}
+.profile-page .profile-hero > * { position: relative; z-index: 1; }
+.profile-page .profile-avatar { box-shadow: 0 0 0 5px #111b2b, 0 0 32px color-mix(in srgb, var(--avatar-color) 40%, transparent); border-radius: 50%; }
+.profile-page .profile-identity h1 { font-size: 32px; }
+@media (max-width: 700px) {
+  .profile-page .profile-hero { padding: 84px 20px 22px; }
+  .profile-page .profile-identity h1 { font-size: 24px; }
+}

@@ -81,4 +81,20 @@ describe('UsuariosService', () => {
     expect(chamada.data.nome).toBe('Novo nome');
     expect(chamada.data).not.toHaveProperty('senhaHash');
   });
+
+  // TESTE 4: AVATAR TEMÁTICO
+  it('deve salvar o avatar escolhido e devolvê-lo no perfil', async () => {
+    prismaMock.usuario.update.mockResolvedValue({
+      id: 'usuario-1',
+      nome: 'Thiago',
+      avatar: 'escudo',
+    });
+
+    const resultado = await service.atualizar('usuario-1', { avatar: 'escudo' });
+
+    const chamada = prismaMock.usuario.update.mock.calls[0][0] as any;
+    expect(chamada.data.avatar).toBe('escudo');
+    expect(chamada.select.avatar).toBe(true);
+    expect(resultado.avatar).toBe('escudo');
+  });
 });

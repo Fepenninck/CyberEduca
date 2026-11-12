@@ -15,13 +15,14 @@ describe('QuizzesController', () => {
     const admin = new AdminQuizzesController(service as unknown as QuizzesService);
     const dto = {} as any;
 
-    student.listar('a1'); student.buscar('q1'); student.responder({ user: { id: 'u1' } } as any, 'q1', dto);
+    const req = { user: { id: 'u1' } } as any;
+    student.listar(req, 'a1'); student.buscar(req, 'q1'); student.responder({ user: { id: 'u1' } } as any, 'q1', dto);
     admin.listar(); admin.criar(dto); admin.atualizar('q1', dto); admin.criarQuestao('q1', dto);
     admin.criarAlternativa('q1', 'questao-1', dto); admin.atualizarStatus('q1', { status: 'PUBLICADO' } as any);
     admin.atualizarStatus('q1', { status: 'ARQUIVADO' } as any);
 
-    expect(service.listarQuizzes).toHaveBeenCalledWith('a1');
-    expect(service.buscarQuiz).toHaveBeenCalledWith('q1');
+    expect(service.listarQuizzes).toHaveBeenCalledWith('a1', 'u1');
+    expect(service.buscarQuiz).toHaveBeenCalledWith('q1', 'u1');
     expect(service.responderQuiz).toHaveBeenCalledWith('u1', 'q1', dto);
     expect(service.listarQuizzesAdmin).toHaveBeenCalled();
     expect(service.criarQuiz).toHaveBeenCalledWith(dto);

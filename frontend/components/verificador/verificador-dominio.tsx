@@ -82,9 +82,6 @@ export function VerificadorDominio() {
     <div className="verificador-layout">
       <div>
         <section className="activity-panel">
-          <div className="activity-card-icon">
-            <Search size={26} />
-          </div>
           <h2>Consultar um domínio</h2>
           <p className="activity-muted">
             Informe o endereço que você quer analisar.
@@ -163,7 +160,7 @@ export function VerificadorDominio() {
               </div>
             </div>
             <p className="activity-footnote">
-              Fonte: VirusTotal · Consultado em{" "}
+              Fonte: VirusTotal, consultado em{" "}
               {new Date(resultado.consultadoEm).toLocaleString("pt-BR")}
             </p>
             <p className="activity-footnote">
@@ -174,7 +171,7 @@ export function VerificadorDominio() {
         )}
       </div>
       <aside className="activity-panel domain-tips">
-        <span className="activity-kicker">NAVEGUE COM ATENÇÃO</span>
+        <span className="activity-kicker">Navegue com atenção</span>
         <h2>Um endereço pode enganar.</h2>
         <ol>
           <li>

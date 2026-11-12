@@ -116,3 +116,31 @@
 }
 
 .provas-vazio { opacity: .7; font-size: .95rem; padding: 2rem 0; }
+
+.prova-nivel-card { position: relative; overflow: hidden; }
+.prova-nivel-card::before { position: absolute; top: 0; right: 0; left: 0; height: 3px; content: ''; background: var(--level-color); }
+.activity-card.prova-nivel-card:hover { border-color: var(--level-color); }
+.prova-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.activity-card-icon.prova-card-icon { color: var(--level-color); background: color-mix(in srgb, var(--level-color) 12%, transparent); }
+.prova-card-nota { border-radius: 4px; padding: 6px 10px; font-size: 18px; font-weight: 700; }
+.prova-card-nota.is-aprovado { background: #b2ff0018; color: #b2ff00; }
+.prova-card-nota.is-reprovado { background: #ff465418; color: #ff8c94; }
+.prova-card-status { margin-top: 12px; color: #a2b1c5; font-size: 13px; }
+
+.prova-resultado-resumo { display: flex; flex-wrap: wrap; align-items: center; gap: 28px; margin: 22px 0 8px; }
+.prova-resultado-anel { position: relative; display: grid; width: 150px; height: 150px; flex: none; place-items: center; }
+.prova-resultado-anel svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.prova-anel-fundo, .prova-anel-valor { fill: none; stroke-width: 9; }
+.prova-anel-fundo { stroke: #26354a; }
+.prova-anel-valor { stroke-linecap: round; transition: stroke-dashoffset .8s ease; }
+.prova-resultado-anel.is-aprovado .prova-anel-valor { stroke: #b2ff00; }
+.prova-resultado-anel.is-reprovado .prova-anel-valor { stroke: #ff4654; }
+.prova-resultado-anel .prova-resultado-nota { position: relative; display: flex; flex-direction: column; align-items: center; margin: 0; font-size: 2.6rem; line-height: 1; }
+.prova-resultado-anel .prova-resultado-nota small { margin-top: 6px; color: #8f9eb2; font-size: 12px; font-weight: 500; }
+.prova-resultado-nota.is-aprovado { color: #b2ff00; }
+.prova-resultado-nota.is-reprovado { color: #ff8c94; }
+.prova-resultado-titulo { display: block; color: #f4f7fb; font-size: 20px; font-weight: 600; }
+.prova-resultado-resumo .prova-resultado-detalhe { margin: 6px 0 4px; opacity: 1; color: #a2b1c5; }
+
+@media (prefers-reduced-motion: reduce) { .prova-anel-valor { transition: none; } }
+.activity-card.prova-nivel-card .activity-kicker { color: var(--level-color); }

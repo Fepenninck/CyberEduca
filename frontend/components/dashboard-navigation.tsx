@@ -10,6 +10,7 @@ import {
   Menu,
 } from "lucide-react";
 import { UserMenu } from "@/components/user-menu";
+import "./painel.css";
 const items = [
   { key: "inicio", href: "/dashboard", label: "Início", icon: Home },
   { key: "aulas", href: "/aulas", label: "Trilhas", icon: BookOpen },

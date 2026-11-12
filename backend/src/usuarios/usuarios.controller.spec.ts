@@ -12,4 +12,12 @@ describe('UsuariosController', () => {
     expect(controller.atualizarMeuPerfil(request, { nome: 'Ana' } as any)).toEqual({ id: 'u1', nome: 'Ana' });
     expect(service.atualizar).toHaveBeenCalledWith('u1', { nome: 'Ana' });
   });
+
+  it('encaminha o pedido de desempenho do aluno logado', () => {
+    const service = { desempenho: jest.fn().mockReturnValue({ comparativo: {} }) };
+    const controller = new UsuariosController(service as unknown as UsuariosService);
+
+    expect(controller.meuDesempenho({ user: { id: 'u1' } })).toEqual({ comparativo: {} });
+    expect(service.desempenho).toHaveBeenCalledWith('u1');
+  });
 });

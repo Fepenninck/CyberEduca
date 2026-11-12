@@ -14,6 +14,7 @@ model Usuario {
   senhaHash                String?
   googleId                 String?             @unique
   foto                     String?
+  avatar                   String?
   papel                    String              @default("USUARIO")
   criadoEm                 DateTime            @default(now())
   atualizadoEm             DateTime            @default(now()) @updatedAt

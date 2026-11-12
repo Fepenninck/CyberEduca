@@ -1,13 +1,17 @@
 'use client'
 
 import Link from 'next/link'
-import { BookOpen, Check, ChevronLeft, ClipboardCheck, Clock3, Home, LockKeyhole, MonitorPlay, Save, ShieldCheck, UserRound, X } from 'lucide-react'
+import { ChevronLeft, LockKeyhole, Pencil, X } from 'lucide-react'
 import { ChangeEvent, PointerEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { API_URL, getCurrentUser, TrackSummary, updateCurrentUser } from '@/lib/api'
 import { DashboardNavigation } from '@/components/dashboard-navigation'
+import type { CSSProperties } from 'react'
+import { AvatarPicker } from '@/components/avatar-picker'
+import './perfil.css'
+import { AVATARES, ProfilePicture, type AvatarId } from '@/components/cyber-avatar'
 
-type Profile = { nome: string; email: string; foto?: string | null }
+type Profile = { nome: string; email: string; foto?: string | null; avatar?: string | null }
 
 export default function PerfilPage() {
   const router = useRouter()
@@ -18,12 +22,13 @@ export default function PerfilPage() {
   const [cropOffset, setCropOffset] = useState({ x: 0, y: 0 })
   const [saved, setSaved] = useState(false)
   const [activeTab, setActiveTab] = useState<'overview' | 'settings'>('overview')
+  const [pickerOpen, setPickerOpen] = useState(false)
   const fileInput = useRef<HTMLInputElement>(null)
   const cropDrag = useRef({ x: 0, y: 0, offsetX: 0, offsetY: 0 })
 
   useEffect(() => {
     getCurrentUser()
-      .then((user) => setProfile({ nome: user.nome, email: user.email, foto: user.foto }))
+      .then((user) => setProfile({ nome: user.nome, email: user.email, foto: user.foto, avatar: user.avatar }))
       .catch(() => router.replace('/login'))
     fetch(`${API_URL}/trilhas`).then((response) => response.ok ? response.json() : []).then(setTracks).catch(() => setTracks([]))
   }, [router])
@@ -81,11 +86,26 @@ export default function PerfilPage() {
 
   async function saveProfile() {
     const updated = await updateCurrentUser(profile)
-    setProfile({ nome: updated.nome, email: updated.email, foto: updated.foto })
+    setProfile({ nome: updated.nome, email: updated.email, foto: updated.foto, avatar: updated.avatar })
     window.dispatchEvent(new Event('profile-updated'))
     setSaved(true)
     window.setTimeout(() => setSaved(false), 2400)
   }
+
+  async function chooseAvatar(avatar: AvatarId) {
+    const updated = await updateCurrentUser({ avatar, foto: null })
+    setProfile((current) => ({ ...current, foto: updated.foto, avatar: updated.avatar }))
+    window.dispatchEvent(new Event('profile-updated'))
+  }
+
+  async function removePhoto() {
+    const updated = await updateCurrentUser({ foto: null })
+    setProfile((current) => ({ ...current, foto: updated.foto }))
+    window.dispatchEvent(new Event('profile-updated'))
+  }
+
+  const levelColors: Record<string, string> = { BASICO: '#24b4ff', INTERMEDIARIO: '#ffd34e', AVANCADO: '#ff4654' }
+  const currentAvatar = AVATARES.find((avatar) => avatar.id === profile.avatar)
 
   const basicStatus = stats.basic >= 80 ? 'Você domina os fundamentos.' : stats.basic >= 40 ? 'Você está evoluindo no nível básico.' : 'Comece pelos fundamentos.'
 
@@ -93,9 +113,10 @@ export default function PerfilPage() {
     <DashboardNavigation active="perfil" />
     <section className="profile-wrap">
       <Link className="profile-back" href="/dashboard"><ChevronLeft size={16} /> Voltar ao dashboard</Link>
-      <header className="profile-hero">
-        <button className="profile-avatar" type="button" onClick={() => fileInput.current?.click()} aria-label="Alterar foto de perfil">
-          {profile.foto ? <img src={profile.foto} alt="Foto de perfil" /> : <UserRound size={44} />}
+      <header className="profile-hero" style={{ '--avatar-color': currentAvatar?.cor ?? '#b2ff00' } as CSSProperties}>
+        <button className="profile-avatar" type="button" onClick={() => setPickerOpen(true)} aria-label="Alterar avatar ou foto de perfil">
+          <ProfilePicture foto={profile.foto} avatar={profile.avatar} iconSize={44} alt={currentAvatar ? `Avatar ${currentAvatar.nome}` : 'Foto de perfil'} />
+          <span aria-hidden="true"><Pencil size={13} /></span>
         </button>
         <div className="profile-identity"><span className="profile-kicker">Perfil do aluno</span><div><h1>{profile.nome || 'Seu perfil'}</h1>{profile.nome && <span className="profile-handle">@{profile.nome.toLowerCase().replace(/\s+/g, '')}</span>}</div><p>{profile.email || 'Dados da conta indisponíveis'}</p></div>
       </header>
@@ -103,11 +124,11 @@ export default function PerfilPage() {
       <div className="profile-tabs"><button className={activeTab === 'overview' ? 'is-active' : ''} type="button" onClick={() => setActiveTab('overview')}>Visão geral</button><button type="button" onClick={() => window.dispatchEvent(new Event('open-account-settings'))}>Configurações</button></div>
       <section className="profile-overview">
         <div className="profile-main">
-          <article className="profile-card profile-level-card"><span className="profile-card-label"><ShieldCheck size={17} /> Seu nível</span><div className="profile-level-content"><div className="profile-level-number">{stats.overall}<small>%</small></div><div><strong>{basicStatus}</strong><p>Seu progresso geral é calculado pelas trilhas de aprendizagem disponíveis.</p><div className="profile-progress"><span style={{ width: `${stats.overall}%` }} /></div></div></div></article>
-          <article className="profile-card"><h2>Progresso nas trilhas</h2><div className="profile-track-list">{tracks.length ? tracks.map((track) => <div key={track.id}><div><span>{track.nivel.charAt(0) + track.nivel.slice(1).toLowerCase()}</span><strong>{track.percentual}%</strong></div><div className="profile-progress"><span style={{ width: `${track.percentual}%` }} /></div></div>) : <p>Carregando seu progresso...</p>}</div></article>
-          <article className="profile-card"><h2>Ritmo de estudo</h2><div className="profile-study-metrics"><div><BookOpen size={19} /><strong>{stats.completed}</strong><span>Aulas concluídas</span></div><div><Check size={19} /><strong>{stats.rate}%</strong><span>Taxa de conclusão</span></div><div><Clock3 size={19} /><strong>{stats.total}</strong><span>Aulas disponíveis</span></div></div><p className="profile-note">A frequência semanal aparecerá quando o histórico de atividades estiver disponível.</p></article>
+          <article className="profile-card profile-level-card"><span className="profile-card-label">Seu nível</span><div className="profile-level-content"><div className="profile-level-number">{stats.overall}<small>%</small></div><div><strong>{basicStatus}</strong><p>Seu progresso geral é calculado pelas trilhas de aprendizagem disponíveis.</p><div className="profile-progress"><span style={{ width: `${stats.overall}%` }} /></div></div></div></article>
+          <article className="profile-card"><h2>Progresso nas trilhas</h2><div className="profile-track-list">{tracks.length ? tracks.map((track) => <div key={track.id}><div><span>{track.titulo}</span><strong>{track.percentual}%</strong></div><div className="profile-progress"><span style={{ width: `${track.percentual}%`, background: levelColors[track.nivel] }} /></div></div>) : <p>Carregando seu progresso...</p>}</div></article>
+          <article className="profile-card"><h2>Ritmo de estudo</h2><div className="profile-study-metrics"><div><strong>{stats.completed}</strong><span>Aulas concluídas</span></div><div><strong>{stats.rate}%</strong><span>Taxa de conclusão</span></div><div><strong>{stats.total}</strong><span>Aulas disponíveis</span></div></div><p className="profile-note">A frequência semanal aparecerá quando o histórico de atividades estiver disponível.</p></article>
         </div>
-        <aside className="profile-side"><article className="profile-card"><span className="profile-card-label"><ShieldCheck size={17} /> Resumo</span><strong>{stats.basic >= 80 ? 'Nível básico concluído' : 'Nível básico em andamento'}</strong><p>{stats.completed} aulas concluídas e {stats.overall}% de progresso geral.</p></article><article className="profile-card"><h2>Atividade semanal</h2><p>O histórico semanal será exibido quando a API registrar as datas de estudo.</p></article></aside>
+        <aside className="profile-side"><article className="profile-card profile-avatar-card"><span className="profile-card-label">Seu avatar</span><strong>{profile.foto ? 'Foto personalizada' : currentAvatar?.nome ?? 'Nenhum avatar escolhido'}</strong><p>{profile.foto ? 'Você está usando uma foto enviada por você.' : currentAvatar?.descricao ?? 'Escolha um avatar que combine com o seu jeito de proteger o mundo digital.'}</p><button className="dashboard-button-secondary" type="button" onClick={() => setPickerOpen(true)}>{currentAvatar || profile.foto ? 'Trocar avatar' : 'Escolher avatar'}</button></article><article className="profile-card"><span className="profile-card-label">Resumo</span><strong>{stats.basic >= 80 ? 'Nível básico concluído' : 'Nível básico em andamento'}</strong><p>{stats.completed} aulas concluídas e {stats.overall}% de progresso geral.</p></article><article className="profile-card"><h2>Atividade semanal</h2><p>O histórico semanal será exibido quando a API registrar as datas de estudo.</p></article></aside>
       </section>
       {activeTab === 'settings' && (
         <div className="profile-settings-backdrop" role="dialog" aria-modal="true" aria-labelledby="profile-settings-title">
@@ -120,6 +141,7 @@ export default function PerfilPage() {
           </article>
         </div>
       )}
+      {pickerOpen && <AvatarPicker avatarAtual={profile.avatar} temFoto={Boolean(profile.foto)} onEscolher={chooseAvatar} onRemoverFoto={removePhoto} onEnviarFoto={() => { setPickerOpen(false); fileInput.current?.click() }} onFechar={() => setPickerOpen(false)} />}
       <input ref={fileInput} className="profile-file-input" type="file" accept="image/png,image/jpeg,image/webp" onChange={choosePhoto} />
     </section>
     {cropSource && <div className="crop-backdrop" role="dialog" aria-modal="true" aria-labelledby="crop-title"><div className="crop-modal"><h2 id="crop-title">Ajustar foto de perfil</h2><p className="crop-help">Arraste a imagem para posicioná-la. Use o zoom para aproximar.</p><div className="crop-preview" onPointerDown={startCropDrag} onPointerMove={moveCropDrag}><img draggable={false} src={cropSource} alt="Prévia para recorte" style={{ transform: `translate(${cropOffset.x}%, ${cropOffset.y}%) scale(${zoom})` }} /></div><label>Zoom<input type="range" min="1" max="2.5" step=".05" value={zoom} onChange={(event) => setZoom(Number(event.target.value))} /></label><div className="crop-actions"><button className="dashboard-button-secondary" type="button" onClick={() => setCropSource('')}>Cancelar</button><button className="dashboard-button-primary" type="button" onClick={applyCrop}>Usar foto</button></div></div></div>}

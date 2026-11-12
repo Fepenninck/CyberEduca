@@ -14,6 +14,12 @@ export class UsuariosController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @Get('me/desempenho')
+    meuDesempenho(@Request() req: any) {
+        return this.usuariosService.desempenho(req.user.id);
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Patch('me')
     atualizarMeuPerfil(@Request() req: any, @Body() dados: UpdateProfileDto) {
         return this.usuariosService.atualizar(req.user.id, dados);

@@ -1,7 +1,6 @@
 "use client";
 import Link from "next/link";
 import { useCallback, useState } from "react";
-import { ArrowUpRight, Mail, MessageSquare, Globe, Users } from "lucide-react";
 import {
   listarCenarios,
   nomesTipos,
@@ -14,12 +13,6 @@ import {
   ActivityLoading,
 } from "@/components/activities/activity-state";
 import { useActivity } from "@/components/activities/use-activity";
-const icons = {
-  EMAIL: Mail,
-  SMS: MessageSquare,
-  SITE: Globe,
-  REDE_SOCIAL: Users,
-};
 export default function SimulacoesPage() {
   const [tipo, setTipo] = useState<TipoCenario | "TODOS">("TODOS");
   const loader = useCallback(
@@ -60,24 +53,23 @@ export default function SimulacoesPage() {
       ) : cenarios?.length ? (
         <div className="activity-grid">
           {cenarios.map((cenario) => {
-            const Icon = icons[cenario.tipo];
+            const tentativa = cenario.tentativas?.[0];
             return (
               <article key={cenario.id} className="activity-card">
-                <div className="activity-card-icon blue">
-                  <Icon size={26} />
-                </div>
                 <span className="activity-kicker">
                   {nomesTipos[cenario.tipo]}
                 </span>
                 <h2>{cenario.titulo}</h2>
                 <p>{cenario.descricao}</p>
-                <span className="activity-lesson">{cenario.aula.titulo}</span>
-                {!!cenario.tentativas?.length && <span className="activity-kicker">Simulação concluída</span>}
+                <div className="activity-card-footer">
+                  <span>{cenario.aula.titulo}</span>
+                  {tentativa && <span className={`activity-status${tentativa.acertou ? "" : " is-low"}`}>{tentativa.acertou ? "Acertou" : "Errou"}</span>}
+                </div>
                 <Link
                   className="activity-card-link"
                   href={`/simulacoes/${cenario.id}`}
                 >
-                  {cenario.tentativas?.length ? 'Ver resultado' : 'Iniciar simulação'} <ArrowUpRight size={18} />
+                  {tentativa ? 'Ver resultado' : 'Iniciar simulação'}
                   <span className="sr-only">: {cenario.titulo}</span>
                 </Link>
               </article>

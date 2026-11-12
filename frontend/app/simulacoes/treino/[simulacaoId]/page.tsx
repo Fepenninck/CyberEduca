@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowLeft, ArrowRight, CheckCircle2 } from 'lucide-react'
+import { ArrowLeft, CheckCircle2 } from 'lucide-react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -151,7 +151,7 @@ export default function IniciarSimulacaoPage() {
                 </div>
                 <div className="mt-7 flex justify-between gap-3">
                   <button type="button" onClick={() => setQuestaoAtual((atual) => Math.max(0, atual - 1))} disabled={questaoAtual === 0 || enviando} className="rounded-lg border border-[#50627b] px-4 py-2.5 text-sm font-semibold text-slate-200 transition hover:border-[#b2ff00] disabled:cursor-not-allowed disabled:opacity-40">Anterior</button>
-                  <button type="button" onClick={proximaQuestao} disabled={!respostasDoAluno[questao.id] || enviando} className="inline-flex items-center gap-2 rounded-lg bg-[#b2ff00] px-4 py-2.5 text-sm font-semibold text-[#132000] transition hover:bg-[#c7ff4b] disabled:cursor-not-allowed disabled:opacity-50">{enviando ? 'Calculando…' : questaoAtual === totalQuestoes - 1 ? 'Concluir e ver acertos' : 'Próxima questão'} <ArrowRight size={16} /></button>
+                  <button type="button" onClick={proximaQuestao} disabled={!respostasDoAluno[questao.id] || enviando} className="inline-flex items-center gap-2 rounded-lg bg-[#b2ff00] px-4 py-2.5 text-sm font-semibold text-[#132000] transition hover:bg-[#c7ff4b] disabled:cursor-not-allowed disabled:opacity-50">{enviando ? 'Calculando…' : questaoAtual === totalQuestoes - 1 ? 'Concluir e ver acertos' : 'Próxima questão'}</button>
                 </div>
               </div>
             ) : null}

@@ -1,21 +1,32 @@
 import Link from 'next/link'
-import { ArrowUpRight, ClipboardCheck } from 'lucide-react'
+import type { CSSProperties } from 'react'
 import type { ProvaResumo, TentativaHistorico } from '@/lib/provas-api'
+import './provas.css'
+
+const niveis: Record<string, { nome: string; cor: string }> = {
+  BASICO: { nome: 'Básico', cor: '#24b4ff' },
+  INTERMEDIARIO: { nome: 'Intermediário', cor: '#ffd34e' },
+  AVANCADO: { nome: 'Avançado', cor: '#ff4654' },
+}
 
 export function ProvaCard({ prova, resultado }: { prova: ProvaResumo; resultado?: TentativaHistorico }) {
+  const nivel = niveis[prova.trilha.nivel] ?? niveis.BASICO
+  const aprovado = resultado ? resultado.nota >= 6 : false
+
   return (
-    <article className="activity-card">
-      <div className="activity-card-icon"><ClipboardCheck size={26} /></div>
-      <span className="activity-kicker">Avaliação • {prova.trilha.nivel === 'BASICO' ? 'Básico' : prova.trilha.nivel === 'INTERMEDIARIO' ? 'Intermediário' : 'Avançado'}</span>
+    <article className="activity-card prova-nivel-card" style={{ '--level-color': nivel.cor } as CSSProperties}>
+      <div className="prova-card-top">
+        <span className="activity-kicker">Nível {nivel.nome.toLowerCase()}</span>
+        {resultado && <span className={`prova-card-nota ${aprovado ? 'is-aprovado' : 'is-reprovado'}`}>{resultado.nota.toFixed(1).replace('.', ',')}</span>}
+      </div>
       <h2>{prova.titulo}</h2>
       {prova.descricao && <p>{prova.descricao}</p>}
-      <div className="activity-card-meta">
+      <div className="activity-card-footer">
         <span>{prova.totalQuestoes} {prova.totalQuestoes === 1 ? 'questão' : 'questões'}</span>
+        {resultado && <span className={`activity-status${aprovado ? '' : ' is-low'}`}>{aprovado ? 'Aprovado' : 'Abaixo da média'}: {resultado.totalAcertos} de {resultado.totalQuestoes}</span>}
       </div>
-      <span className="activity-lesson">{prova.trilha.titulo}</span>
-      {resultado && <p className="assessment-score">Concluída · Nota {resultado.nota.toFixed(1).replace('.', ',')} de 10</p>}
       <Link className="activity-card-link" href={`/avaliacoes/${prova.id}`}>
-        {resultado ? 'Ver resultado' : 'Iniciar avaliação'} <ArrowUpRight size={18} />
+        {resultado ? 'Ver resultado' : 'Iniciar avaliação'}
       </Link>
     </article>
   )
