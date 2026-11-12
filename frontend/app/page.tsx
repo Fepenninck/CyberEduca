@@ -108,7 +108,7 @@ export default function Page() {
             <nav aria-label="Canais oficiais">
               <h2>Conecte-se</h2>
               <a href="https://www.instagram.com/cybereduca.ofc?stkn=MTdxY3I5MGJ5ODF3OA==" target="_blank" rel="noreferrer">Instagram</a>
-              <a href="mailto:educacyber123@gmail.com">Fale conosco</a>
+              <a href="mailto:cybereduca.oficial@gmail.com">Fale conosco</a>
               <Link href="/em-breve">Ajuda</Link>
             </nav>
           </div>
