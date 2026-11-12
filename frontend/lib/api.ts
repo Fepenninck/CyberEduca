@@ -10,6 +10,7 @@ export type UserProfile = {
   nome: string
   email: string
   foto?: string | null
+  avatar?: string | null
   papel: string
 }
 
@@ -19,7 +20,7 @@ export async function getCurrentUser(): Promise<UserProfile> {
   return response.json()
 }
 
-export async function updateCurrentUser(data: Partial<Pick<UserProfile, 'nome' | 'email' | 'foto'>> & { senha?: string }): Promise<UserProfile> {
+export async function updateCurrentUser(data: Partial<Pick<UserProfile, 'nome' | 'email' | 'foto' | 'avatar'>> & { senha?: string }): Promise<UserProfile> {
   const response = await apiFetch('/usuarios/me', {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
@@ -44,4 +45,22 @@ export type TrackSummary = {
 
 export type TrackDetail = TrackSummary & {
   aulas: Array<{ id: string; titulo: string; ordem: number; concluida: boolean }>
+}
+
+export type Desempenho = {
+  comparativo: { aulasConcluidas: number; totalAlunos: number; percentil: number | null }
+  ritmo: { diasSeguidos: number; aulasNaSemana: number; semana: Array<{ dia: string; aulas: number }> }
+  phishing: { respondidos: number; acertos: number; porTipo: Array<{ tipo: 'EMAIL' | 'SMS' | 'SITE' | 'REDE_SOCIAL'; total: number; acertos: number }> }
+  quizzes: {
+    feitos: number
+    media: number | null
+    melhor: { quizId: string; titulo: string; percentual: number } | null
+    revisar: { quizId: string; titulo: string; percentual: number } | null
+  }
+}
+
+export async function getDesempenho(): Promise<Desempenho> {
+  const response = await apiFetch('/usuarios/me/desempenho', { cache: 'no-store' })
+  if (!response.ok) throw new Error('Não foi possível carregar seu desempenho.')
+  return response.json()
 }

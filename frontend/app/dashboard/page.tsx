@@ -2,22 +2,22 @@
 
 import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
+import type { CSSProperties } from 'react'
 import { useRouter } from 'next/navigation'
 import {
+  ArrowUpRight,
   BookOpen,
   Check,
-  ClipboardCheck,
-  ChevronDown,
-  Circle,
-  Clock3,
   GraduationCap,
   Home,
   Menu,
-  MonitorPlay,
 } from 'lucide-react'
-import { API_URL, getCurrentUser, TrackDetail, TrackSummary } from '@/lib/api'
+import { API_URL, getCurrentUser, getDesempenho, type Desempenho, TrackDetail, TrackSummary } from '@/lib/api'
 import { UserMenu } from '@/components/user-menu'
 import { DashboardNavigation } from '@/components/dashboard-navigation'
+import { ProfilePicture } from '@/components/cyber-avatar'
+import { DashboardInsights } from '@/components/dashboard-insights'
+import './dashboard.css'
 
 const trackThemes = [
   { color: '#24b4ff', image: '/trilha-basico-bg.png' },
@@ -25,14 +25,22 @@ const trackThemes = [
   { color: '#ff4654', image: '/trilha-avancado-bg.png' },
 ]
 
+const levelThemes: Record<TrackSummary['nivel'], string> = { BASICO: '#24b4ff', INTERMEDIARIO: '#ffd34e', AVANCADO: '#ff4654' }
+
+const levelLabels: Record<TrackSummary['nivel'], string> = { BASICO: 'Básico', INTERMEDIARIO: 'Intermediário', AVANCADO: 'Avançado' }
+
+
 export default function DashboardPage() {
   const router = useRouter()
   const [tracks, setTracks] = useState<TrackSummary[]>([])
   const [lessons, setLessons] = useState<TrackDetail['aulas']>([])
   const [userName, setUserName] = useState('')
+  const [desempenho, setDesempenho] = useState<Desempenho | null>(null)
+  const [picture, setPicture] = useState<{ foto?: string | null; avatar?: string | null }>({})
 
   useEffect(() => {
-    getCurrentUser().then((user) => setUserName(user.nome)).catch(() => router.replace('/login'))
+    getCurrentUser().then((user) => { setUserName(user.nome); setPicture({ foto: user.foto, avatar: user.avatar }) }).catch(() => router.replace('/login'))
+    getDesempenho().then(setDesempenho).catch(() => setDesempenho(null))
     fetch(`${API_URL}/trilhas`)
       .then((response) => response.ok ? response.json() : Promise.reject(new Error('Não foi possível carregar as trilhas.')))
       .then(setTracks)
@@ -61,12 +69,14 @@ export default function DashboardPage() {
     const currentTrack = selectedTrack
     const completedLessons = tracks.reduce((total, track) => total + Math.round(track.totalAulas * track.percentual / 100), 0)
     const overallProgress = tracks.length ? Math.round(tracks.reduce((total, track) => total + track.percentual, 0) / tracks.length) : 0
-    const themeIndex = currentTrack ? tracks.indexOf(currentTrack) % trackThemes.length : 0
+    const themeIndex = currentTrack ? ['BASICO', 'INTERMEDIARIO', 'AVANCADO'].indexOf(currentTrack.nivel) : 0
 
     return {
       userName,
       currentTrack: currentTrack?.titulo ?? 'Escolha uma trilha para começar',
+      currentLevel: currentTrack ? levelLabels[currentTrack.nivel] : 'Básico',
       currentTrackImage: trackThemes[themeIndex].image,
+      currentColor: currentTrack ? levelThemes[currentTrack.nivel] : trackThemes[0].color,
       currentModule: currentLesson ? `Aula ${currentLesson.ordem}` : 'Sem aula disponível',
       currentLessonDuration: '',
       lastLesson: currentLesson?.titulo ?? 'Nenhuma aula disponível',
@@ -74,12 +84,16 @@ export default function DashboardPage() {
       startedTracks: tracks.filter((track) => track.percentual > 0).length,
       completedLessons,
       overallProgress,
-      tracks: tracks.slice(0, 3).map((track, index) => ({
-        name: track.nivel.charAt(0) + track.nivel.slice(1).toLowerCase(),
-        progress: track.percentual,
-        color: trackThemes[index % trackThemes.length].color,
-        status: track.percentual ? `${track.percentual}% concluído` : 'Não iniciado',
-      })),
+      tracks: (['BASICO', 'INTERMEDIARIO', 'AVANCADO'] as const).map((nivel, index) => {
+        const levelTracks = tracks.filter((track) => track.nivel === nivel)
+        const progress = levelTracks.length ? Math.round(levelTracks.reduce((total, track) => total + track.percentual, 0) / levelTracks.length) : 0
+        return {
+          name: levelLabels[nivel],
+          progress,
+          color: trackThemes[index].color,
+          status: progress ? `${progress}% concluído` : 'Não iniciado',
+        }
+      }),
     }
   }, [currentLesson, selectedTrack, tracks, userName])
 
@@ -91,70 +105,82 @@ export default function DashboardPage() {
       <DashboardNavigation active="inicio" />
 
       <div className="dashboard-wrap">
-        <header className="dashboard-welcome">
-          <h1>{data.userName ? `Olá, ${data.userName}!` : 'Olá!'}</h1>
-          <p>Continue desenvolvendo seus conhecimentos em cibersegurança.</p>
+        <header className="dashboard-welcome dashboard-welcome-avatar">
+          <Link className="dashboard-welcome-picture" href="/perfil" aria-label="Ir para o seu perfil e trocar o avatar">
+            <ProfilePicture foto={picture.foto} avatar={picture.avatar} iconSize={30} alt="" />
+          </Link>
+          <div>
+            <h1>{data.userName ? `Olá, ${data.userName.split(' ')[0]}!` : 'Olá!'}</h1>
+            <p>Continue desenvolvendo seus conhecimentos em cibersegurança.</p>
+          </div>
         </header>
 
-        <section className="dashboard-main-grid" aria-label="Resumo da aprendizagem">
-          <article className="continue-card">
-            <div className="learning-card-top">
-              <div className="learning-track-art">
-                <img src={data.currentTrackImage} alt={`Capa da trilha ${data.currentTrack}`} />
-              </div>
-              <div className="learning-track-copy">
-                <div className="learning-badges"><span className={moduleCompleted ? 'is-completed' : data.currentProgress > 0 ? 'is-in-progress' : undefined}>{moduleCompleted ? 'Concluída' : data.currentProgress > 0 ? 'Em andamento' : 'Não iniciada'}</span><small><GraduationCap size={14} /> Básico</small></div>
-                <h2>{data.currentTrack}</h2>
-                <div className="learning-track-meta">
-                  <span><BookOpen size={15} /> {data.currentModule}</span>
-                  {data.currentLessonDuration && <span><Clock3 size={15} /> {data.currentLessonDuration}</span>}
-                </div>
-              </div>
-                <div className="learning-top-progress">
-                  <div className="learning-progress-bar" aria-label={`${data.currentProgress}% concluído`}><span style={{ width: `${data.currentProgress}%` }} /></div>
-                  <strong>{data.currentProgress}%</strong>
-                </div>
+        <section className="dash-hero" style={{ '--hero-image': `url(${data.currentTrackImage})`, '--hero-color': data.currentColor } as CSSProperties} aria-labelledby="dash-hero-title">
+          <div className="dash-hero-copy">
+            <div className="dash-hero-tags">
+              <span className={`dash-hero-status ${moduleCompleted ? 'is-completed' : data.currentProgress > 0 ? 'is-in-progress' : ''}`}>{moduleStatus}</span>
+              <span className="dash-hero-level"><GraduationCap size={14} /> Nível {data.currentLevel.toLowerCase()}</span>
             </div>
+            <h2 id="dash-hero-title">{data.currentTrack}</h2>
+            <p className="dash-hero-lesson"><BookOpen size={16} /> {data.currentModule}: {data.lastLesson}</p>
+            <div className="dash-hero-actions">
+              <Link className="dashboard-button-primary" href={moduleCompleted ? nextTrack ? `/aulas/modulo/${nextTrack.id}` : '/aulas' : trackHref}>{moduleCompleted ? nextTrack ? 'Começar a próxima trilha' : 'Ver trilhas' : 'Continuar aprendendo'}</Link>
+              <Link className="dash-hero-link" href={trackHref}>Ver todas as aulas</Link>
+            </div>
+          </div>
+          <div className="dash-hero-ring" role="img" aria-label={`${data.currentProgress}% da trilha concluída`}>
+            <svg viewBox="0 0 120 120" aria-hidden="true">
+              <circle className="dash-ring-track" cx="60" cy="60" r="50" />
+              <circle className="dash-ring-value" cx="60" cy="60" r="50" pathLength={100} strokeDasharray="100" strokeDashoffset={100 - data.currentProgress} />
+            </svg>
+            <strong>{data.currentProgress}<small>%</small></strong>
+            <span>da trilha</span>
+          </div>
+        </section>
 
-            <details className="learning-module">
-              <summary className="learning-module-head"><strong>Conteúdos da trilha</strong><span className={`learning-module-status ${moduleCompleted ? 'is-completed' : ''}`}>{moduleCompleted ? <i className="module-complete-icon"><Check size={15} strokeWidth={3} /></i> : <Circle size={17} />} {moduleStatus}</span><ChevronDown className="learning-module-toggle" size={20} /></summary>
-              <div className="learning-module-lesson">
-                <span className={`lesson-status ${moduleCompleted ? 'is-completed' : ''}`}>{moduleCompleted ? <Check size={18} strokeWidth={3} /> : <Circle size={18} />}</span>
-                <span className="lesson-type">{data.currentModule}</span>
-                <strong>{data.lastLesson}</strong>
-              </div>
-            </details>
+        <DashboardInsights desempenho={desempenho} />
 
-            <div className="learning-card-footer">
-              <div className="continue-actions">
-                <Link className="dashboard-button-secondary module-link" href={trackHref}>Ver módulo completo</Link>
-                <Link className="dashboard-button-primary" href={moduleCompleted ? nextTrack ? `/aulas/modulo/${nextTrack.id}` : '/aulas' : trackHref}>{moduleCompleted ? nextTrack ? 'Continuar próxima trilha' : 'Ver trilhas' : 'Continuar aprendendo'}</Link>
-              </div>
+        <section className="dash-grid" aria-label="Resumo da aprendizagem">
+          <article className="dash-panel dash-stats">
+            <h2>Seu progresso</h2>
+            <div className="dash-stat-row">
+              <div><strong>{data.overallProgress}%</strong><span>Progresso geral</span></div>
+              <div><strong>{data.completedLessons}</strong><span>Aulas concluídas</span></div>
+              <div><strong>{data.startedTracks}</strong><span>Trilhas iniciadas</span></div>
             </div>
-          </article>
-
-          <aside className="summary-card">
-            <div className="dashboard-card-heading compact">
-              <div><h2>Seu progresso</h2></div>
-            </div>
-            <div className="summary-metrics">
-              <div><span>Trilhas iniciadas</span><strong>{data.startedTracks}</strong></div>
-              <div><span>Aulas concluídas</span><strong>{data.completedLessons}</strong></div>
-            </div>
-            <div className="overall-progress">
-              <div className="dashboard-progress-label"><span>Progresso geral</span><strong>{data.overallProgress}%</strong></div>
-              <div className="dashboard-progress-bar"><span style={{ width: `${data.overallProgress}%` }} /></div>
-            </div>
-            <div className="summary-track-progress">
+            <div className="dash-levels">
               {data.tracks.map((track) => (
-                <div key={track.name}>
+                <div key={track.name} className="dash-level" style={{ '--level-color': track.color } as CSSProperties}>
                   <div><span>{track.name}</span><strong>{track.progress}%</strong></div>
-                  <div className="dashboard-progress-bar"><span style={{ width: `${track.progress}%`, background: track.color }} /></div>
+                  <div className="dash-level-bar"><span style={{ width: `${track.progress}%` }} /></div>
                 </div>
               ))}
             </div>
-          </aside>
+          </article>
+
+          <article className="dash-panel dash-lessons">
+            <div className="dash-panel-head">
+              <h2>Aulas da trilha</h2>
+              <Link href={trackHref}>Abrir trilha <ArrowUpRight size={15} aria-hidden="true" /></Link>
+            </div>
+            {lessons.length ? (
+              <ol className="dash-lesson-list">
+                {lessons.slice(0, 6).map((lesson) => {
+                  const atual = lesson.id === currentLesson?.id && !lesson.concluida
+                  return (
+                    <li key={lesson.id} className={lesson.concluida ? 'is-done' : atual ? 'is-current' : undefined}>
+                      <span className="dash-lesson-mark" aria-hidden="true">{lesson.concluida ? <Check size={14} strokeWidth={3} /> : lesson.ordem}</span>
+                      <span className="dash-lesson-title">{lesson.titulo}</span>
+                      <span className="dash-lesson-state">{lesson.concluida ? 'Concluída' : atual ? 'Próxima' : ''}</span>
+                    </li>
+                  )
+                })}
+              </ol>
+            ) : <p className="dash-empty">As aulas aparecem aqui quando você escolher uma trilha.</p>}
+            {lessons.length > 6 && <p className="dash-more">+ {lessons.length - 6} {lessons.length - 6 === 1 ? 'aula' : 'aulas'} nesta trilha</p>}
+          </article>
         </section>
+
 
       </div>
     </main>

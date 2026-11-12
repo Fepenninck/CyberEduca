@@ -7,21 +7,7 @@ import Link from "next/link";
 import { useRouter } from 'next/navigation';
 import { use, useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
-import {
-  ArrowLeft,
-  ArrowRight,
-  BookOpen,
-  Check,
-  ChevronDown,
-  ClipboardCheck,
-  Clock3,
-  Home,
-  Menu,
-  MonitorPlay,
-  Play,
-  PlayCircle,
-  UserRound,
-} from "lucide-react";
+import { ArrowLeft, Check, ChevronDown, Clock3, Play } from "lucide-react";
 import { apiFetch, type TrackDetail } from "@/lib/api";
 import { UserMenu } from "@/components/user-menu";
 import { DashboardNavigation } from "@/components/dashboard-navigation";
@@ -207,7 +193,7 @@ function TrackModulePage({ params }: { params: Promise<{ slug: string; lesson?: 
               <span
                 className={`eyebrow track-number track-number-${trackNumber}`}
               >
-                Trilha {trackNumber}
+                Trilha {Number(trackNumber)}
               </span>
               <div className="flex flex-wrap items-center gap-3">
                 <h1>{track.titulo}</h1>
@@ -235,7 +221,6 @@ function TrackModulePage({ params }: { params: Promise<{ slug: string; lesson?: 
         {error && <p role="alert" className="mb-5 rounded-lg border border-rose-400/30 bg-rose-400/10 p-4 text-sm text-rose-200">{error}</p>}
         <div className="section-heading">
           <div>
-            <span className="eyebrow">Conteúdo</span>
             <h2>Conteúdos da trilha</h2>
           </div>
         </div>
@@ -253,7 +238,7 @@ function TrackModulePage({ params }: { params: Promise<{ slug: string; lesson?: 
               <span>
                 <small>Módulo 01</small>
                 <strong>Conteúdos da trilha</strong>
-                <em>{track.aulas.length} aulas · 2 horas</em>
+                <em>{track.aulas.length} aulas em 2 horas</em>
               </span>
               <ChevronDown
                 size={18}
@@ -406,7 +391,7 @@ function TrackModulePage({ params }: { params: Promise<{ slug: string; lesson?: 
                 >
                   {displayedLesson.concluida ? (
                     <>
-                      <ArrowRight size={16} /> {track.aulas[track.aulas.findIndex(lesson => lesson.id === displayedLesson.id) + 1] ? 'Continuar para a próxima aula' : 'Voltar às trilhas'}
+                      {track.aulas[track.aulas.findIndex(lesson => lesson.id === displayedLesson.id) + 1] ? 'Continuar para a próxima aula' : 'Voltar às trilhas'}
                     </>
                   ) : savingCompletion ? (
                     "Confirmando..."

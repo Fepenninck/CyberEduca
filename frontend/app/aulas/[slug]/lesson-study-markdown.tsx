@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
-import { ArrowLeft, ArrowRight, Check, Clock3 } from "lucide-react";
+import { ArrowLeft, Check, Clock3 } from "lucide-react";
 import { DashboardNavigation } from "@/components/dashboard-navigation";
 import { API_URL } from "@/lib/api";
 import type { TrackDetail } from "@/lib/api";
@@ -143,7 +143,6 @@ export function LessonStudy({
           <span>{lesson.trilha.titulo}</span>
           <span>Aula {String(lesson.ordem).padStart(2, "0")}</span>
         </div>
-        <div className="eyebrow">Aula</div>
         <h1>{lesson.titulo}</h1>
         <div className="lesson-meta">
           <span>
@@ -224,7 +223,7 @@ export function LessonStudy({
                     : "/aulas/" + lesson.proxima.id
                 }
               >
-                Próxima aula <ArrowRight size={16} />
+                Próxima aula
               </Link>
             )}
           </nav>

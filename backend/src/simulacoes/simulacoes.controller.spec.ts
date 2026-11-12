@@ -14,13 +14,13 @@ describe('SimulacoesController', () => {
     const req = { user: { id: 'u1' } };
     const body = { respostas: [] } as any;
 
-    controller.listar(); controller.listarCategorias(); controller.buscarCategoria('c1');
+    controller.listar(); controller.listarCategorias(); controller.buscarCategoria('c1', req);
     controller.buscar('s1', req); controller.status('s1', req); controller.responder('s1', req, body);
     controller.finalizar('s1', req, body);
 
     expect(service.listarParaAluno).toHaveBeenCalled();
     expect(service.listarCategoriasParaAluno).toHaveBeenCalled();
-    expect(service.buscarCategoriaParaAluno).toHaveBeenCalledWith('c1');
+    expect(service.buscarCategoriaParaAluno).toHaveBeenCalledWith('c1', 'u1');
     expect(service.buscarParaAluno).toHaveBeenCalledWith('s1', 'u1');
     expect(service.statusDoAluno).toHaveBeenCalledWith('s1', 'u1');
     expect(service.responder).toHaveBeenCalledWith('s1', [], 'u1');

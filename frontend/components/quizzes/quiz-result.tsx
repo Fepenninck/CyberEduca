@@ -12,7 +12,7 @@ export function QuizResult({
     <section className="activity-panel" aria-labelledby="quiz-result-title">
       <div className="activity-result-top">
         <CheckCircle2 size={36} />
-        <span className="activity-kicker">PRÁTICA CONCLUÍDA</span>
+        <span className="activity-kicker">Prática concluída</span>
         <h2 id="quiz-result-title" tabIndex={-1}>
           Mais um passo no seu aprendizado.
         </h2>
@@ -38,8 +38,7 @@ export function QuizResult({
                 ) : (
                   <CircleHelp size={18} />
                 )}
-                {item.acertou ? "Você acertou" : "Vamos revisar"} · Questão{" "}
-                {index + 1}
+                {item.acertou ? "Você acertou" : "Vamos revisar"} na questão {index + 1}
               </span>
               <h3>{questao?.enunciado}</h3>
               <p>

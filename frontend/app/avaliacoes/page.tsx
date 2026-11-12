@@ -8,6 +8,8 @@ import { useActivity } from '@/components/activities/use-activity'
 import { ProvaCard } from '@/components/provas/prova-card'
 import { listarProvas, listarMinhasTentativas } from '@/lib/provas-api'
 
+const ordemNivel = ['BASICO', 'INTERMEDIARIO', 'AVANCADO']
+
 export default function AvaliacoesPage() {
   const loader = useCallback(async () => {
     const [provas, tentativas] = await Promise.all([listarProvas(), listarMinhasTentativas()])
@@ -26,20 +28,14 @@ export default function AvaliacoesPage() {
         <span>{provas ? `${provas.length} avaliações` : 'Conhecimento na prática'}</span>
       </div>
       {loading ? <ActivityLoading /> : error ? <ActivityError error={error} retry={retry} /> : provas?.length ? (
-        <div className="assessment-levels">{(['BASICO', 'INTERMEDIARIO', 'AVANCADO'] as const).map((nivel) => {
-          const grupo = provas.filter((prova) => prova.trilha.nivel === nivel)
-          return grupo.length > 0 && <section key={nivel} className="library-section">
-            <div className="activity-section-label"><h2>Nível {nivel === 'BASICO' ? 'básico' : nivel === 'INTERMEDIARIO' ? 'intermediário' : 'avançado'}</h2></div>
-            <div className="activity-grid">{grupo.map((prova) => <ProvaCard key={prova.id} prova={prova} resultado={prova.resultado} />)}</div>
-          </section>
-        })}</div>
+        <div className="activity-grid">{[...provas].sort((a, b) => ordemNivel.indexOf(a.trilha.nivel) - ordemNivel.indexOf(b.trilha.nivel)).map((prova) => <ProvaCard key={prova.id} prova={prova} resultado={prova.resultado} />)}</div>
       ) : <ActivityEmpty>As avaliações aparecerão aqui quando forem publicadas.</ActivityEmpty>}
       {!!data?.anteriores.length && <section className="library-section">
         <div className="activity-section-label"><h2>Resultados anteriores</h2></div>
         <p className="activity-muted">Seu histórico continua disponível mesmo quando uma avaliação é arquivada.</p>
         <div className="activity-grid">{data.anteriores.map((tentativa) => <article key={tentativa.tentativaId} className="activity-card">
           <span className="activity-kicker">Concluída</span><h2>{tentativa.provaTitulo}</h2>
-          <p>Nota {tentativa.nota.toFixed(1).replace('.', ',')} de 10 · {tentativa.totalAcertos} de {tentativa.totalQuestoes} acertos</p>
+          <p>Nota {tentativa.nota.toFixed(1).replace('.', ',')} de 10, com {tentativa.totalAcertos} de {tentativa.totalQuestoes} acertos</p>
           <Link className="activity-card-link" href={`/avaliacoes/${tentativa.provaId}`}>Ver resultado</Link>
         </article>)}</div>
       </section>}
