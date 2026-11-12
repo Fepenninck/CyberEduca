@@ -10,7 +10,7 @@ describe('UsuariosController', () => {
 
     expect(controller.meuPerfil(request)).toEqual(request.user);
     expect(controller.atualizarMeuPerfil(request, { nome: 'Ana' } as any)).toEqual({ id: 'u1', nome: 'Ana' });
-    expect(service.atualizar).toHaveBeenCalledWith('u1', { nome: 'Ana' });
+    expect(service.atualizar).toHaveBeenCalledWith('u1', { nome: 'Bia' });
   });
 
   it('encaminha o pedido de desempenho do aluno logado', () => {
