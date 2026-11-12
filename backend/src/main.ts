@@ -22,3 +22,5 @@ async function bootstrap() {
 }
 
 bootstrap();
+
+var quebraLint = 1;
