@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { ChevronLeft, LockKeyhole, Pencil, X } from 'lucide-react'
+import { ChevronLeft, Pencil } from 'lucide-react'
 import { ChangeEvent, PointerEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { API_URL, getCurrentUser, TrackSummary, updateCurrentUser } from '@/lib/api'
@@ -20,8 +20,6 @@ export default function PerfilPage() {
   const [cropSource, setCropSource] = useState('')
   const [zoom, setZoom] = useState(1)
   const [cropOffset, setCropOffset] = useState({ x: 0, y: 0 })
-  const [saved, setSaved] = useState(false)
-  const [activeTab, setActiveTab] = useState<'overview' | 'settings'>('overview')
   const [pickerOpen, setPickerOpen] = useState(false)
   const fileInput = useRef<HTMLInputElement>(null)
   const cropDrag = useRef({ x: 0, y: 0, offsetX: 0, offsetY: 0 })
@@ -84,14 +82,6 @@ export default function PerfilPage() {
     })
   }
 
-  async function saveProfile() {
-    const updated = await updateCurrentUser(profile)
-    setProfile({ nome: updated.nome, email: updated.email, foto: updated.foto, avatar: updated.avatar })
-    window.dispatchEvent(new Event('profile-updated'))
-    setSaved(true)
-    window.setTimeout(() => setSaved(false), 2400)
-  }
-
   async function chooseAvatar(avatar: AvatarId) {
     const updated = await updateCurrentUser({ avatar, foto: null })
     setProfile((current) => ({ ...current, foto: updated.foto, avatar: updated.avatar }))
@@ -121,7 +111,7 @@ export default function PerfilPage() {
         <div className="profile-identity"><span className="profile-kicker">Perfil do aluno</span><div><h1>{profile.nome || 'Seu perfil'}</h1>{profile.nome && <span className="profile-handle">@{profile.nome.toLowerCase().replace(/\s+/g, '')}</span>}</div><p>{profile.email || 'Dados da conta indisponíveis'}</p></div>
       </header>
 
-      <div className="profile-tabs"><button className={activeTab === 'overview' ? 'is-active' : ''} type="button" onClick={() => setActiveTab('overview')}>Visão geral</button><button type="button" onClick={() => window.dispatchEvent(new Event('open-account-settings'))}>Configurações</button></div>
+      <div className="profile-tabs"><button className="is-active" type="button" aria-current="page">Visão geral</button><Link href="/configuracoes">Configurações</Link></div>
       <section className="profile-overview">
         <div className="profile-main">
           <article className="profile-card profile-level-card"><span className="profile-card-label">Seu nível</span><div className="profile-level-content"><div className="profile-level-number">{stats.overall}<small>%</small></div><div><strong>{basicStatus}</strong><p>Seu progresso geral é calculado pelas trilhas de aprendizagem disponíveis.</p><div className="profile-progress"><span style={{ width: `${stats.overall}%` }} /></div></div></div></article>
@@ -130,17 +120,6 @@ export default function PerfilPage() {
         </div>
         <aside className="profile-side"><article className="profile-card profile-avatar-card"><span className="profile-card-label">Seu avatar</span><strong>{profile.foto ? 'Foto personalizada' : currentAvatar?.nome ?? 'Nenhum avatar escolhido'}</strong><p>{profile.foto ? 'Você está usando uma foto enviada por você.' : currentAvatar?.descricao ?? 'Escolha um avatar que combine com o seu jeito de proteger o mundo digital.'}</p><button className="dashboard-button-secondary" type="button" onClick={() => setPickerOpen(true)}>{currentAvatar || profile.foto ? 'Trocar avatar' : 'Escolher avatar'}</button></article><article className="profile-card"><span className="profile-card-label">Resumo</span><strong>{stats.basic >= 80 ? 'Nível básico concluído' : 'Nível básico em andamento'}</strong><p>{stats.completed} aulas concluídas e {stats.overall}% de progresso geral.</p></article><article className="profile-card"><h2>Atividade semanal</h2><p>O histórico semanal será exibido quando a API registrar as datas de estudo.</p></article></aside>
       </section>
-      {activeTab === 'settings' && (
-        <div className="profile-settings-backdrop" role="dialog" aria-modal="true" aria-labelledby="profile-settings-title">
-          <article className="profile-card profile-settings profile-settings-modal">
-            <button className="profile-modal-close" type="button" onClick={() => setActiveTab('overview')} aria-label="Fechar configurações"><X size={20} /></button>
-            <div className="profile-settings-heading"><div><h2 id="profile-settings-title">Configurações da conta</h2><p>Atualize suas informações sem sair da página atual.</p></div></div>
-            <div className="profile-form-grid"><label>Nome completo<input value={profile.nome} onChange={(event) => setProfile({ ...profile, nome: event.target.value })} autoComplete="name" /></label><label>E-mail<input type="email" value={profile.email} onChange={(event) => setProfile({ ...profile, email: event.target.value })} autoComplete="email" /></label><label>Nova senha<input type="password" placeholder="Deixe em branco para não alterar" autoComplete="new-password" /></label><label>Confirmar nova senha<input type="password" placeholder="Repita a nova senha" autoComplete="new-password" /></label></div>
-            <div className="profile-privacy"><LockKeyhole size={18} /><div><strong>Privacidade e proteção de dados</strong><p>Nome e e-mail são usados para identificar e dar acesso à sua conta.</p></div></div>
-            <div className="profile-modal-actions"><button type="button" onClick={() => setActiveTab('overview')}>Cancelar</button><button type="button" onClick={saveProfile}>{saved ? 'Salvo' : 'Salvar'}</button></div>
-          </article>
-        </div>
-      )}
       {pickerOpen && <AvatarPicker avatarAtual={profile.avatar} temFoto={Boolean(profile.foto)} onEscolher={chooseAvatar} onRemoverFoto={removePhoto} onEnviarFoto={() => { setPickerOpen(false); fileInput.current?.click() }} onFechar={() => setPickerOpen(false)} />}
       <input ref={fileInput} className="profile-file-input" type="file" accept="image/png,image/jpeg,image/webp" onChange={choosePhoto} />
     </section>

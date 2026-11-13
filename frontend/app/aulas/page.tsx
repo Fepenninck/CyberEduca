@@ -52,7 +52,7 @@ export default function AulasPage() {
   }, []);
 
   return (
-    <main className="app-shell dashboard-page">
+    <main className="app-shell dashboard-page learning-paths-page">
       <DashboardNavigation active="aulas" />
       <section className="learning-paths content-wrap">
         <header className="paths-hero">

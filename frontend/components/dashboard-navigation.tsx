@@ -10,7 +10,6 @@ import {
   Menu,
 } from "lucide-react";
 import { UserMenu } from "@/components/user-menu";
-import "./painel.css";
 const items = [
   { key: "inicio", href: "/dashboard", label: "Início", icon: Home },
   { key: "aulas", href: "/aulas", label: "Trilhas", icon: BookOpen },
@@ -30,7 +29,7 @@ const items = [
   {
     key: "verificador",
     href: "/verificador",
-    label: "Verificador",
+    label: "Laboratório",
     icon: ShieldCheck,
   },
 ] as const;
@@ -46,10 +45,6 @@ export function DashboardNavigation({
     | "perfil"
     | "inicio";
 }) {
-  const settings = (event: React.MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
-    window.dispatchEvent(new Event("open-account-settings"));
-  };
   const links = items.map((item) => (
     <Link
       key={item.key}
@@ -84,7 +79,7 @@ export function DashboardNavigation({
           <nav>
             {links}
             <Link href="/perfil">Meu perfil</Link>
-            <Link href="#configuracoes" onClick={settings}>
+            <Link href="/configuracoes">
               Configurações
             </Link>
           </nav>

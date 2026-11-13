@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import type { CSSProperties } from 'react'
-import { ArrowUpRight, Flame, ListChecks, MailWarning, Trophy } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 import type { Desempenho } from '@/lib/api'
 
 const canais: Record<Desempenho['phishing']['porTipo'][number]['tipo'], string> = {
@@ -21,7 +21,6 @@ function Comparativo({ dados }: { dados: Desempenho['comparativo'] }) {
   const percentil = dados.percentil
   return (
     <article className="insight-card" style={{ '--insight-color': '#b2ff00' } as CSSProperties}>
-      <span className="insight-icon"><Trophy size={18} /></span>
       {percentil === null ? (
         <>
           <h3>Você está abrindo caminho</h3>
@@ -33,7 +32,7 @@ function Comparativo({ dados }: { dados: Desempenho['comparativo'] }) {
           <p>{dados.aulasConcluidas === 0 ? 'Conclua sua primeira aula para entrar no ranking da turma.' : `Comparação feita pelas ${dados.aulasConcluidas} aulas que você já concluiu.`}</p>
           <div className="insight-rank" aria-hidden="true">
             <span className="insight-rank-fill" style={{ width: `${percentil}%` }} />
-            <span className="insight-rank-you" style={{ left: `${percentil}%` }}>você</span>
+            <span className="insight-rank-you" style={{ left: `clamp(20px, ${percentil}%, calc(100% - 20px))` }}>você</span>
           </div>
           <div className="insight-rank-scale" aria-hidden="true"><span>Menos aulas</span><span>Mais aulas</span></div>
         </>
@@ -46,7 +45,6 @@ function Ritmo({ dados }: { dados: Desempenho['ritmo'] }) {
   const maior = Math.max(1, ...dados.semana.map((dia) => dia.aulas))
   return (
     <article className="insight-card" style={{ '--insight-color': '#c28cf5' } as CSSProperties}>
-      <span className="insight-icon"><Flame size={18} /></span>
       <h3>{dados.diasSeguidos > 0 ? <><em>{dados.diasSeguidos}</em> {dados.diasSeguidos === 1 ? 'dia' : 'dias'} seguidos estudando</> : 'Comece uma sequência hoje'}</h3>
       <p>{dados.aulasNaSemana > 0 ? `${dados.aulasNaSemana} ${dados.aulasNaSemana === 1 ? 'aula concluída' : 'aulas concluídas'} nos últimos 7 dias.` : 'Nenhuma aula nos últimos 7 dias. Uma aula hoje já inicia sua sequência.'}</p>
       <ol className="insight-week" aria-label="Aulas concluídas por dia">
@@ -70,7 +68,6 @@ function DetectorDeGolpes({ dados }: { dados: Desempenho['phishing'] }) {
 
   return (
     <article className="insight-card" style={{ '--insight-color': '#24b4ff' } as CSSProperties}>
-      <span className="insight-icon"><MailWarning size={18} /></span>
       {dados.respondidos === 0 ? (
         <>
           <h3>Qual golpe engana você?</h3>
@@ -99,7 +96,6 @@ function DetectorDeGolpes({ dados }: { dados: Desempenho['phishing'] }) {
 function Quizzes({ dados }: { dados: Desempenho['quizzes'] }) {
   return (
     <article className="insight-card" style={{ '--insight-color': '#ffd34e' } as CSSProperties}>
-      <span className="insight-icon"><ListChecks size={18} /></span>
       {dados.media === null ? (
         <>
           <h3>Teste o que você aprendeu</h3>

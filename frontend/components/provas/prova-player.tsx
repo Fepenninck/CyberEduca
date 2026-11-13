@@ -50,7 +50,7 @@ export function ProvaPlayer({ prova }: { prova: ProvaDetalhe }) {
   }
 
   return (
-    <div className="activity-panel">
+    <div className="activity-panel assessment-player">
 
       <div className="quiz-progress">
         <span>{prova.trilha.titulo}</span>

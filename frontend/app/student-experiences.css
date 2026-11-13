@@ -1,0 +1,1495 @@
+/* Learning paths: a visible journey, with course shelves grouped by level. */
+.app-shell.learning-paths-page .paths-hero {
+  grid-template-columns: minmax(0, 1fr) minmax(340px, .8fr);
+  gap: 60px;
+  padding: 4px 0 40px;
+  border-bottom: 1px solid var(--student-line);
+}
+.app-shell.learning-paths-page .paths-journey {
+  padding: 24px 10px;
+}
+.app-shell.learning-paths-page .paths-journey-dot {
+  background: var(--student-page);
+  box-shadow: none;
+}
+.app-shell.learning-paths-page .paths-journey li.is-done .paths-journey-dot {
+  background: var(--level-color);
+}
+.app-shell.learning-paths-page .learning-level {
+  display: block;
+  padding: 32px 0 42px;
+  border: 0;
+}
+.app-shell.learning-paths-page .learning-level-header {
+  align-items: center;
+  padding: 0;
+  margin-bottom: 22px;
+  border: 0;
+}
+.app-shell.learning-paths-page .learning-level-header h2 {
+  font-size: 25px;
+}
+.app-shell.learning-paths-page .learning-level-header p {
+  max-width: 600px;
+  margin-top: 8px;
+  line-height: 1.7;
+}
+.app-shell.learning-paths-page .learning-level-summary {
+  width: 220px;
+  padding: 14px 18px;
+  border-radius: 6px;
+  background: var(--student-raised);
+}
+.app-shell.learning-paths-page .course-carousel {
+  gap: 12px;
+}
+.app-shell.learning-paths-page .course-carousel-window {
+  padding: 0;
+}
+.app-shell.learning-paths-page .learning-path-card {
+  border: 0;
+  border-radius: 9px;
+  background: var(--student-card);
+  box-shadow: none;
+}
+.app-shell.learning-paths-page .learning-path-card:hover {
+  transform: none;
+  box-shadow: none;
+}
+.app-shell.learning-paths-page .learning-path-image {
+  height: 136px;
+  flex-basis: 136px;
+}
+.app-shell.learning-paths-page .learning-path-body {
+  padding: 22px;
+}
+.app-shell.learning-paths-page .learning-path-badge {
+  padding: 0;
+  border: 0;
+  color: var(--level-color);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .06em;
+}
+.app-shell.learning-paths-page .learning-path-body h2 {
+  min-height: 2.7em;
+  margin-top: 14px;
+  font-size: 19px;
+  font-weight: 400;
+  line-height: 1.35;
+}
+.app-shell.learning-paths-page .learning-path-body > p {
+  color: var(--student-muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+.app-shell.learning-paths-page .learning-path-meta {
+  margin-top: 24px;
+  color: var(--student-muted);
+  font-size: 11px;
+}
+.app-shell.learning-paths-page .learning-path-progress {
+  height: 3px;
+  margin-top: 12px;
+}
+.app-shell.learning-paths-page .learning-path-body > a {
+  margin-top: 22px;
+  width: 100%;
+  min-height: 42px;
+  padding-inline: 12px;
+  font-size: 13px;
+}
+.app-shell.learning-paths-page .learning-path-lock {
+  min-height: 42px;
+  margin-top: 22px;
+  padding: 10px;
+  border: 0;
+  border-radius: 4px;
+  background: var(--student-control);
+  color: var(--student-muted);
+  font-size: 11px;
+}
+.app-shell.learning-paths-page .course-carousel-arrow {
+  border: 0;
+  border-radius: 4px;
+  background: var(--student-control);
+  color: var(--student-text);
+}
+.app-shell.learning-paths-page .course-carousel-arrow:disabled {
+  opacity: .3;
+}
+/* Study: a quiet reading canvas framed by the existing lesson navigation. */
+.app-shell.track-module-page .track-detail-hero-no-image {
+  min-height: 0;
+  padding-bottom: 0;
+  background: transparent;
+}
+.app-shell.track-module-page .track-detail-hero-no-image .content-wrap {
+  width: min(calc(100% - 64px), 1440px);
+  padding: 24px 0 0;
+}
+.app-shell.track-module-page .track-detail-hero-no-image .back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 42px;
+  margin-bottom: 20px;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 5px;
+  background: var(--student-control);
+  color: var(--student-text);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  text-decoration: none;
+  transition: background .16s ease;
+}
+.app-shell.track-module-page .track-detail-hero-no-image .back-link:hover {
+  background: #304158;
+}
+.app-shell.track-module-page .track-detail-hero-no-image .back-link svg {
+  flex: none;
+}
+.app-shell.track-module-page .detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 368px;
+  align-items: center;
+  gap: 32px;
+  padding: 32px;
+  border: 0;
+  border-bottom: 0;
+  border-radius: 10px;
+  background: #1e2d40;
+}
+.app-shell.track-module-page .detail-grid h1 {
+  margin: 10px 0 0;
+  font-size: clamp(28px, 2.5vw, 36px);
+  font-weight: 400;
+  line-height: 1.2;
+}
+.app-shell.track-module-page .detail-grid p {
+  max-width: 760px;
+  margin-top: 14px;
+  color: var(--student-muted);
+  font-size: 16px;
+  line-height: 1.7;
+}
+.app-shell.track-module-page .detail-stats {
+  gap: 32px;
+  margin-top: 24px;
+}
+.app-shell.track-module-page .detail-stats > div {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.app-shell.track-module-page .detail-stats strong {
+  font-size: 22px;
+  font-weight: 400;
+}
+.app-shell.track-module-page .detail-stats span {
+  color: var(--student-subtle);
+  font-size: 11px;
+}
+.app-shell.track-module-page .track-learning {
+  width: min(calc(100% - 64px), 1440px);
+  padding-top: 24px;
+}
+.app-shell.track-module-page .track-learning-grid {
+  display: grid;
+  padding-top: 0;
+  grid-template-columns: minmax(0, 300px) minmax(0, 1fr) minmax(0, 280px);
+  gap: 24px;
+  align-items: start;
+}
+.app-shell.track-module-page .track-module-navigation {
+  min-width: 0;
+  position: sticky;
+  top: 112px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--student-card);
+}
+.app-shell.track-module-page .track-module-navigation > button {
+  min-height: 0;
+  height: auto;
+  align-items: flex-start;
+  padding: 24px 20px;
+  border: 0;
+  background: transparent;
+}
+.app-shell.track-module-page .track-module-navigation > button strong {
+  font-size: 16px;
+  font-weight: 500;
+}
+.app-shell.track-module-page .track-module-navigation > button em {
+  color: var(--student-subtle);
+  font-size: 12px;
+}
+.app-shell.track-module-page .track-module-lessons {
+  max-height: calc(100dvh - 250px);
+  overflow-y: auto;
+}
+.app-shell.track-module-page .track-module-lessons button {
+  min-height: 84px;
+  padding: 18px 20px;
+  border: 0;
+  border-top: 1px solid #24344a;
+  background: transparent;
+  height: auto;
+  align-items: flex-start;
+}
+.app-shell.track-module-page .track-module-navigation strong,
+.app-shell.track-module-page .track-next-lesson strong {
+  display: block;
+  white-space: normal;
+  text-overflow: clip;
+  overflow: visible;
+  overflow-wrap: anywhere;
+}
+.app-shell.track-module-page .track-module-navigation button > span:nth-child(2),
+.app-shell.track-module-page .track-module-lessons p,
+.app-shell.track-module-page .track-next-lesson p {
+  flex: 1;
+  min-width: 0;
+}
+.app-shell.track-module-page .track-module-navigation > button > svg,
+.app-shell.track-module-page .track-module-lessons button > span {
+  flex-shrink: 0;
+}
+.app-shell.track-module-page .track-module-lessons button.is-selected {
+  background: #24354a;
+  box-shadow: inset 3px 0 var(--student-accent);
+}
+.app-shell.track-module-page .track-module-lessons button:disabled {
+  opacity: .55;
+}
+.app-shell.track-module-page .track-module-lessons strong {
+  color: var(--student-muted);
+  font-size: 14px;
+  line-height: 1.6;
+  font-weight: 400;
+}
+.app-shell.track-module-page .track-module-lessons small {
+  color: var(--student-subtle);
+  font-size: 12px;
+}
+.app-shell.track-module-page .track-lesson-viewer {
+  min-width: 0;
+  padding: 30px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--student-card);
+}
+.app-shell.track-module-page .track-lesson-viewer-heading {
+  padding: 0 0 24px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--student-line);
+  background: transparent;
+}
+.app-shell.track-module-page .track-lesson-viewer-heading > span {
+  color: var(--student-subtle);
+  font-size: 13px;
+}
+.app-shell.track-module-page .track-lesson-viewer-heading h3 {
+  margin-top: 12px;
+  color: var(--student-text);
+  font-size: 30px;
+  font-weight: 400;
+  line-height: 1.35;
+}
+.app-shell.track-module-page .track-lesson-content {
+  padding: 0;
+  width: auto;
+  max-width: 100%;
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.85;
+}
+.app-shell.track-module-page .track-learning-aside {
+  min-width: 0;
+  position: sticky;
+  top: 112px;
+  max-height: calc(100dvh - 136px);
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-width: thin;
+  align-content: start;
+  display: grid;
+  gap: 16px;
+}
+/* Desktop sidebars stay anchored while the document scrolls normally. */
+@media (min-width: 1401px) {
+  .app-shell.track-module-page .track-learning {
+    padding-bottom: 24px;
+  }
+  .app-shell.track-module-page .track-learning-grid {
+    min-height: calc(100dvh - 136px);
+    padding-bottom: 0;
+  }
+  .app-shell.track-module-page .track-module-navigation,
+  .app-shell.track-module-page .track-learning-aside {
+    position: fixed;
+    top: 112px;
+    max-height: none;
+    overflow: visible;
+  }
+  .app-shell.track-module-page .track-module-navigation {
+    left: max(32px, calc((100% - 1440px) / 2));
+    width: 300px;
+  }
+  .app-shell.track-module-page .track-learning-aside {
+    right: max(32px, calc((100% - 1440px) / 2));
+    width: 280px;
+  }
+  .app-shell.track-module-page .track-lesson-viewer {
+    grid-column: 2;
+    min-height: 0;
+    height: auto;
+    overflow: visible;
+  }
+}
+.app-shell.track-module-page :is(.track-progress-summary, .track-next-lesson) {
+  min-width: 0;
+  height: auto;
+  padding: 24px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--student-raised);
+}
+.app-shell.track-module-page .track-progress-summary strong {
+  font-size: 14px;
+  font-weight: 400;
+}
+.app-shell.track-module-page .track-progress-summary b {
+  color: var(--student-accent);
+  font-size: 28px;
+  font-weight: 400;
+}
+.app-shell.track-module-page .track-progress-summary p {
+  margin-top: 14px;
+  color: var(--student-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.app-shell.track-module-page .track-next-lesson strong {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.app-shell.track-module-page .track-next-lesson > button {
+  width: 100%;
+  padding: 13px 14px;
+  font-size: 14px;
+  white-space: normal;
+}
+.app-shell.track-module-page .track-lesson-preview {
+  min-height: 280px;
+  border: 1px solid var(--student-line);
+  border-radius: 8px;
+  background: var(--student-raised);
+}
+.app-shell.lesson-study-page .lesson-content {
+  width: min(calc(100% - 64px), 900px);
+  margin: 40px auto 64px;
+  padding: 44px 56px;
+  border-radius: 10px;
+  background: var(--student-card);
+}
+.app-shell.lesson-study-page .lesson-content > h1 {
+  margin-top: 24px;
+  color: var(--student-text);
+  font-size: clamp(30px, 3.5vw, 44px);
+  font-weight: 400;
+  line-height: 1.25;
+}
+.app-shell.lesson-study-page .lesson-topline {
+  margin-top: 32px;
+  color: var(--student-muted);
+  font-size: 12px;
+}
+.app-shell.lesson-study-page .lesson-divider {
+  margin: 30px 0;
+  background: var(--student-line);
+}
+.app-shell.dashboard-page :is(.lesson-learning-content, .track-lesson-content, .prose-content) {
+  color: #c5d0e0;
+  font-size: 16px;
+  line-height: 1.85;
+  overflow-wrap: anywhere;
+}
+.app-shell.dashboard-page :is(.lesson-learning-content, .track-lesson-content, .prose-content) :is(h2, h3, h4) {
+  color: var(--student-text);
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: -.015em;
+}
+.app-shell.dashboard-page :is(.lesson-learning-content, .track-lesson-content, .prose-content) h2 {
+  margin: 36px 0 18px;
+  font-size: 24px;
+}
+.app-shell.dashboard-page :is(.lesson-learning-content, .track-lesson-content, .prose-content) h3 {
+  margin: 28px 0 14px;
+  font-size: 20px;
+}
+.app-shell.dashboard-page :is(.lesson-learning-content, .track-lesson-content, .prose-content) p {
+  margin: 16px 0;
+  color: #c5d0e0;
+}
+.app-shell.dashboard-page :is(.lesson-learning-content, .track-lesson-content, .prose-content) :is(ul, ol) {
+  padding-left: 22px;
+  margin: 16px 0;
+}
+.app-shell.dashboard-page :is(.lesson-learning-content, .track-lesson-content, .prose-content) li {
+  margin: 8px 0;
+}
+.app-shell.dashboard-page :is(.lesson-learning-content, .track-lesson-content, .prose-content) pre {
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--student-line);
+  border-radius: 6px;
+  padding: 20px;
+  background: #0b1421;
+  line-height: 1.6;
+}
+.app-shell.dashboard-page :is(.lesson-learning-content, .track-lesson-content, .prose-content) code {
+  font-size: .88em;
+}
+.app-shell.dashboard-page .lesson-teaching-figure {
+  margin: 28px 0;
+  padding: 16px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--student-raised);
+}
+.app-shell.dashboard-page .lesson-table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.app-shell.dashboard-page .lesson-table-wrap :is(th, td) {
+  padding: 12px 16px;
+  border-color: var(--student-line);
+  font-size: 13px;
+}
+.app-shell.dashboard-page .lesson-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 28px;
+  margin-top: 36px;
+  border-top: 1px solid var(--student-line);
+}
+/* Quizzes are short practice sessions, with each question visually separated. */
+.app-shell.quizzes-page .activity-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.app-shell.quizzes-page .activity-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 24px;
+  padding: 26px 28px;
+}
+.app-shell.quizzes-page .activity-card > :is(.activity-kicker, h2, p) {
+  grid-column: 1 / -1;
+}
+.app-shell.quizzes-page .activity-card h2 {
+  margin-top: 14px;
+  font-size: 24px;
+}
+.app-shell.quizzes-page .activity-card p {
+  margin-bottom: 24px;
+}
+.app-shell.quizzes-page .activity-card-footer {
+  gap: 12px;
+  justify-content: flex-start;
+  padding: 0;
+}
+.app-shell.quizzes-page .activity-card-link {
+  align-self: end;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  white-space: nowrap;
+}
+.app-shell.quizzes-page :is(.quiz-player, .quiz-result) {
+  width: min(100%, 920px);
+  margin-inline: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.app-shell.quizzes-page .quiz-progress {
+  color: var(--student-muted);
+  font-size: 13px;
+}
+.app-shell.quizzes-page .activity-progress {
+  margin-bottom: 32px;
+  height: 4px;
+}
+.app-shell.quizzes-page .quiz-question {
+  padding: 28px;
+  margin-bottom: 20px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--student-card);
+}
+.app-shell.quizzes-page .quiz-question legend {
+  float: left;
+  width: 100%;
+}
+.app-shell.quizzes-page .quiz-options {
+  clear: both;
+}
+.app-shell.quizzes-page .quiz-question .activity-kicker {
+  display: block;
+  color: var(--student-accent);
+}
+.app-shell.quizzes-page .quiz-enunciado {
+  margin: 12px 0 24px;
+  color: var(--student-text);
+  font-size: 22px;
+  line-height: 1.5;
+}
+.app-shell.dashboard-page .quiz-option {
+  gap: 14px;
+  padding: 16px 18px;
+  border: 1px solid #35485e;
+  border-radius: 6px;
+  background: transparent;
+  color: #c5d0e0;
+  font-size: 15px;
+  line-height: 1.65;
+  transition: background .16s ease, border-color .16s ease;
+}
+.app-shell.dashboard-page .quiz-option:hover {
+  background: #1e2d40;
+  border-color: #718096;
+}
+.app-shell.dashboard-page .quiz-option.is-selected {
+  background: #233629;
+  border-color: #8cbd3f;
+  color: #f2f8e7;
+}
+.app-shell.dashboard-page .quiz-option:has(input:focus-visible) {
+  outline: 2px solid var(--student-accent);
+  outline-offset: 3px;
+}
+.app-shell.dashboard-page .quiz-option input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--student-accent);
+}
+.app-shell.quizzes-page .quiz-letter {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  border-radius: 4px;
+  background: var(--student-control);
+  color: var(--student-muted);
+  font-size: 12px;
+}
+.app-shell.dashboard-page .quiz-feedback {
+  padding: 26px;
+  border: 1px solid #63533b;
+  border-radius: 8px;
+  background: #28282a;
+}
+.app-shell.dashboard-page .quiz-feedback.is-correct {
+  border-color: #3b5d45;
+  background: #1b2c29;
+}
+.app-shell.dashboard-page .quiz-feedback.is-danger {
+  border-color: #75414c;
+  background: #33262f;
+}
+.app-shell.dashboard-page .quiz-feedback :is(h2, h3) {
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+.app-shell.dashboard-page .quiz-feedback p {
+  color: #c5d0e0;
+  line-height: 1.8;
+}
+.app-shell.dashboard-page .feedback-explanation {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top-color: #ffffff18;
+}
+.app-shell.quizzes-page .activity-result-top {
+  align-items: flex-start;
+  padding: 28px 0 36px;
+  text-align: left;
+}
+.app-shell.quizzes-page .activity-result-top h2 {
+  font-size: 30px;
+}
+.app-shell.quizzes-page .quiz-feedback-list {
+  gap: 16px;
+}
+/* Assessments have a focused, continuous document layout and a clear score summary. */
+.app-shell.avaliacoes-page .activity-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.app-shell.avaliacoes-page .prova-nivel-card {
+  position: relative;
+  padding: 30px;
+  border: 0;
+  border-top: 3px solid var(--level-color);
+  border-radius: 6px;
+  background: var(--student-card);
+}
+.app-shell.avaliacoes-page .prova-nivel-card h2 {
+  margin-top: 28px;
+  font-size: 27px;
+  line-height: 1.3;
+}
+.app-shell.avaliacoes-page .prova-card-top {
+  gap: 16px;
+}
+.app-shell.avaliacoes-page .prova-card-nota {
+  font-size: 28px;
+  font-weight: 400;
+  background: transparent;
+}
+.app-shell.avaliacoes-page :is(.assessment-player, .assessment-result) {
+  width: min(100%, 900px);
+  margin-inline: auto;
+  padding: 40px 48px;
+}
+.app-shell.avaliacoes-page .assessment-player .quiz-progress {
+  align-items: start;
+  gap: 24px;
+  color: var(--student-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.app-shell.avaliacoes-page .assessment-player .quiz-question {
+  padding: 8px 0 32px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid var(--student-line);
+  border-radius: 0;
+  background: transparent;
+}
+.app-shell.avaliacoes-page .assessment-player .quiz-enunciado {
+  margin-bottom: 24px;
+  color: var(--student-text);
+  font-size: 21px;
+  line-height: 1.6;
+}
+.app-shell.avaliacoes-page .assessment-player .quiz-option {
+  background: #192738;
+}
+.app-shell.avaliacoes-page .assessment-player .quiz-option.is-selected {
+  background: #233629;
+}
+.app-shell.avaliacoes-page .prova-resultado-resumo {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  gap: 36px;
+  align-items: center;
+  margin: 32px 0 40px;
+  padding: 28px 0;
+  border-block: 1px solid var(--student-line);
+}
+.app-shell.avaliacoes-page .prova-resultado-titulo {
+  font-size: 27px;
+  font-weight: 400;
+  line-height: 1.35;
+}
+.app-shell.avaliacoes-page .prova-resultado-detalhe {
+  margin-top: 14px;
+  color: var(--student-muted);
+  line-height: 1.7;
+}
+.app-shell.avaliacoes-page .prova-resultado-anel {
+  width: 150px;
+  height: 150px;
+}
+.app-shell.avaliacoes-page .prova-anel-valor {
+  filter: none;
+}
+.app-shell.avaliacoes-page .library-section {
+  margin-top: 48px;
+  padding-top: 30px;
+  border-top: 1px solid var(--student-line);
+}
+/* Phishing uses a realistic message preview next to a separate analysis area. */
+.app-shell.simulacoes-page .activity-heading {
+  max-width: 900px;
+}
+.app-shell.simulacoes-page .activity-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.app-shell.simulacoes-page .activity-card {
+  padding: 26px 28px;
+  border-radius: 8px;
+}
+.app-shell.simulacoes-page .activity-card > .activity-kicker {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 5px 10px;
+  border-radius: 4px;
+  background: #24364d;
+  color: #9fcaed;
+  font-size: 11px;
+}
+.app-shell.simulacoes-page .activity-card h2 {
+  margin-top: 18px;
+  font-size: 24px;
+}
+.app-shell.simulacoes-page .activity-card-footer {
+  align-items: start;
+  gap: 12px;
+  color: var(--student-subtle);
+  font-size: 12px;
+}
+.app-shell.simulacoes-page .simulation-layout {
+  grid-template-columns: minmax(0, 1.65fr) minmax(300px, .85fr);
+  gap: 28px;
+  align-items: start;
+}
+.app-shell.simulacoes-page .simulation-preview {
+  padding: 24px;
+  background: #233247;
+}
+.app-shell.simulacoes-page .simulation-preview > .activity-section-label {
+  padding: 0 4px 18px;
+  margin: 0;
+}
+.app-shell.simulacoes-page .simulation-preview > .activity-section-label h2 {
+  margin: 0;
+  font-size: 16px;
+}
+.app-shell.simulacoes-page .simulation-window {
+  min-height: 360px;
+  border: 0;
+  border-radius: 8px;
+  background: #f7f8fa;
+  box-shadow: 0 10px 24px #09101c22;
+}
+.app-shell.simulacoes-page .simulation-toolbar {
+  padding: 18px 22px;
+  background: #e9edf3;
+  border-color: #d5dce6;
+}
+.app-shell.simulacoes-page .simulation-email-header {
+  padding: 24px;
+  border-color: #dce2ea;
+}
+.app-shell.simulacoes-page .simulation-message {
+  padding: 28px;
+  color: #243346;
+  font-size: 15px;
+  line-height: 1.9;
+}
+.app-shell.simulacoes-page .simulation-social-footer {
+  padding: 18px 28px;
+}
+.app-shell.simulacoes-page .simulation-address {
+  padding: 8px 12px;
+  color: #56677b;
+}
+.app-shell.simulacoes-page .simulation-phone {
+  border: 7px solid #0b1421;
+  background: #f0f3f7;
+  box-shadow: 0 16px 30px #09101c33;
+}
+.app-shell.simulacoes-page .simulation-phone .simulation-message {
+  padding: 18px;
+  font-size: 14px;
+}
+.app-shell.simulacoes-page .simulation-phone .simulation-toolbar {
+  padding: 14px;
+}
+.app-shell.simulacoes-page .simulation-bubble {
+  background: #dce5ef;
+}
+.app-shell.simulacoes-page .simulation-decision {
+  position: sticky;
+  top: 112px;
+}
+.app-shell.simulacoes-page .simulation-decision .activity-panel {
+  padding: 28px;
+}
+.app-shell.simulacoes-page .simulation-decision h2 {
+  margin-top: 14px;
+  font-size: 26px;
+  line-height: 1.3;
+}
+.app-shell.simulacoes-page .simulation-decision .activity-muted {
+  margin-top: 16px;
+  font-size: 14px;
+}
+.app-shell.simulacoes-page .simulation-choices {
+  display: grid;
+  gap: 12px;
+  margin: 26px 0;
+}
+.app-shell.simulacoes-page .simulation-choices label {
+  min-height: 60px;
+  padding: 16px;
+  border: 1px solid #35485e;
+  border-radius: 6px;
+  background: #192738;
+}
+.app-shell.simulacoes-page .simulation-choices label.is-selected {
+  border-color: #8cbd3f;
+  background: #233629;
+}
+.app-shell.simulacoes-page .simulation-choices label:has(input:focus-visible) {
+  outline: 2px solid var(--student-accent);
+  outline-offset: 3px;
+}
+.app-shell.simulacoes-page .simulation-decision .dashboard-button-primary {
+  width: 100%;
+}
+.app-shell.simulacoes-page .simulation-preview .activity-footnote {
+  padding-inline: 4px;
+  color: var(--student-muted);
+}
+/* Profile and settings use an account layout, rather than an activity layout. */
+.app-shell.profile-page .profile-wrap {
+  max-width: 1100px;
+}
+.app-shell.profile-page .profile-hero {
+  gap: 28px;
+  align-items: center;
+  padding: 32px 0;
+  margin: 24px 0 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.app-shell.profile-page .profile-hero::before {
+  content: none;
+}
+.app-shell.profile-page .profile-avatar {
+  width: 100px;
+  height: 100px;
+  border: 0;
+  background: var(--student-control);
+  box-shadow: none;
+}
+.app-shell.profile-page .profile-avatar > span {
+  background: #35485e;
+}
+.app-shell.profile-page .profile-kicker {
+  color: var(--student-subtle);
+  font-size: 12px;
+  letter-spacing: .02em;
+}
+.app-shell.profile-page .profile-identity > div {
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 10px;
+}
+.app-shell.profile-page .profile-identity p {
+  margin-top: 12px;
+  color: var(--student-muted);
+}
+.app-shell.profile-page .profile-tabs {
+  gap: 24px;
+  margin-top: 12px;
+  border-bottom: 1px solid var(--student-line);
+}
+.app-shell.profile-page .profile-tabs :is(a, button) {
+  display: inline-flex;
+  align-items: center;
+  min-height: 50px;
+  padding: 12px 0;
+  border-radius: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--student-muted);
+  font-size: 14px;
+  font-weight: 400;
+}
+.app-shell.profile-page .profile-tabs .is-active {
+  border-bottom-color: var(--student-accent);
+  color: var(--student-text);
+  background: transparent;
+}
+.app-shell.profile-page .profile-overview {
+  grid-template-columns: minmax(0, 1.7fr) minmax(260px, 1fr);
+  gap: 30px;
+  margin-top: 30px;
+}
+.app-shell.profile-page .profile-main {
+  gap: 24px;
+}
+.app-shell.profile-page .profile-level-card {
+  background: var(--student-raised);
+}
+.app-shell.profile-page .profile-level-content {
+  grid-template-columns: 100px minmax(0, 1fr);
+  gap: 24px;
+}
+.app-shell.profile-page .profile-level-number {
+  font-size: 48px;
+  font-weight: 400;
+  color: var(--student-accent);
+}
+.app-shell.profile-page .profile-level-number small {
+  font-size: 22px;
+}
+.app-shell.profile-page .profile-level-content strong {
+  font-weight: 500;
+}
+.app-shell.profile-page .profile-track-list {
+  gap: 22px;
+  margin-top: 26px;
+}
+.app-shell.profile-page .profile-progress {
+  height: 4px;
+  background: #2e4056;
+}
+.app-shell.profile-page .profile-progress span {
+  box-shadow: none;
+}
+.app-shell.profile-page .profile-study-metrics {
+  gap: 16px;
+  background: transparent;
+}
+.app-shell.profile-page .profile-study-metrics div {
+  align-items: flex-start;
+  padding: 14px 0;
+  background: transparent;
+  text-align: left;
+}
+.app-shell.profile-page .profile-study-metrics strong {
+  font-size: 30px;
+  font-weight: 400;
+}
+.app-shell.profile-page .profile-side {
+  gap: 20px;
+}
+.app-shell.profile-page .profile-side > .profile-card {
+  background: transparent;
+  padding: 0 0 24px;
+  border-bottom: 1px solid var(--student-line);
+  border-radius: 0;
+}
+.app-shell.profile-page .profile-avatar-card strong {
+  display: block;
+  margin-top: 14px;
+  font-size: 20px;
+  font-weight: 400;
+}
+.app-shell.profile-page .profile-avatar-card p {
+  margin-top: 12px;
+  font-size: 14px;
+}
+.app-shell.profile-page .profile-avatar-card .dashboard-button-secondary {
+  width: auto;
+  padding-inline: 20px;
+}
+.app-shell.dashboard-page :is(.avatar-picker, .crop-modal) {
+  background: var(--student-card);
+  border: 1px solid var(--student-line);
+  border-radius: 10px;
+}
+.app-shell.dashboard-page .avatar-option {
+  border-color: var(--student-line);
+  background: var(--student-raised);
+}
+.app-shell.dashboard-page .avatar-option.is-selected {
+  border-color: var(--student-accent);
+  background: #233629;
+}
+.app-shell.dashboard-page .avatar-picker {
+  width: min(100%, 640px);
+  max-height: calc(100dvh - 40px);
+  padding: 30px;
+  border: 0;
+  border-radius: var(--student-radius);
+  background: var(--student-card);
+  box-shadow: none;
+}
+.app-shell.dashboard-page .avatar-picker-head {
+  padding: 0 28px 0 0;
+  border: 0;
+}
+.app-shell.dashboard-page .avatar-picker-head h2 {
+  color: var(--student-text);
+  font-size: 27px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: -.02em;
+}
+.app-shell.dashboard-page .avatar-picker-head p {
+  margin-top: 12px;
+  color: var(--student-muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+.app-shell.dashboard-page .avatar-picker-grid {
+  gap: 12px;
+  margin-top: 26px;
+}
+.app-shell.dashboard-page .avatar-option {
+  min-width: 0;
+  padding: 18px 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: var(--student-raised);
+  color: var(--student-muted);
+}
+.app-shell.dashboard-page .avatar-option:hover {
+  border-color: transparent;
+  background: var(--student-control);
+  color: var(--student-text);
+}
+.app-shell.dashboard-page .avatar-option.is-selected {
+  border-color: var(--student-accent);
+  background: #233629;
+  color: var(--student-text);
+}
+.app-shell.dashboard-page .avatar-option strong {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.app-shell.dashboard-page .avatar-option-art i {
+  border-color: #233629;
+  background: var(--student-accent);
+}
+.app-shell.dashboard-page .avatar-picker-caption {
+  min-height: 44px;
+  margin-top: 22px;
+  color: var(--student-muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+.app-shell.dashboard-page .avatar-picker-caption strong {
+  color: var(--student-text);
+  font-weight: 500;
+}
+.app-shell.dashboard-page .avatar-picker-actions {
+  gap: 20px;
+  margin-top: 20px;
+  padding-top: 22px;
+  border-top-color: var(--student-line);
+}
+.app-shell.dashboard-page .avatar-picker-link {
+  color: var(--student-muted);
+  font-size: 13px;
+  font-weight: 400;
+}
+.app-shell.dashboard-page .avatar-picker-link:hover {
+  color: var(--student-accent);
+}
+.app-shell.dashboard-page .avatar-picker-link.is-danger:hover {
+  color: #f3a2ad;
+}
+.app-shell.dashboard-page .avatar-picker-actions .dashboard-button-primary {
+  min-width: 0;
+}
+@media (max-width: 560px) {
+  .app-shell.dashboard-page .avatar-picker {
+    padding: 24px;
+  }
+  .app-shell.dashboard-page .avatar-picker-head h2 {
+    font-size: 24px;
+  }
+  .app-shell.dashboard-page .avatar-picker-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .app-shell.dashboard-page .avatar-picker-actions > div:last-child {
+    gap: 10px;
+  }
+}
+/* Domain verification keeps its existing input and results in a tool workspace. */
+.app-shell.verificador-page .verificador-layout {
+  grid-template-columns: minmax(0, 1.5fr) minmax(280px, .8fr);
+  gap: 28px;
+}
+.app-shell.verificador-page .domain-tips {
+  padding: 0;
+  background: transparent;
+}
+.app-shell.verificador-page .domain-tips ol {
+  margin-top: 24px;
+}
+.app-shell.verificador-page .domain-tips li {
+  padding: 0 0 22px;
+  margin-top: 22px;
+  border-left: 0;
+  border-bottom: 1px solid var(--student-line);
+}
+.app-shell.verificador-page .domain-tips li::before {
+  content: none;
+}
+.app-shell.verificador-page .domain-input-wrap {
+  min-height: 54px;
+}
+.app-shell.verificador-page .domain-metrics > div {
+  background: var(--student-raised);
+}
+@media (max-width: 1400px) {
+  .app-shell.track-module-page .track-learning-grid {
+    grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
+  }
+  .app-shell.track-module-page .track-learning-aside {
+    position: static;
+    max-height: none;
+    overflow-y: visible;
+    grid-column: 2;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .app-shell.track-module-page .track-module-navigation {
+    grid-row: span 2;
+  }
+}
+@media (max-width: 1000px) {
+  .app-shell.learning-paths-page .paths-hero {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .app-shell.learning-paths-page .paths-journey {
+    max-width: 520px;
+  }
+  .app-shell.simulacoes-page .simulation-layout {
+    grid-template-columns: 1fr;
+  }
+  .app-shell.simulacoes-page .simulation-decision {
+    position: static;
+  }
+  .app-shell.avaliacoes-page .activity-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .app-shell.verificador-page .verificador-layout {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 900px) {
+  .app-shell.track-module-page .track-learning-grid {
+    grid-template-columns: 1fr;
+  }
+  .app-shell.track-module-page .track-module-navigation {
+    position: static;
+    grid-row: auto;
+  }
+  .app-shell.track-module-page .track-module-lessons {
+    max-height: 300px;
+  }
+  .app-shell.track-module-page .track-learning-aside {
+    grid-column: 1;
+  }
+  .app-shell.profile-page .profile-overview {
+    grid-template-columns: 1fr;
+  }
+  .app-shell.profile-page .profile-side {
+    display: block;
+  }
+}
+@media (max-width: 700px) {
+  .app-shell.learning-paths-page .paths-hero {
+    padding-bottom: 24px;
+  }
+  .app-shell.learning-paths-page .learning-level {
+    padding-block: 18px 30px;
+  }
+  .app-shell.learning-paths-page .learning-level-header {
+    align-items: flex-start;
+  }
+  .app-shell.learning-paths-page .learning-level-summary {
+    width: 100%;
+  }
+  .app-shell.learning-paths-page .learning-path-image {
+    height: 150px;
+    flex-basis: 150px;
+  }
+  .app-shell.learning-paths-page .learning-path-body {
+    padding: 22px;
+  }
+  .app-shell.learning-paths-page .paths-journey small {
+    font-size: 10px;
+  }
+  .app-shell.learning-paths-page .paths-journey strong {
+    font-size: 12px;
+  }
+  .app-shell.track-module-page :is(.track-detail-hero-no-image .content-wrap, .track-learning) {
+    width: calc(100% - 40px);
+  }
+  .app-shell.track-module-page .detail-stats {
+    gap: 22px;
+  }
+  .app-shell.track-module-page .track-lesson-viewer {
+    padding: 22px;
+  }
+  .app-shell.track-module-page .track-lesson-viewer-heading h3 {
+    font-size: 25px;
+  }
+  .app-shell.track-module-page .track-learning-aside {
+    grid-template-columns: 1fr;
+  }
+  .app-shell.lesson-study-page .lesson-content {
+    width: calc(100% - 40px);
+    margin-top: 24px;
+    padding: 24px;
+  }
+  .app-shell.dashboard-page :is(.lesson-learning-content, .track-lesson-content, .prose-content) {
+    font-size: 15px;
+  }
+  .app-shell.dashboard-page .lesson-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .app-shell.dashboard-page .lesson-nav-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .app-shell.quizzes-page .activity-grid,
+  .app-shell.simulacoes-page .activity-grid,
+  .app-shell.avaliacoes-page .activity-grid {
+    grid-template-columns: 1fr;
+  }
+  .app-shell.quizzes-page .activity-card {
+    grid-template-columns: 1fr;
+  }
+  .app-shell.quizzes-page .activity-card-link {
+    justify-self: start;
+    margin-top: 20px;
+  }
+  .app-shell.quizzes-page .quiz-question {
+    padding: 22px;
+  }
+  .app-shell.quizzes-page .quiz-enunciado {
+    font-size: 20px;
+  }
+  .app-shell.avaliacoes-page :is(.assessment-player, .assessment-result) {
+    padding: 24px;
+  }
+  .app-shell.avaliacoes-page .assessment-player .quiz-progress {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .app-shell.avaliacoes-page .prova-resultado-resumo {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+  .app-shell.simulacoes-page .simulation-preview {
+    padding: 16px;
+  }
+  .app-shell.simulacoes-page .simulation-message {
+    padding: 22px;
+    font-size: 14px;
+  }
+  .app-shell.simulacoes-page .simulation-address {
+    font-size: 10px;
+  }
+  .app-shell.profile-page .profile-hero {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px 0;
+    gap: 22px;
+  }
+  .app-shell.profile-page .profile-avatar {
+    width: 84px;
+    height: 84px;
+  }
+  .app-shell.profile-page .profile-level-content {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .app-shell.profile-page .profile-level-number {
+    text-align: left;
+  }
+}
+
+/* Give a lone course a comfortable card width without stretching the page. */
+.app-shell.learning-paths-page .course-carousel[data-course-count="1"] {
+  grid-template-columns: minmax(0, 1fr);
+}
+.app-shell.learning-paths-page .course-carousel[data-course-count="1"] > .course-carousel-arrow {
+  display: none;
+}
+.app-shell.learning-paths-page .course-carousel[data-course-count="1"] .course-carousel-track {
+  grid-auto-columns: min(100%, 400px);
+}
+.app-shell.learning-paths-page .course-carousel[data-course-count="1"] .learning-path-image {
+  height: 180px;
+  flex-basis: 180px;
+}
+.app-shell.learning-paths-page .course-carousel[data-course-count="1"] .learning-path-body {
+  padding: 24px;
+}
+.app-shell.learning-paths-page .course-carousel[data-course-count="1"] .learning-path-body h2 {
+  min-height: 0;
+  font-size: 23px;
+}
+.app-shell.learning-paths-page .course-carousel[data-course-count="1"] .learning-path-body > p {
+  min-height: 0;
+}
+.app-shell.track-module-page .track-next-lesson > div {
+  align-items: flex-start;
+}
+.app-shell.track-module-page .track-next-icon {
+  width: 36px;
+  height: 36px;
+}
+.app-shell.track-module-page .track-next-lesson > button {
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 13px 14px;
+}
+@media (max-width: 700px) {
+  .app-shell.learning-paths-page .course-carousel[data-course-count="1"] .course-carousel-track {
+    grid-auto-columns: 100%;
+  }
+}
+
+.app-shell.track-module-page .track-next-lesson > span {
+  font-size: 18px;
+  font-weight: 400;
+}
+.app-shell.track-module-page .track-next-lesson small {
+  font-size: 12px;
+}
+@media (min-width: 701px) {
+  .app-shell.track-module-page .lesson-learning-content {
+    font-size: 17px;
+  }
+}
+@media (max-width: 1000px) {
+  .app-shell.track-module-page .detail-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+}
+@media (max-width: 700px) {
+  .app-shell.track-module-page .detail-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 22px;
+  }
+}
+
+.app-shell.track-module-page .track-header-copy {
+  min-width: 0;
+}
+.app-shell.track-module-page .detail-grid .detail-stats {
+  display: grid;
+  grid-template-columns: minmax(0, .8fr) minmax(0, 1.4fr) minmax(0, .9fr);
+  gap: 24px;
+  margin: 0;
+  padding: 16px 0 16px 32px;
+  border-left: 1px solid var(--student-line);
+}
+.app-shell.track-module-page .detail-grid .detail-stats > div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+.app-shell.track-module-page .detail-grid .detail-stats strong {
+  font-size: 27px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: -.02em;
+  white-space: nowrap;
+}
+.app-shell.track-module-page .detail-grid .detail-stats span {
+  color: var(--student-muted);
+  font-size: 13px;
+}
+@media (max-width: 1000px) {
+  .app-shell.track-module-page .detail-grid .detail-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    padding: 20px 0 0;
+    border-left: 0;
+    border-top: 1px solid var(--student-line);
+  }
+}
+@media (max-width: 700px) {
+  .app-shell.track-module-page .detail-grid {
+    padding: 22px;
+  }
+  .app-shell.track-module-page .detail-grid .detail-stats strong {
+    font-size: 22px;
+  }
+}
+.app-shell.track-module-page .track-video-native {
+  aspect-ratio: auto;
+  background: #080e17;
+}
+.app-shell.track-module-page .track-video-native video {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  image-rendering: auto;
+  background: #080e17;
+}
+.app-shell.track-module-page .track-video-native video:fullscreen {
+  height: 100%;
+}
+.app-shell.track-module-page .track-learning {
+  padding-top: 24px;
+}
+.app-shell.track-module-page .track-info-summary {
+  min-width: 0;
+  padding: 24px;
+  border-radius: 8px;
+  background: var(--student-raised);
+}
+.app-shell.track-module-page .track-return-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  margin-bottom: 24px;
+  color: var(--student-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.app-shell.track-module-page .track-return-link:hover {
+  color: var(--student-text);
+}
+.app-shell.track-module-page .track-return-link svg {
+  flex-shrink: 0;
+}
+.app-shell.track-module-page .track-info-summary h1 {
+  margin: 10px 0;
+  font-size: 22px;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+.app-shell.track-module-page .track-info-summary p {
+  color: var(--student-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.app-shell.track-module-page .track-info-summary .detail-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--student-line);
+}
+.app-shell.track-module-page .track-info-summary .detail-stats strong {
+  font-size: 18px;
+  line-height: 1.5;
+}
+.app-shell.track-module-page .track-info-summary .detail-stats span {
+  font-size: 12px;
+}
+.app-shell.track-module-page .track-next-lesson > button {
+  height: auto;
+  min-height: 48px;
+  white-space: nowrap;
+  overflow: visible;
+  overflow-wrap: normal;
+  text-overflow: clip;
+  line-height: 1.5;
+}

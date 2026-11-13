@@ -6,18 +6,12 @@ import type { CSSProperties } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   ArrowUpRight,
-  BookOpen,
   Check,
-  GraduationCap,
-  Home,
-  Menu,
 } from 'lucide-react'
 import { API_URL, getCurrentUser, getDesempenho, type Desempenho, TrackDetail, TrackSummary } from '@/lib/api'
-import { UserMenu } from '@/components/user-menu'
 import { DashboardNavigation } from '@/components/dashboard-navigation'
 import { ProfilePicture } from '@/components/cyber-avatar'
 import { DashboardInsights } from '@/components/dashboard-insights'
-import './dashboard.css'
 
 const trackThemes = [
   { color: '#24b4ff', image: '/trilha-basico-bg.png' },
@@ -101,48 +95,45 @@ export default function DashboardPage() {
   const moduleStatus = moduleCompleted ? 'Concluído' : data.currentProgress > 0 ? 'Em andamento' : 'Não iniciado'
 
   return (
-    <main className="app-shell dashboard-page">
+    <main className="app-shell dashboard-page student-home">
       <DashboardNavigation active="inicio" />
 
       <div className="dashboard-wrap">
         <header className="dashboard-welcome dashboard-welcome-avatar">
-          <Link className="dashboard-welcome-picture" href="/perfil" aria-label="Ir para o seu perfil e trocar o avatar">
+          <div className="dashboard-welcome-picture">
             <ProfilePicture foto={picture.foto} avatar={picture.avatar} iconSize={30} alt="" />
-          </Link>
+          </div>
           <div>
             <h1>{data.userName ? `Olá, ${data.userName.split(' ')[0]}!` : 'Olá!'}</h1>
-            <p>Continue desenvolvendo seus conhecimentos em cibersegurança.</p>
+            <p>Que bom ter você por aqui. Vamos ao próximo passo?</p>
           </div>
         </header>
 
-        <section className="dash-hero" style={{ '--hero-image': `url(${data.currentTrackImage})`, '--hero-color': data.currentColor } as CSSProperties} aria-labelledby="dash-hero-title">
-          <div className="dash-hero-copy">
-            <div className="dash-hero-tags">
-              <span className={`dash-hero-status ${moduleCompleted ? 'is-completed' : data.currentProgress > 0 ? 'is-in-progress' : ''}`}>{moduleStatus}</span>
-              <span className="dash-hero-level"><GraduationCap size={14} /> Nível {data.currentLevel.toLowerCase()}</span>
+        <div className="student-start-grid">
+          <section className="dash-hero" style={{ '--hero-image': `url(${data.currentTrackImage})`, '--hero-color': data.currentColor } as CSSProperties} aria-labelledby="dash-hero-title">
+            <div className="dash-hero-copy">
+              <div className="dash-hero-tags">
+                <span className={`dash-hero-status ${moduleCompleted ? 'is-completed' : data.currentProgress > 0 ? 'is-in-progress' : ''}`}>{moduleStatus}</span>
+                <span className="dash-hero-level">Nível {data.currentLevel.toLowerCase()}</span>
+              </div>
+              <h2 id="dash-hero-title">{data.currentTrack}</h2>
+              <p className="dash-hero-lesson">{data.currentModule}: {data.lastLesson}</p>
+              <div className="dash-hero-actions">
+                <Link className="dashboard-button-primary" href={moduleCompleted ? nextTrack ? `/aulas/modulo/${nextTrack.id}` : '/aulas' : trackHref}>{moduleCompleted ? nextTrack ? 'Começar a próxima trilha' : 'Ver trilhas' : 'Continuar aprendendo'}</Link>
+                <Link className="dash-hero-link" href={trackHref}>Ver todas as aulas</Link>
+              </div>
             </div>
-            <h2 id="dash-hero-title">{data.currentTrack}</h2>
-            <p className="dash-hero-lesson"><BookOpen size={16} /> {data.currentModule}: {data.lastLesson}</p>
-            <div className="dash-hero-actions">
-              <Link className="dashboard-button-primary" href={moduleCompleted ? nextTrack ? `/aulas/modulo/${nextTrack.id}` : '/aulas' : trackHref}>{moduleCompleted ? nextTrack ? 'Começar a próxima trilha' : 'Ver trilhas' : 'Continuar aprendendo'}</Link>
-              <Link className="dash-hero-link" href={trackHref}>Ver todas as aulas</Link>
+            <div className="student-hero-art">
+              <img src="/desenvolva-seu-conhecimento.png" alt="" />
             </div>
-          </div>
-          <div className="dash-hero-ring" role="img" aria-label={`${data.currentProgress}% da trilha concluída`}>
-            <svg viewBox="0 0 120 120" aria-hidden="true">
-              <circle className="dash-ring-track" cx="60" cy="60" r="50" />
-              <circle className="dash-ring-value" cx="60" cy="60" r="50" pathLength={100} strokeDasharray="100" strokeDashoffset={100 - data.currentProgress} />
-            </svg>
-            <strong>{data.currentProgress}<small>%</small></strong>
-            <span>da trilha</span>
-          </div>
-        </section>
+            <div className="student-track-progress">
+              <div><span>Progresso na trilha</span><strong>{data.currentProgress}%</strong></div>
+              <div className="student-progress-bar" role="progressbar" aria-label="Progresso na trilha" aria-valuemin={0} aria-valuemax={100} aria-valuenow={data.currentProgress}><span style={{ width: `${data.currentProgress}%` }} /></div>
+            </div>
+          </section>
 
-        <DashboardInsights desempenho={desempenho} />
-
-        <section className="dash-grid" aria-label="Resumo da aprendizagem">
           <article className="dash-panel dash-stats">
-            <h2>Seu progresso</h2>
+            <h2>Sua jornada até aqui</h2>
             <div className="dash-stat-row">
               <div><strong>{data.overallProgress}%</strong><span>Progresso geral</span></div>
               <div><strong>{data.completedLessons}</strong><span>Aulas concluídas</span></div>
@@ -157,7 +148,15 @@ export default function DashboardPage() {
               ))}
             </div>
           </article>
+        </div>
 
+        <nav className="student-shortcuts" aria-label="Pratique seus conhecimentos">
+          <Link href="/aulas"><span>Explore as trilhas</span><ArrowUpRight size={20} aria-hidden="true" /></Link>
+          <Link href="/simulacoes"><span>Pratique com simulações</span><ArrowUpRight size={20} aria-hidden="true" /></Link>
+          <Link href="/quizzes"><span>Teste seus conhecimentos</span><ArrowUpRight size={20} aria-hidden="true" /></Link>
+        </nav>
+
+        <section className="dash-grid" aria-label="Resumo da aprendizagem">
           <article className="dash-panel dash-lessons">
             <div className="dash-panel-head">
               <h2>Aulas da trilha</h2>
@@ -181,7 +180,7 @@ export default function DashboardPage() {
           </article>
         </section>
 
-
+        <DashboardInsights desempenho={desempenho} />
       </div>
     </main>
   )

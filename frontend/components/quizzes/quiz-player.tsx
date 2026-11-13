@@ -54,12 +54,12 @@ export function QuizPlayer({ quiz }: { quiz: QuizDetalhe }) {
     );
   if (!quiz.questoes.length)
     return (
-      <p className="activity-panel">
+      <p className="activity-panel quiz-player">
         Este quiz ainda não possui questões disponíveis.
       </p>
     );
   return (
-    <form onSubmit={submit} className="activity-panel">
+    <form onSubmit={submit} className="activity-panel quiz-player">
       <div className="quiz-progress">
         <span>
           {answered} de {quiz.questoes.length} respondidas

@@ -29,3 +29,5 @@
   .profile-page .profile-hero { padding: 84px 20px 22px; }
   .profile-page .profile-identity h1 { font-size: 24px; }
 }
+
+.profile-page .profile-tabs a { display:inline-flex; align-items:center; padding:15px 0; color:#9fb3cf; font-size:14px; font-weight:700; }

@@ -3,6 +3,12 @@ import type { Metadata, Viewport } from 'next'
 import { SiteScrollbar } from '@/components/site-scrollbar'
 import { CookieConsent } from '@/components/cookie-consent'
 import './globals.css'
+import '@/components/painel.css'
+import './dashboard/dashboard.css'
+import './student-theme.css'
+import './dashboard/student-home.css'
+import './student-experiences.css'
+import '@/components/verificador/verificador.css'
 
 export const metadata: Metadata = {
   title: 'CyberEduca+',

@@ -20,7 +20,7 @@ export function ActivityShell({
   resumo?: ReactNode;
 }) {
   return (
-    <main className="app-shell dashboard-page activity-page">
+    <main className={`app-shell dashboard-page activity-page ${section}-page`}>
       <DashboardNavigation active={section} />
       <div className="dashboard-wrap">
         {back && (

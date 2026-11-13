@@ -115,14 +115,14 @@ export function LessonStudy({
 
   if (loading)
     return (
-      <main className="app-shell dashboard-page">
+      <main className="app-shell dashboard-page lesson-study-page">
         <DashboardNavigation active="aulas" />
         <p className="content-wrap">Carregando aula...</p>
       </main>
     );
   if (error || !lesson)
     return (
-      <main className="app-shell dashboard-page">
+      <main className="app-shell dashboard-page lesson-study-page">
         <DashboardNavigation active="aulas" />
         <p className="content-wrap">{error || "Aula não encontrada."}</p>
       </main>
@@ -130,7 +130,7 @@ export function LessonStudy({
   const { markdown, videos } = extractYoutubeEmbeds(lesson.conteudo);
 
   return (
-    <main className="app-shell dashboard-page">
+    <main className="app-shell dashboard-page lesson-study-page">
       <DashboardNavigation active="aulas" />
       <article className="lesson-content mx-auto">
         <Link

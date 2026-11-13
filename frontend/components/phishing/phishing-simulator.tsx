@@ -48,7 +48,7 @@ export function PhishingSimulator({ cenario }: { cenario: CenarioDetalhe }) {
     REDE_SOCIAL: PhishingSocial,
   }[cenario.tipo];
   return (
-    <div className="simulation-layout">
+    <div className={`simulation-layout simulation-type-${cenario.tipo.toLowerCase()}`}>
       <section className="activity-panel simulation-preview">
         <div className="activity-section-label">
           <h2>{nomesTipos[cenario.tipo]}</h2>

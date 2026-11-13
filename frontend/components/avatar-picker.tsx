@@ -11,9 +11,10 @@ type Props = {
   onEnviarFoto: () => void
   onRemoverFoto: () => Promise<void>
   onFechar: () => void
+  confirmLabel?: string
 }
 
-export function AvatarPicker({ avatarAtual, temFoto, onEscolher, onEnviarFoto, onRemoverFoto, onFechar }: Props) {
+export function AvatarPicker({ avatarAtual, temFoto, onEscolher, onEnviarFoto, onRemoverFoto, onFechar, confirmLabel = 'Salvar avatar' }: Props) {
   const [selecionado, setSelecionado] = useState<string | null | undefined>(avatarAtual)
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState('')
@@ -71,7 +72,7 @@ export function AvatarPicker({ avatarAtual, temFoto, onEscolher, onEnviarFoto, o
           </div>
           <div>
             <button className="dashboard-button-secondary" type="button" onClick={onFechar}>Cancelar</button>
-            <button className="dashboard-button-primary" type="button" onClick={salvar} disabled={!escolhido || salvando}>{salvando ? 'Salvando...' : 'Salvar avatar'}</button>
+            <button className="dashboard-button-primary" type="button" onClick={salvar} disabled={!escolhido || salvando}>{salvando ? 'Salvando...' : confirmLabel}</button>
           </div>
         </footer>
       </article>

@@ -9,7 +9,7 @@ export function QuizResult({
   resultado: ResultadoQuiz;
 }) {
   return (
-    <section className="activity-panel" aria-labelledby="quiz-result-title">
+    <section className="activity-panel quiz-result" aria-labelledby="quiz-result-title">
       <div className="activity-result-top">
         <CheckCircle2 size={36} />
         <span className="activity-kicker">Prática concluída</span>

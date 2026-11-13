@@ -25,14 +25,21 @@ type LessonContent = {
 const youtubePattern =
   /<iframe\b[^>]*\bsrc=["'](https:\/\/(?:www\.)?youtube(?:-nocookie)?\.com\/embed\/[\w-]+(?:\?[^"']*)?)["'][^>]*><\/iframe>\s*/gi;
 
-function splitLessonContent(content: string) {
+const welcomeLessonId = 'b1a2c3d4-1111-2222-3333-444444444441';
+const welcomeVideoSource = '/videos/boas-vindas-cybereduca.mp4';
+
+function splitLessonContent(content: string, lessonId: string) {
   const videos: string[] = [];
+  const markdown = content.replace(youtubePattern, (_, source: string) => {
+    videos.push(source);
+    return "";
+  });
+
   return {
-    markdown: content.replace(youtubePattern, (_, source: string) => {
-      videos.push(source);
-      return "";
-    }),
-    videos,
+    markdown,
+    videos: lessonId === welcomeLessonId
+      ? [welcomeVideoSource, ...videos.filter(source => !/\/embed\/doFxojMJwLc(?:\?|$)/.test(source))]
+      : videos,
   };
 }
 
@@ -150,14 +157,14 @@ function TrackModulePage({ params }: { params: Promise<{ slug: string; lesson?: 
 
   if (error && !track)
     return (
-      <main className="app-shell dashboard-page">
+      <main className="app-shell dashboard-page track-module-page">
         <DashboardHeader />
         <p className="content-wrap">{error}</p>
       </main>
     );
   if (!track)
     return (
-      <main className="app-shell dashboard-page">
+      <main className="app-shell dashboard-page track-module-page">
         <DashboardHeader />
         <p className="content-wrap">Carregando trilha...</p>
       </main>
@@ -171,7 +178,7 @@ function TrackModulePage({ params }: { params: Promise<{ slug: string; lesson?: 
   const activeLessonId = selectedLesson?.id ?? initialLesson?.id;
   const displayedLesson = selectedLesson ?? initialLesson;
   const lessonBody = selectedLesson
-    ? splitLessonContent(selectedLesson.conteudo)
+    ? splitLessonContent(selectedLesson.conteudo, selectedLesson.id)
     : null;
   const trackNumber =
     track.nivel === "BASICO"
@@ -181,42 +188,8 @@ function TrackModulePage({ params }: { params: Promise<{ slug: string; lesson?: 
         : "03";
 
   return (
-    <main className="app-shell dashboard-page">
+    <main className="app-shell dashboard-page track-module-page">
       <DashboardHeader />
-      <section className="track-detail-hero track-detail-hero-no-image">
-        <div className="content-wrap">
-          <Link href="/aulas" className="back-link">
-            <ArrowLeft size={16} /> Voltar para trilhas
-          </Link>
-          <div className="detail-grid">
-            <div>
-              <span
-                className={`eyebrow track-number track-number-${trackNumber}`}
-              >
-                Trilha {Number(trackNumber)}
-              </span>
-              <div className="flex flex-wrap items-center gap-3">
-                <h1>{track.titulo}</h1>
-              </div>
-              <p>{track.descricao}</p>
-              <div className="detail-stats">
-                <div>
-                  <strong>{track.aulas.length}</strong>
-                  <span>Aulas</span>
-                </div>
-                <div>
-                  <strong>2 horas</strong>
-                  <span>Duração</span>
-                </div>
-                <div>
-                  <strong>1</strong>
-                  <span>Módulo</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
       <section className="content-wrap curriculum track-learning">
         {error && <p role="alert" className="mb-5 rounded-lg border border-rose-400/30 bg-rose-400/10 p-4 text-sm text-rose-200">{error}</p>}
         <div className="section-heading">
@@ -314,13 +287,20 @@ function TrackModulePage({ params }: { params: Promise<{ slug: string; lesson?: 
                 ) : lessonBody ? (
                   <div className="track-lesson-content">
                     {lessonBody.videos.map((source) => (
-                      <div className="track-video" key={source}>
+                      <div className={`track-video${source === welcomeVideoSource ? ' track-video-native' : ''}`} key={source}>
+                        {source === welcomeVideoSource ? (
+                          <video controls playsInline preload="metadata" aria-label={`Vídeo da aula: ${selectedLesson?.titulo ?? ''}`}>
+                            <source src={source} type="video/mp4" />
+                            Seu navegador não oferece suporte a este vídeo. <a href={source}>Abrir arquivo de vídeo</a>.
+                          </video>
+                        ) : (
                         <iframe
                           src={source}
                           title={`Vídeo da aula: ${selectedLesson?.titulo ?? ""}`}
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                           allowFullScreen
                         />
+                        )}
                       </div>
                     ))}
 {parseLessonMaterial(selectedLesson!.conteudo) ? <LessonLearningContent key={selectedLesson!.id} lesson={parseLessonMaterial(selectedLesson!.conteudo)!} aulaId={selectedLesson!.id} showDiagram /> : (
@@ -357,6 +337,37 @@ function TrackModulePage({ params }: { params: Promise<{ slug: string; lesson?: 
           </article>
 
           <aside className="track-learning-aside">
+            <article className="track-info-summary">
+              <Link href="/aulas" className="track-return-link">
+                <ArrowLeft size={18} aria-hidden="true" /> Voltar para trilhas
+              </Link>
+            <div className="track-header-copy">
+              <span
+                className={`eyebrow track-number track-number-${trackNumber}`}
+              >
+                Trilha {Number(trackNumber)}
+              </span>
+              <div className="flex flex-wrap items-center gap-3">
+                <h1>{track.titulo}</h1>
+              </div>
+              <p>{track.descricao}</p>
+            </div>
+            <div className="detail-stats">
+              <div>
+                <strong>{track.aulas.length}</strong>
+                <span>Aulas</span>
+              </div>
+              <div>
+                <strong>2 horas</strong>
+                <span>Duração</span>
+              </div>
+              <div>
+                <strong>1</strong>
+                <span>Módulo</span>
+              </div>
+            </div>
+
+            </article>
             <article className="track-progress-summary">
               <div>
                 <strong>Seu progresso na trilha</strong>
@@ -391,7 +402,7 @@ function TrackModulePage({ params }: { params: Promise<{ slug: string; lesson?: 
                 >
                   {displayedLesson.concluida ? (
                     <>
-                      {track.aulas[track.aulas.findIndex(lesson => lesson.id === displayedLesson.id) + 1] ? 'Continuar para a próxima aula' : 'Voltar às trilhas'}
+                      {track.aulas[track.aulas.findIndex(lesson => lesson.id === displayedLesson.id) + 1] ? 'Próxima aula' : 'Voltar às trilhas'}
                     </>
                   ) : savingCompletion ? (
                     "Confirmando..."

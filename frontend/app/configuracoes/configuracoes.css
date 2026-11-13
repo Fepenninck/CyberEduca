@@ -1,0 +1,265 @@
+﻿/* Account editor, scoped to the settings page. */
+.app-shell.account-settings-page .account-settings-wrap {
+  width: min(calc(100% - 48px), 820px);
+  margin: 0 auto;
+  padding: 38px 0 56px;
+}
+.app-shell.account-settings-page .account-settings-heading {
+  margin: 26px 0 28px;
+}
+.app-shell.account-settings-page .account-settings-wrap .account-settings-heading h1 {
+  margin: 0;
+  color: var(--student-text);
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -.025em;
+}
+.app-shell.account-settings-page .account-settings-heading p {
+  margin-top: 12px;
+  color: var(--student-muted);
+  font-size: 16px;
+  line-height: 1.6;
+}
+.app-shell.account-settings-page .profile-card.account-settings-form {
+  height: auto;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: var(--student-card);
+  box-shadow: none;
+}
+.account-settings-form fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.settings-profile-strip {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 20px;
+  padding: 30px;
+}
+.settings-photo-preview {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--student-control);
+  color: var(--student-accent);
+}
+.settings-photo-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.app-shell.account-settings-page .settings-photo-copy h2 {
+  margin: 0;
+  color: var(--student-text);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+.settings-photo-copy p {
+  margin-top: 7px;
+  color: var(--student-subtle);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.settings-photo-controls {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  max-width: 310px;
+  gap: 10px;
+}
+.app-shell.account-settings-page .account-settings-form .profile-photo-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  margin: 0;
+  padding: 9px 14px;
+  border: 0;
+  border-radius: 4px;
+  background: var(--student-control);
+  color: var(--student-text);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+.app-shell.account-settings-page .account-settings-form .profile-photo-button:hover {
+  background: #304158;
+}
+.app-shell.account-settings-page .account-settings-form .profile-remove-photo {
+  margin: 0;
+  padding: 0;
+  color: var(--student-muted);
+  font-size: 12px;
+}
+.app-shell.account-settings-page .account-settings-form .profile-remove-photo:hover {
+  color: #f3a2ad;
+}
+.app-shell.account-settings-page .account-settings-form input.profile-file-input {
+  display: none;
+}
+.settings-edit-row {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  align-items: start;
+  gap: 26px;
+  padding: 30px;
+  border-top: 1px solid #253449;
+}
+.settings-row-heading {
+  padding-top: 2px;
+}
+.app-shell.account-settings-page .settings-row-heading h2 {
+  margin: 0;
+  color: var(--student-text);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+.settings-row-heading p {
+  margin-top: 8px;
+  color: var(--student-subtle);
+  font-size: 14px;
+  line-height: 1.7;
+}
+.app-shell.account-settings-page .account-settings-form .profile-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  margin: 0;
+}
+.app-shell.account-settings-page .account-settings-form .profile-form-grid label {
+  display: block;
+  min-width: 0;
+  margin: 0;
+  color: var(--student-muted);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+.app-shell.account-settings-page .account-settings-form .profile-form-grid input {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 48px;
+  margin-top: 9px;
+  padding: 12px 14px;
+  border: 1px solid #34465d;
+  border-radius: 5px;
+  background: var(--student-raised);
+  color: var(--student-text);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+.app-shell.account-settings-page .account-settings-form .profile-form-grid input:focus {
+  border-color: #6c7f9b;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(159, 188, 245, .1);
+}
+.settings-form-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 22px 30px;
+  border-top: 1px solid #2c3b50;
+  border-radius: 0 0 10px 10px;
+  background: #192638;
+}
+.app-shell.account-settings-page .settings-form-footer .dashboard-button-primary,
+.app-shell.account-settings-page .settings-form-footer .dashboard-button-secondary {
+  min-height: 46px;
+  padding: 12px 22px;
+  font-size: 15px;
+}
+.settings-feedback {
+  margin: 0;
+  padding: 18px 28px;
+  color: var(--student-accent);
+  font-size: 13px;
+  line-height: 1.7;
+}
+.settings-feedback[role="alert"] {
+  color: #f3a2ad;
+}
+.settings-legal-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px 24px;
+  margin-top: 22px;
+}
+.settings-legal-links a {
+  color: var(--student-subtle);
+  font-size: 13px;
+  line-height: 1.7;
+  text-decoration: none;
+}
+.settings-legal-links a:hover {
+  color: var(--student-text);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+@media (max-width: 760px) {
+  .app-shell.account-settings-page .account-settings-wrap {
+    width: calc(100% - 40px);
+    padding-top: 28px;
+  }
+  .app-shell.account-settings-page .account-settings-wrap .account-settings-heading h1 {
+    font-size: 30px;
+  }
+  .settings-profile-strip {
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 14px;
+    padding: 24px;
+  }
+  .settings-photo-preview {
+    width: 64px;
+    height: 64px;
+  }
+  .settings-photo-controls {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+    max-width: none;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .settings-edit-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+    padding: 24px;
+  }
+  .settings-row-heading p {
+    margin-top: 5px;
+  }
+  .settings-form-footer {
+    padding: 18px 24px;
+  }
+}
+@media (max-width: 560px) {
+  .app-shell.account-settings-page .account-settings-form .profile-form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .app-shell.account-settings-page .settings-form-footer .dashboard-button-primary,
+  .app-shell.account-settings-page .settings-form-footer .dashboard-button-secondary {
+    width: auto;
+    flex: 1;
+  }
+}

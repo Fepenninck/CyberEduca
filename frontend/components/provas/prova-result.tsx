@@ -7,7 +7,7 @@ export function ProvaResult({ resultado }: { resultado: ResultadoTentativa }) {
   const circunferencia = 2 * Math.PI * 52
 
   return (
-    <section className="activity-panel" aria-live="polite">
+    <section className="activity-panel assessment-result" aria-live="polite">
       <h2>Avaliação concluída</h2>
       <div className="prova-resultado-resumo">
         <div className={`prova-resultado-anel ${aprovado ? 'is-aprovado' : 'is-reprovado'}`} role="img" aria-label={`Nota ${resultado.nota.toFixed(1).replace('.', ',')} de 10`}>

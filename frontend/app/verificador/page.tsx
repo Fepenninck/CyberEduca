@@ -4,8 +4,8 @@ export default function VerificadorPage() {
   return (
     <ActivityShell
       section="verificador"
-      title="Antes de acessar, verifique."
-      description="Consulte a reputação de um domínio e entenda os sinais encontrados pelos mecanismos de segurança."
+      title="Laboratório de investigação de links"
+      description="Investigue a reputação de um domínio, interprete as evidências disponíveis e aprenda a reconhecer os limites de uma análise de segurança."
     >
       <VerificadorDominio />
     </ActivityShell>
