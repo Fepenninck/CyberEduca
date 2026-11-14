@@ -2,21 +2,21 @@
 import { Children, useEffect, useRef, useState, type ReactNode } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
-export function CourseCarousel({ children, label }: { children: ReactNode; label: string }) {
+export function CourseCarousel({ children, label, desktopVisible = 4 }: { children: ReactNode; label: string; desktopVisible?: number }) {
   const viewport = useRef<HTMLDivElement>(null)
   const cards = Children.toArray(children)
   const [index, setIndex] = useState(0)
-  const [size, setSize] = useState({ width: 0, visible: 4 })
+  const [size, setSize] = useState({ width: 0, visible: desktopVisible })
   useEffect(() => {
     const element = viewport.current
     if (!element) return
-    const measure = () => setSize({ width: element.clientWidth, visible: window.innerWidth <= 700 ? 1 : window.innerWidth <= 1100 ? 2 : 4 })
+    const measure = () => setSize({ width: element.clientWidth, visible: window.innerWidth <= 700 ? 1 : window.innerWidth <= 1100 ? 2 : desktopVisible })
     measure()
     const observer = new ResizeObserver(measure)
     observer.observe(element)
     window.addEventListener('resize', measure)
     return () => { observer.disconnect(); window.removeEventListener('resize', measure) }
-  }, [])
+  }, [desktopVisible])
   const max = Math.max(0, cards.length - size.visible)
   const current = Math.min(index, max)
   const step = (size.width + 16) / size.visible

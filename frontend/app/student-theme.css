@@ -1,4 +1,50 @@
 /* CyberEduca+ student design tokens and shared components. */
+/* Inclui painéis, listas, código, campos e elementos abertos em portais. */
+body:has(.app-shell) * {
+  scrollbar-color: #526780 #101927;
+  scrollbar-width: thin;
+}
+body:has(.app-shell) *::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+body:has(.app-shell) *::-webkit-scrollbar-track,
+body:has(.app-shell) *::-webkit-scrollbar-corner {
+  background: #101927;
+  border-radius: 0;
+}
+body:has(.app-shell) *::-webkit-scrollbar-thumb {
+  background: #526780;
+  border: 0;
+  border-radius: 0;
+}
+body:has(.app-shell) *::-webkit-scrollbar-thumb:hover {
+  background: #7187a1;
+}
+body:has(.app-shell) *::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+/* Chromium precisa usar os pseudo-elementos para respeitar as pontas retas. */
+@supports selector(::-webkit-scrollbar) {
+  body:has(.app-shell) * {
+    scrollbar-color: auto !important;
+    scrollbar-width: auto !important;
+  }
+}
+body:has(.app-shell) .site-scrollbar {
+  background: #101927;
+  border-radius: 0;
+}
+body:has(.app-shell) .site-scrollbar i {
+  background: #526780;
+  border-radius: 0;
+}
+body:has(.app-shell) .site-scrollbar:hover i {
+  background: #7187a1;
+}
+
 .app-shell.dashboard-page {
   --student-page: #172334;
   --student-card: #101927;

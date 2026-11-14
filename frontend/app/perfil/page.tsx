@@ -8,12 +8,14 @@ import { API_URL, getCurrentUser, TrackSummary, updateCurrentUser } from '@/lib/
 import { DashboardNavigation } from '@/components/dashboard-navigation'
 import type { CSSProperties } from 'react'
 import { AvatarPicker } from '@/components/avatar-picker'
+import { LevelAchievements, useAchievements } from '@/components/level-achievements'
 import './perfil.css'
 import { AVATARES, ProfilePicture, type AvatarId } from '@/components/cyber-avatar'
 
 type Profile = { nome: string; email: string; foto?: string | null; avatar?: string | null }
 
 export default function PerfilPage() {
+  const achievements = useAchievements()
   const router = useRouter()
   const [profile, setProfile] = useState<Profile>({ nome: '', email: '' })
   const [tracks, setTracks] = useState<TrackSummary[]>([])
@@ -114,8 +116,13 @@ export default function PerfilPage() {
       <div className="profile-tabs"><button className="is-active" type="button" aria-current="page">Visão geral</button><Link href="/configuracoes">Configurações</Link></div>
       <section className="profile-overview">
         <div className="profile-main">
+          <LevelAchievements />
           <article className="profile-card profile-level-card"><span className="profile-card-label">Seu nível</span><div className="profile-level-content"><div className="profile-level-number">{stats.overall}<small>%</small></div><div><strong>{basicStatus}</strong><p>Seu progresso geral é calculado pelas trilhas de aprendizagem disponíveis.</p><div className="profile-progress"><span style={{ width: `${stats.overall}%` }} /></div></div></div></article>
-          <article className="profile-card"><h2>Progresso nas trilhas</h2><div className="profile-track-list">{tracks.length ? tracks.map((track) => <div key={track.id}><div><span>{track.titulo}</span><strong>{track.percentual}%</strong></div><div className="profile-progress"><span style={{ width: `${track.percentual}%`, background: levelColors[track.nivel] }} /></div></div>) : <p>Carregando seu progresso...</p>}</div></article>
+          <article className="profile-card"><h2>Progresso por nível</h2><div className="profile-track-list">{achievements.error ? <p>Não foi possível carregar seu progresso.</p> : achievements.data.length ? achievements.data.map(level => {
+            const percentage = level.totalAulas ? Math.round(level.aulasConcluidas / level.totalAulas * 100) : 0
+            const name = level.nivel === 'BASICO' ? 'Básico' : level.nivel === 'INTERMEDIARIO' ? 'Intermediário' : 'Avançado'
+            return <div key={level.nivel}><div><span>{name}</span><strong>{percentage}%</strong></div><div className="profile-progress" role="progressbar" aria-label={name} aria-valuenow={percentage} aria-valuemin={0} aria-valuemax={100}><span style={{ width: `${percentage}%`, background: levelColors[level.nivel] }} /></div></div>
+          }) : <p>Carregando seu progresso...</p>}</div></article>
           <article className="profile-card"><h2>Ritmo de estudo</h2><div className="profile-study-metrics"><div><strong>{stats.completed}</strong><span>Aulas concluídas</span></div><div><strong>{stats.rate}%</strong><span>Taxa de conclusão</span></div><div><strong>{stats.total}</strong><span>Aulas disponíveis</span></div></div><p className="profile-note">A frequência semanal aparecerá quando o histórico de atividades estiver disponível.</p></article>
         </div>
         <aside className="profile-side"><article className="profile-card profile-avatar-card"><span className="profile-card-label">Seu avatar</span><strong>{profile.foto ? 'Foto personalizada' : currentAvatar?.nome ?? 'Nenhum avatar escolhido'}</strong><p>{profile.foto ? 'Você está usando uma foto enviada por você.' : currentAvatar?.descricao ?? 'Escolha um avatar que combine com o seu jeito de proteger o mundo digital.'}</p><button className="dashboard-button-secondary" type="button" onClick={() => setPickerOpen(true)}>{currentAvatar || profile.foto ? 'Trocar avatar' : 'Escolher avatar'}</button></article><article className="profile-card"><span className="profile-card-label">Resumo</span><strong>{stats.basic >= 80 ? 'Nível básico concluído' : 'Nível básico em andamento'}</strong><p>{stats.completed} aulas concluídas e {stats.overall}% de progresso geral.</p></article><article className="profile-card"><h2>Atividade semanal</h2><p>O histórico semanal será exibido quando a API registrar as datas de estudo.</p></article></aside>

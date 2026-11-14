@@ -8,6 +8,7 @@ import { DashboardNavigation } from '@/components/dashboard-navigation'
 import './configuracoes.css'
 import { ProfilePicture, type AvatarId } from '@/components/cyber-avatar'
 import { AvatarPicker } from '@/components/avatar-picker'
+import { DeleteAccountDialog } from '@/components/delete-account-dialog'
 type Profile = { nome: string; email: string; foto?: string | null; avatar?: string | null }
 export default function ConfiguracoesPage() {
  const router = useRouter()
@@ -19,8 +20,10 @@ export default function ConfiguracoesPage() {
  const [password, setPassword] = useState('')
  const [confirmation, setConfirmation] = useState('')
  const [pickerOpen, setPickerOpen] = useState(false)
+ const [deleteOpen, setDeleteOpen] = useState(false)
+ const [userId, setUserId] = useState('')
  const photoInput = useRef<HTMLInputElement>(null)
- useEffect(() => { getCurrentUser().then(user => { setDraftProfile({nome:user.nome,email:user.email,foto:user.foto,avatar:user.avatar}); setLoading(false) }).catch(() => router.replace('/login')) },[router])
+ useEffect(() => { getCurrentUser().then(user => { setUserId(user.id); setDraftProfile({nome:user.nome,email:user.email,foto:user.foto,avatar:user.avatar}); setLoading(false) }).catch(() => router.replace('/login')) },[router])
  async function saveSettings() {
   setMessage(''); setError('')
   if(password !== confirmation) { setError('As senhas não coincidem.'); return }
@@ -146,11 +149,16 @@ export default function ConfiguracoesPage() {
           {error && <p className="settings-feedback" role="alert">{error}</p>}
         </form>
 
+        <section className="settings-delete-account" aria-labelledby="settings-delete-title">
+          <div><h2 id="settings-delete-title">Excluir conta</h2><p>Encerre seu acesso e remova seu cadastro e histórico de aprendizagem.</p></div>
+          <button type="button" disabled={loading || saving} onClick={() => setDeleteOpen(true)}>Excluir minha conta</button>
+        </section>
         <nav className="settings-legal-links" aria-label="Informações legais">
           <Link href="/privacidade/politica#politica-de-privacidade">Privacidade e LGPD</Link>
           <Link href="/privacidade/politica#termos-de-uso">Termos de uso</Link>
         </nav>
       </section>
+      {deleteOpen && <DeleteAccountDialog userId={userId} onClose={() => setDeleteOpen(false)} />}
       {pickerOpen && (
         <AvatarPicker
           avatarAtual={draftProfile.avatar}

@@ -129,7 +129,7 @@ describe('AprendizagemService - trilhas', () => {
 
     expect(bloqueada).toBe(false);
     expect(prismaMock.trilha.findMany).toHaveBeenCalledWith({
-      where: { ordem: { lt: 4 }, aulas: { some: {} } },
+      where: { ordem: { lt: 4 }, id: { not: '4328594b-f7cb-52d2-862f-e612b1647aa9' }, aulas: { some: {} } },
       select: { id: true },
     });
   });

@@ -1,6 +1,7 @@
 // Conteúdo editorial original. As referências são leituras complementares oficiais.
 import { expandCourses } from "./course-expansion";
 import { enrichFoundations } from "./lesson-foundations";
+import { applyLearningLevels } from './learning-levels';
 export type CourseLevel = "BASICO" | "INTERMEDIARIO" | "AVANCADO";
 export const levelNames = {
   BASICO: "Básico",
@@ -518,6 +519,7 @@ export const libraryCourses: LibraryCourse[] = [
 
 enrichFoundations(libraryCourses);
 expandCourses(libraryCourses);
+applyLearningLevels(libraryCourses);
 
 // Referências específicas complementares às leituras de cada curso.
 export const extraReferences = [

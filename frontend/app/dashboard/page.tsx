@@ -5,7 +5,6 @@ import { useEffect, useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { useRouter } from 'next/navigation'
 import {
-  ArrowUpRight,
   Check,
 } from 'lucide-react'
 import { API_URL, getCurrentUser, getDesempenho, type Desempenho, TrackDetail, TrackSummary } from '@/lib/api'
@@ -35,13 +34,21 @@ export default function DashboardPage() {
   useEffect(() => {
     getCurrentUser().then((user) => { setUserName(user.nome); setPicture({ foto: user.foto, avatar: user.avatar }) }).catch(() => router.replace('/login'))
     getDesempenho().then(setDesempenho).catch(() => setDesempenho(null))
-    fetch(`${API_URL}/trilhas`)
+    const loadTracks = () => fetch(`${API_URL}/trilhas`, { cache: 'no-store' })
       .then((response) => response.ok ? response.json() : Promise.reject(new Error('Não foi possível carregar as trilhas.')))
       .then(setTracks)
       .catch(() => setTracks([]))
+    void loadTracks()
+    window.addEventListener('focus', loadTracks)
+    window.addEventListener('learning-progress-updated', loadTracks)
+    return () => { window.removeEventListener('focus', loadTracks); window.removeEventListener('learning-progress-updated', loadTracks) }
   }, [router])
 
-  const selectedTrack = tracks.find((track) => track.percentual > 0 && track.percentual < 100) ?? tracks[0]
+  const availableTracks = tracks.filter(track => track.totalAulas > 0)
+  const selectedTrack = availableTracks.find(track => !track.bloqueada && track.percentual > 0 && track.percentual < 100)
+    ?? availableTracks.find(track => !track.bloqueada && track.percentual < 100)
+    ?? availableTracks.filter(track => track.percentual === 100).at(-1)
+    ?? availableTracks.at(-1)
 
   useEffect(() => {
     if (!selectedTrack) {
@@ -49,10 +56,13 @@ export default function DashboardPage() {
       return
     }
 
-    fetch(`${API_URL}/trilhas/${selectedTrack.id}`)
+    const controller = new AbortController()
+    setLessons([])
+    fetch(`${API_URL}/trilhas/${selectedTrack.id}`, { cache: 'no-store', signal: controller.signal })
       .then((response) => response.ok ? response.json() : Promise.reject(new Error('Não foi possível carregar as aulas.')))
-      .then((track: TrackDetail) => setLessons(track.aulas))
-      .catch(() => setLessons([]))
+      .then((track: TrackDetail) => { if (!controller.signal.aborted) setLessons(track.aulas) })
+      .catch(() => { if (!controller.signal.aborted) setLessons([]) })
+    return () => controller.abort()
   }, [selectedTrack])
 
   const currentLesson = lessons.find((lesson) => !lesson.concluida) ?? lessons.at(-1)
@@ -150,21 +160,15 @@ export default function DashboardPage() {
           </article>
         </div>
 
-        <nav className="student-shortcuts" aria-label="Pratique seus conhecimentos">
-          <Link href="/aulas"><span>Explore as trilhas</span><ArrowUpRight size={20} aria-hidden="true" /></Link>
-          <Link href="/simulacoes"><span>Pratique com simulações</span><ArrowUpRight size={20} aria-hidden="true" /></Link>
-          <Link href="/quizzes"><span>Teste seus conhecimentos</span><ArrowUpRight size={20} aria-hidden="true" /></Link>
-        </nav>
-
         <section className="dash-grid" aria-label="Resumo da aprendizagem">
           <article className="dash-panel dash-lessons">
             <div className="dash-panel-head">
               <h2>Aulas da trilha</h2>
-              <Link href={trackHref}>Abrir trilha <ArrowUpRight size={15} aria-hidden="true" /></Link>
             </div>
+            {selectedTrack && <p className="dash-lessons-subtitle">{selectedTrack.titulo}</p>}
             {lessons.length ? (
               <ol className="dash-lesson-list">
-                {lessons.slice(0, 6).map((lesson) => {
+                {lessons.map((lesson) => {
                   const atual = lesson.id === currentLesson?.id && !lesson.concluida
                   return (
                     <li key={lesson.id} className={lesson.concluida ? 'is-done' : atual ? 'is-current' : undefined}>
@@ -176,7 +180,6 @@ export default function DashboardPage() {
                 })}
               </ol>
             ) : <p className="dash-empty">As aulas aparecem aqui quando você escolher uma trilha.</p>}
-            {lessons.length > 6 && <p className="dash-more">+ {lessons.length - 6} {lessons.length - 6 === 1 ? 'aula' : 'aulas'} nesta trilha</p>}
           </article>
         </section>
 

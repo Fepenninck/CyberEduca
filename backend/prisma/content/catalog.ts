@@ -3,6 +3,9 @@ import { libraryCourses } from './course-library';
 import { localScenarios } from './phishing';
 import { lessonSupplements } from './lesson-supplements';
 import { lessonVideos, courseDiagrams, courseReadings } from './lesson-media';
+import { glossary, basicLessonDiagram } from './learning-levels';
+import { technicalExample } from './technical-examples';
+import { specificDiagram } from './lesson-specific-material';
 
 // Stable UUIDs make imports repeatable without deleting records or attempts.
 export function contentId(key: string): string {
@@ -21,27 +24,38 @@ export function buildCatalog() {
     nivel: course.level,
     aulas: course.lessons.map((lesson, index) => {
       const key = `${course.id}/${lesson.id}`;
+      const diagram = course.level === 'BASICO' ? basicLessonDiagram(course.id, index, lesson.title) : specificDiagram(course.id, index, lesson.title);
       return {
         id: contentId(key),
         titulo: lesson.title,
         ordem: index + 1,
         conteudo: JSON.stringify({
           format: 'cybereduca-lesson-v1',
+          level: course.level,
           title: lesson.title,
           concept: lesson.concept,
-          practice: lesson.practice,
+          practice: `Acompanhe o exemplo de “${lesson.title}”. Observe a relação entre ${diagram.nodes[0].toLowerCase()} e ${diagram.nodes[1].toLowerCase()}; depois, escolha uma resposta na atividade desta página. A correção aparece aqui no site.`,
           source: lesson.source,
           sourceTitle: lesson.sourceTitle,
           caseStudy: lesson.caseStudy,
-          objectives: lesson.objectives,
+          objectives: [`Compreender ${lesson.title.charAt(0).toLowerCase() + lesson.title.slice(1)}.`, `Relacionar ${diagram.nodes[0].toLowerCase()}, ${diagram.nodes[1].toLowerCase()} e ${diagram.nodes[2].toLowerCase()} no exemplo apresentado.`],
           // Do not include expected/explanation: some contain the checkpoint answer.
-          supplement: lessonSupplements[key],
-          video: lessonVideos[key],
-          diagram: courseDiagrams[course.id],
-          readings: courseReadings[course.id],
+          supplement: course.level === 'BASICO' ? undefined : [
+            lessonSupplements[key]?.split(/\n\n/).filter(paragraph => !/exercício|entrega|produza|instale|execute|desenhe/i.test(paragraph)).join('\n\n'),
+            course.level === 'AVANCADO' ? technicalExample(course.id, index) : undefined,
+          ].filter(Boolean).join('\n\n'),
+          glossary: course.level === 'INTERMEDIARIO' ? Object.entries(glossary)
+            .filter(([term]) => new RegExp(`\\b${term}\\b`, 'i').test(JSON.stringify([lesson, courseDiagrams[course.id], lessonSupplements[key]])))
+            .map(([term, meaning]) => ({ term, meaning })) : undefined,
+          video: lessonVideos[key] ? {
+            ...lessonVideos[key],
+            prompt: course.level === 'BASICO' ? 'Observe uma situação do vídeo e pense no cuidado que ajudaria a pessoa. Você responde à atividade nesta página.' : lessonVideos[key].prompt,
+          } : undefined,
+          diagram,
+          readings: course.level === 'BASICO' ? undefined : courseReadings[course.id],
         }),
         quiz: {
-          id: contentId(`quiz/${key}`),
+          id: contentId(`pedagogia-v2/${contentId(key)}`),
           titulo: `Prática — ${lesson.title}`,
           descricao: `Revise os conceitos da aula ${lesson.title}.`,
           questao: {

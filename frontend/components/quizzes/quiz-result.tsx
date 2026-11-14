@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { CheckCircle2, CircleHelp } from "lucide-react";
 import type { QuizDetalhe, ResultadoQuiz } from "@/lib/quizzes-api";
 export function QuizResult({
@@ -10,11 +9,9 @@ export function QuizResult({
 }) {
   return (
     <section className="activity-panel quiz-result" aria-labelledby="quiz-result-title">
-      <div className="activity-result-top">
-        <CheckCircle2 size={36} />
-        <span className="activity-kicker">Prática concluída</span>
+      <div className="quiz-result-summary">
         <h2 id="quiz-result-title" tabIndex={-1}>
-          Mais um passo no seu aprendizado.
+          Prática concluída
         </h2>
         <p>
           Você acertou{" "}
@@ -62,14 +59,6 @@ export function QuizResult({
             </article>
           );
         })}
-      </div>
-      <div className="activity-actions">
-        <Link
-          className="dashboard-button-secondary"
-          href="/quizzes"
-        >
-          Ver outros quizzes
-        </Link>
       </div>
       <p className="activity-footnote">
         Sua tentativa foi registrada. Esta prática não gera nota nem conclui a aula automaticamente.

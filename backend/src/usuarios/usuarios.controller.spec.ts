@@ -14,10 +14,10 @@ describe('UsuariosController', () => {
   });
 
   it('encaminha o pedido de desempenho do aluno logado', () => {
-    const service = { desempenho: jest.fn().mockReturnValue({ comparativo: {} }) };
+    const service = { desempenho: jest.fn().mockReturnValue({ ritmo: {} }) };
     const controller = new UsuariosController(service as unknown as UsuariosService);
 
-    expect(controller.meuDesempenho({ user: { id: 'u1' } })).toEqual({ comparativo: {} });
+    expect(controller.meuDesempenho({ user: { id: 'u1' } })).toEqual({ ritmo: {} });
     expect(service.desempenho).toHaveBeenCalledWith('u1');
   });
 });

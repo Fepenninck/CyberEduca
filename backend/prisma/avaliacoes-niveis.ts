@@ -1,4 +1,5 @@
 import type { NivelTrilha } from '@prisma/client';
+import { libraryCourses } from './content/course-library';
 
 type Questao = { aula: string; pergunta: string; opcoes: string[]; correta: number; explicacao: string };
 type Avaliacao = { nivel: NivelTrilha; trilhaId: string; titulo: string; descricao: string; questoes: Questao[] };
@@ -19,7 +20,7 @@ export const avaliacoes: Avaliacao[] = [
       { aula: 'Permissões de aplicativos', pergunta: 'Um app de lanterna pede contatos e localização sem explicar a necessidade. Qual decisão reduz a exposição?', opcoes: ['Negar permissões desnecessárias e avaliar o app.', 'Aceitar tudo para aumentar a proteção.', 'Desativar o bloqueio do celular.', 'Enviar os contatos ao desenvolvedor.'], correta: 0, explicacao: 'Permissões devem acompanhar a função. Acesso sem necessidade amplia a exposição dos dados.' },
       { aula: 'Cópia não é só sincronização', pergunta: 'Um arquivo excluído desapareceu também da pasta sincronizada. O que faltou na proteção?', opcoes: ['Renomear a pasta.', 'Desativar atualizações.', 'Criar duas pastas no mesmo disco.', 'Backup com versões recuperáveis e cópias separadas.'], correta: 3, explicacao: 'Sincronização pode propagar exclusões. Backup precisa permitir recuperação e considerar falhas compartilhadas.' },
       { aula: 'Testar a restauração', pergunta: 'Como demonstrar que um backup permite recuperar o trabalho?', opcoes: ['Conferir apenas o ícone da nuvem.', 'Restaurar um arquivo em outra pasta e comparar seu conteúdo.', 'Contar arquivos sem abri-los.', 'Excluir o original antes do teste.'], correta: 1, explicacao: 'O teste verifica recuperação e usabilidade. Preserve os originais durante o exercício.' },
-      { aula: '03. Segurança em redes Wi-Fi públicas', pergunta: 'Duas redes de um café têm nomes parecidos. Qual cuidado vem antes da conexão?', opcoes: ['Escolher a de sinal mais forte.', 'Ignorar os avisos do dispositivo.', 'Confirmar o nome com o estabelecimento e evitar conexão automática a redes desconhecidas.', 'Informar a senha do e-mail para liberar acesso.'], correta: 2, explicacao: 'Nome e força do sinal não comprovam a origem. Confirme a rede e mantenha os demais cuidados com dados sensíveis.' },
+      { aula: '03. Antes de publicar: o que aparece na foto?', pergunta: 'Uma foto mostra um documento e o endereço de casa. Qual cuidado reduz a exposição antes de publicar?', opcoes: ['Publicar e apagar depois.', 'Confiar apenas no número de seguidores.', 'Refazer ou recortar a imagem para retirar os dados e revisar o público.', 'Publicar somente por alguns minutos.'], correta: 2, explicacao: 'Revise os dados visíveis e o público antes de compartilhar. Apagar depois não elimina cópias já feitas.' },
     ],
   },
   {
@@ -57,3 +58,15 @@ export const avaliacoes: Avaliacao[] = [
     ],
   },
 ];
+
+// A nova prova basica usa situacoes das aulas reescritas para o publico leigo.
+const basicLessons = libraryCourses.filter(course => course.level === 'BASICO').flatMap(course => course.lessons.slice(0, 3)).slice(0, 10);
+avaliacoes[0].descricao = 'Escolha cuidados simples para contas, mensagens, aparelhos e arquivos. Tudo e respondido aqui no site.';
+avaliacoes[0].questoes = basicLessons.map((lesson, index) => {
+  const good = lesson.options[lesson.correct];
+  const bad = lesson.options[1 - lesson.correct];
+  const opcoes = [bad, 'Enviar a senha a qualquer pessoa que ofereca ajuda.', 'Presumir que nada precisa de cuidado.', good];
+  const correta = index % 4;
+  [opcoes[correta], opcoes[3]] = [opcoes[3], opcoes[correta]];
+  return { aula: lesson.title, pergunta: lesson.question, opcoes, correta, explicacao: lesson.explanation };
+});

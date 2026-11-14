@@ -24,10 +24,10 @@ async function main() {
       }
       // IDs diferentes preservam as provas e tentativas anteriores.
       await tx.prova.upsert({
-        where: { id: `ce000000-0000-4000-8002-${String(indice + 1).padStart(12, '0')}` },
+        where: { id: `ce000000-0000-4000-${indice === 0 ? '8003' : '8002'}-${String(indice + 1).padStart(12, '0')}` },
         update: {},
         create: {
-          id: `ce000000-0000-4000-8002-${String(indice + 1).padStart(12, '0')}`,
+          id: `ce000000-0000-4000-${indice === 0 ? '8003' : '8002'}-${String(indice + 1).padStart(12, '0')}`,
           titulo: avaliacao.titulo,
           descricao: avaliacao.descricao,
           trilhaId: trilha.id,

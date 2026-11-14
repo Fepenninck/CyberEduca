@@ -1,4 +1,4 @@
-import { Analytics } from '@vercel/analytics/next'
+import { AchievementCelebration } from '@/components/achievement-celebration'
 import type { Metadata, Viewport } from 'next'
 import { SiteScrollbar } from '@/components/site-scrollbar'
 import { CookieConsent } from '@/components/cookie-consent'
@@ -19,5 +19,5 @@ export const metadata: Metadata = {
 export const viewport: Viewport = { colorScheme: 'dark', themeColor: '#111a14' }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="pt-BR" className="bg-background"><body className="antialiased">{children}<SiteScrollbar /><CookieConsent />{process.env.NODE_ENV === 'production' && <Analytics />}</body></html>
+  return <html lang="pt-BR" className="bg-background"><body className="antialiased">{children}<AchievementCelebration /><SiteScrollbar /><CookieConsent /></body></html>
 }

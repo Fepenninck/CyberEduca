@@ -89,3 +89,4 @@
 .recovery-secondary { width:100%; height:41px; border:1px solid #3a495d; border-radius:4px; background:transparent; color:#f4f4f4; font-size:14px; font-weight:600; transition:border-color .18s,background .18s; }
 .recovery-secondary:hover { border-color:#8799b5; background:#1e2939; }
 @media (max-width:560px) { .recovery-shell { transform:translateY(-8px); } .recovery-card { padding:30px 22px; } }
+.login-account-deleted { margin: 0 0 20px; border-radius: 5px; padding: 12px 14px; background: #183328; color: #b5e0bf; font-size: 13px; line-height: 1.6; }

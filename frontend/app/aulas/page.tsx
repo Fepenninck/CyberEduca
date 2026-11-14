@@ -6,9 +6,11 @@ import type { CSSProperties } from "react";
 import { BookOpen, Check, LockKeyhole } from "lucide-react";
 import { DashboardNavigation } from "@/components/dashboard-navigation";
 import { apiFetch, type TrackSummary } from "@/lib/api";
-import { CourseCarousel } from "@/components/course-carousel";
+import { LearningTrail } from "@/components/learning-trail";
 import { unlockedLearningCourses } from '@/lib/course-access';
 import { courseButtonLabel } from '@/lib/course-status';
+import courseImages from '@/lib/course-images.json';
+import { TrailAchievement, useAchievements } from '@/components/level-achievements';
 import './aulas.css';
 
 const levels = [
@@ -37,74 +39,61 @@ const levels = [
 ] as const;
 
 export default function AulasPage() {
+  const achievements = useAchievements();
   const [tracks, setTracks] = useState<TrackSummary[]>([]);
+  const visibleTracks = tracks.filter(track => track.totalAulas > 0 && track.id !== '4328594b-f7cb-52d2-862f-e612b1647aa9');
+  const images: Record<string, { src: string; alt: string; source: string }> = courseImages;
   const unlocked = unlockedLearningCourses(tracks);
   const [error, setError] = useState("");
   useEffect(() => {
     const controller = new AbortController();
-    apiFetch("/trilhas", { signal: controller.signal, cache: 'no-store' })
+    const load = () => apiFetch("/trilhas", { signal: controller.signal, cache: 'no-store' })
       .then(async (response) => {
         if (!response.ok) throw new Error("Entre na sua conta para carregar as aulas.");
         setTracks(await response.json());
       })
       .catch((cause) => { if (!controller.signal.aborted) setError(cause instanceof Error ? cause.message : "Não foi possível carregar as aulas."); });
-    return () => controller.abort();
+    void load();
+    window.addEventListener('focus', load);
+    window.addEventListener('learning-progress-updated', load);
+    return () => { controller.abort(); window.removeEventListener('focus', load); window.removeEventListener('learning-progress-updated', load); };
   }, []);
 
   return (
     <main className="app-shell dashboard-page learning-paths-page">
       <DashboardNavigation active="aulas" />
       <section className="learning-paths content-wrap">
-        <header className="paths-hero">
+        <header className="paths-hero paths-heading">
           <div>
+            <span className="paths-heading-eyebrow">Seu percurso de aprendizagem</span>
             <h1>Trilhas de aprendizagem</h1>
-            <p>Avance do básico ao avançado. Cada nível libera o próximo quando todas as trilhas dele forem concluídas.</p>
+            <p>Aprenda no seu ritmo. Conclua um nível para desbloquear o próximo.</p>
           </div>
           <ol className="paths-journey" aria-label="Progresso por nível">
-            {levels.map((level) => {
-              const doNivel = tracks.filter((track) => track.nivel === level.key);
-              const media = doNivel.length ? Math.round(doNivel.reduce((total, track) => total + track.percentual, 0) / doNivel.length) : 0;
-              return (
-                <li key={level.key} className={media === 100 ? "is-done" : media > 0 ? "is-active" : undefined} style={{ "--level-color": level.color } as CSSProperties}>
-                  <span className="paths-journey-dot" aria-hidden="true">{media === 100 ? <Check size={14} strokeWidth={3} /> : null}</span>
-                  <strong>{level.title.replace("Nível ", "")}</strong>
-                  <small>{media}% concluído</small>
-                </li>
-              );
+            {levels.map(level => {
+              const group = visibleTracks.filter(track => track.nivel === level.key);
+              const progress = group.length ? Math.round(group.reduce((sum, track) => sum + track.percentual, 0) / group.length) : 0;
+              return <li key={level.key} className={progress === 100 ? 'is-done' : progress > 0 ? 'is-active' : undefined} style={{ '--level-color': level.color } as CSSProperties}>
+                <div className="paths-level-label"><strong>{level.key === 'BASICO' ? 'Básico' : level.title.replace('Nível ', '')}</strong><small>{progress}%</small></div>
+                <div className="paths-level-meter" role="progressbar" aria-label={`Progresso no ${level.title}`} aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}><span style={{ width: `${progress}%` }} /></div>
+                <span className="paths-level-count">{group.filter(track => track.percentual === 100).length}/{group.length} trilhas concluídas</span>
+              </li>;
             })}
           </ol>
+
         </header>
         {error && <p role="alert">{error}</p>}
-        {levels.map((level) => {
-          const levelTracks = tracks.filter((track) => track.nivel === level.key);
-          const finished = levelTracks.filter((track) => track.percentual === 100).length;
-          const average = levelTracks.length ? Math.round(levelTracks.reduce((total, track) => total + track.percentual, 0) / levelTracks.length) : 0;
-          return (
-          <section
-            className="learning-level learning-level-cards-only"
-            key={level.key}
-            style={{ "--level-color": level.color } as CSSProperties}
-          >
-            <header className="learning-level-header">
-              <div>
-                <h2>{level.title}</h2>
-                <p>{level.description}</p>
-              </div>
-              {levelTracks.length > 0 && (
-                <div className="learning-level-summary" aria-label={`${average}% do ${level.title.toLowerCase()} concluído`}>
-                  <span>{finished} de {levelTracks.length} {levelTracks.length === 1 ? "trilha concluída" : "trilhas concluídas"}</span>
-                  <div className="learning-level-bar"><span style={{ width: `${average}%` }} /></div>
-                </div>
-              )}
-            </header>
-            <CourseCarousel label={level.title}>
-              {levelTracks.map((track) => (
+        <LearningTrail label="Iniciante ao avançado">
+          {levels.flatMap(level => [...visibleTracks.filter(track => track.nivel === level.key).map(track => (
                   <article
                     key={track.id}
+                    data-level={level.key}
                     className={`learning-path-card ${!unlocked.includes(track.id) ? "is-locked" : ""} ${track.percentual === 100 ? "is-done" : ""}`}
-                    style={{ "--track-image": level.image } as CSSProperties}
+                    style={{ "--track-image": level.image, "--level-color": level.color } as CSSProperties}
                   >
-                    <div className="learning-path-image" />
+                    <div className="learning-path-image">
+                      {images[track.id] && <img src={images[track.id].src} alt={images[track.id].alt} loading="lazy" width={900} height={500} />}
+                    </div>
                     <div className="learning-path-body">
                       <span className="learning-path-badge">
                         {level.key === "BASICO"
@@ -133,11 +122,8 @@ export default function AulasPage() {
                       )}
                     </div>
                   </article>
-                ))}
-            </CourseCarousel>
-          </section>
-          );
-        })}
+          )), <TrailAchievement key={`badge-${level.key}`} level={level.key} progress={achievements.data.find(item => item.nivel === level.key)} unavailable={achievements.error} />])}
+        </LearningTrail>
       </section>
     </main>
   );

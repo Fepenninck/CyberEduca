@@ -139,11 +139,6 @@
 .student-home .insight-card p { margin-top: 8px; color: #9dacbf; font-size: 14px; line-height: 1.55; }
 .student-home .insight-link { display: inline-flex; align-items: center; gap: 4px; margin-top: auto; padding-top: 18px; color: var(--insight-color); font-size: 13px; font-weight: 600; }
 
-.student-home .insight-rank-scale { display: flex; justify-content: space-between; margin-top: 8px; color: #6f7f95; font-size: 11px; }
-.student-home .insight-rank { position: relative; height: 8px; margin: 34px 0 0; border-radius: 999px; background: rgba(255, 255, 255, .08); }
-.student-home .insight-rank-fill { position: absolute; inset: 0 auto 0 0; border-radius: inherit; background: linear-gradient(90deg, rgba(178, 255, 0, .25), #b2ff00); }
-.student-home .insight-rank-you { position: absolute; bottom: 14px; transform: translateX(-50%); border-radius: 999px; padding: 2px 8px; background: #b2ff00; color: #132000; font-size: 11px; font-weight: 700; white-space: nowrap; }
-.student-home .insight-rank-you::after { position: absolute; bottom: -4px; left: 50%; width: 8px; height: 8px; content: ''; transform: translateX(-50%) rotate(45deg); background: #b2ff00; }
 
 .student-home .insight-week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; margin-top: 20px; list-style: none; }
 .student-home .insight-week li { display: flex; flex-direction: column; align-items: center; gap: 6px; }

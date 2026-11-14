@@ -1,6 +1,8 @@
 // Conteúdo editorial carregado de Aula.conteudo. Gabaritos ficam em QuestaoQuiz.
 export type LessonMaterial = {
   format: 'cybereduca-lesson-v1';
+  level?: 'BASICO' | 'INTERMEDIARIO' | 'AVANCADO';
+  glossary?: { term: string; meaning: string }[];
   title: string;
   concept: string;
   practice: string;
@@ -13,6 +15,12 @@ export type LessonMaterial = {
   video?: { title: string; url: string; source: string; prompt: string };
   diagram?: { title: string; nodes: string[]; notes: string[]; caption: string };
   readings?: { title: string; url: string; task: string }[];
+  introductory?: {
+    step: number;
+    image: { src: string; alt: string; caption: string };
+    checkpoint: { question: string; options: string[]; correct: number; explanation: string };
+    takeaway: string;
+  };
 };
 
 export function parseLessonMaterial(content: string): LessonMaterial | null {

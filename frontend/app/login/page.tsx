@@ -1,6 +1,6 @@
 'use client'
 
-import { FormEvent, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { AlertCircle } from 'lucide-react'
 import './login.css'
@@ -20,6 +20,8 @@ export default function LoginPage() {
   const router = useRouter()
   const [apiError, setApiError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [accountDeleted, setAccountDeleted] = useState(false)
+  useEffect(() => { setAccountDeleted(new URLSearchParams(window.location.search).get('conta') === 'excluida') }, [])
   const formIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && password.length >= 6
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
@@ -66,6 +68,7 @@ export default function LoginPage() {
       <Link href="/" className="login-brand" aria-label="Voltar para o início do CyberEduca+"><img src="/cybereduca-logo.png" alt="CyberEduca+" /></Link>
       <section className="login-card" aria-labelledby="login-title">
         <h1 id="login-title">Entre no CyberEduca+</h1>
+        {accountDeleted && <p className="login-account-deleted" role="status">Sua conta e seu histórico foram excluídos.</p>}
         <form onSubmit={submit} noValidate>
           <div className="login-field"><label htmlFor="email">E-mail</label><div className={`login-input${errors.email ? ' is-invalid' : ''}`}><input id="email" name="email" type="email" autoComplete="email" value={email} onChange={(event) => { setEmail(event.target.value); setErrors((current) => ({ ...current, email: undefined })) }} aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? 'email-error' : undefined} />{errors.email && <AlertCircle aria-hidden="true" />}</div>{errors.email && <p className="login-error" id="email-error">{errors.email}</p>}</div>
           <div className="login-field"><label htmlFor="password">Senha</label><div className={`login-input${errors.password ? ' is-invalid' : ''}`}><input id="password" name="password" type={showPassword ? 'text' : 'password'} autoComplete="current-password" value={password} onChange={(event) => { setPassword(event.target.value); setErrors((current) => ({ ...current, password: undefined })) }} aria-invalid={Boolean(errors.password)} aria-describedby={errors.password ? 'password-error' : undefined} /><button type="button" className="password-toggle" onClick={() => setShowPassword((visible) => !visible)} aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}>{showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}</button></div>{errors.password && <p className="login-error" id="password-error">{errors.password}</p>}</div>

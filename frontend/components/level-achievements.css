@@ -1,0 +1,17 @@
+.achievement-intro { color: var(--student-muted); font-size: 14px; margin: 8px 0 20px; }
+.achievement-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.achievement-item { min-width: 0; text-align: center; }
+.achievement-item img { display: block; width: 100%; height: auto; object-fit: contain; border-radius: 6px; }
+.achievement-item.is-locked img { filter: grayscale(1); opacity: .4; }
+.achievement-item h3 { font-size: 15px; margin: 12px 0 4px; }
+.achievement-item strong { font-size: 12px; color: var(--student-muted); }
+.achievement-item.is-earned strong { color: var(--student-accent); }
+.achievement-item p, .achievement-item small { font-size: 11px; color: var(--student-subtle); line-height: 1.6; }
+.trail-achievement { padding: 20px 12px; text-align: center; }
+.trail-achievement-label { color: var(--level-color); font-size: 11px; }
+.trail-achievement img { display: block; width: 100%; height: auto; border-radius: 8px; margin: 14px 0; }
+.trail-achievement.is-locked img { opacity: .5; filter: grayscale(.8); }
+.trail-achievement h2 { font-size: 17px; margin-bottom: 10px; }
+.trail-achievement strong { font-size: 12px; color: var(--level-color); }
+.trail-achievement p { color: var(--student-muted); font-size: 12px; line-height: 1.6; margin-top: 8px; }
+@media(max-width: 500px) { .achievement-grid { grid-template-columns: 1fr; } .achievement-item img { max-width: 260px; margin-inline: auto; } }

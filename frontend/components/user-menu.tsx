@@ -51,9 +51,8 @@ export function UserMenu() {
       <Link href="/perfil" onClick={() => setOpen(false)}><UserRound size={18} /> Perfil</Link>
       <Link href="/configuracoes" onClick={() => setOpen(false)}><Cog size={18} /> Configurações</Link>
       <div className="user-menu-divider" />
-      <span className="user-menu-label">Privacidade e segurança</span>
-      <Link href="/privacidade" onClick={() => setOpen(false)}><ShieldCheck size={18} /> Privacidade e dados</Link>
-      <Link href="/privacidade/politica" onClick={() => setOpen(false)}><ShieldCheck size={18} /> Segurança dos dados</Link>
+      <span className="user-menu-label">Informações legais</span>
+      <Link href="/privacidade/politica" onClick={() => setOpen(false)}><ShieldCheck size={18} /> Termos e privacidade</Link>
       <div className="user-menu-divider" />
       <button className="user-menu-signout" type="button" onClick={signOut}><LogOut size={18} /> Sair da conta</button>
     </div>}

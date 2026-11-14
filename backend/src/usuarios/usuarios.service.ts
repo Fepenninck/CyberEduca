@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import * as bcrypt from 'bcrypt';
 
@@ -11,6 +11,44 @@ function chaveDoDia(data: Date) {
 @Injectable()
 export class UsuariosService {
     constructor(private readonly prisma: PrismaService) {}
+
+    async excluirConta(usuarioId: string, confirmacao: string) {
+        if (confirmacao !== 'excluir') throw new BadRequestException('Digite excluir para confirmar a exclusão da conta.');
+        await this.prisma.$transaction(async tx => {
+            const usuario = await tx.usuario.findUnique({ where: { id: usuarioId }, select: { email: true } });
+            if (!usuario) throw new NotFoundException('Conta não encontrada.');
+            await tx.logAuditoria.deleteMany({ where: { OR: [
+                { atorId: usuarioId }, { entidadeId: usuarioId },
+                { entidade: 'Usuario', acao: 'LOGIN_FALHOU', detalhes: { path: ['emailInformado'], equals: usuario.email } },
+            ] } });
+            // Foreign-key cascades remove progress, attempts, answers, results and lab history.
+            await tx.usuario.delete({ where: { id: usuarioId } });
+        });
+        return { message: 'Sua conta e seu histórico foram excluídos.' };
+    }
+
+    async conquistas(usuarioId: string) {
+        const aulas = await this.prisma.aula.findMany({
+            // Trilha retirada do percurso do aluno; seu histórico é preservado.
+            where: { trilhaId: { not: '4328594b-f7cb-52d2-862f-e612b1647aa9' } },
+            select: {
+                trilha: { select: { nivel: true } },
+                progressos: {
+                    where: { usuarioId, concluida: true },
+                    select: { dataConclusao: true },
+                },
+            },
+        });
+        return (['BASICO', 'INTERMEDIARIO', 'AVANCADO'] as const).map(nivel => {
+            const doNivel = aulas.filter(aula => aula.trilha.nivel === nivel);
+            const concluidas = doNivel.filter(aula => aula.progressos.length > 0);
+            const conquistada = doNivel.length > 0 && concluidas.length === doNivel.length;
+            return {
+                nivel, totalAulas: doNivel.length, aulasConcluidas: concluidas.length, conquistada,
+                conquistadaEm: conquistada ? new Date(Math.max(...concluidas.map(aula => aula.progressos[0].dataConclusao.getTime()))).toISOString() : null,
+            };
+        });
+    }
 
     async criar(nome: string, email: string, senha: string) {
         const senhaHash = await bcrypt.hash(senha, 10);
@@ -108,13 +146,7 @@ export class UsuariosService {
         const agora = new Date();
         const inicioJanela = new Date(agora.getTime() - 60 * DIA_MS);
 
-        const [porAluno, totalAlunos, progressos, phishing, quizzes] = await Promise.all([
-            this.prisma.progressoAula.groupBy({
-                by: ['usuarioId'],
-                where: { concluida: true, usuario: { papel: { not: 'ADMIN' } } },
-                _count: { _all: true },
-            }),
-            this.prisma.usuario.count({ where: { papel: { not: 'ADMIN' } } }),
+        const [progressos, phishing, quizzes, totalAulas, aulasConcluidas, simulacoes, provas, resultadosLegados] = await Promise.all([
             this.prisma.progressoAula.findMany({
                 where: { usuarioId, concluida: true, dataConclusao: { gte: inicioJanela } },
                 select: { dataConclusao: true },
@@ -128,14 +160,12 @@ export class UsuariosService {
                 orderBy: { concluidoEm: 'desc' },
                 select: { totalAcertos: true, totalQuestoes: true, quiz: { select: { id: true, titulo: true } } },
             }),
+            this.prisma.aula.count({ where: { trilhaId: { not: '4328594b-f7cb-52d2-862f-e612b1647aa9' } } }),
+            this.prisma.progressoAula.count({ where: { usuarioId, concluida: true, aula: { trilhaId: { not: '4328594b-f7cb-52d2-862f-e612b1647aa9' } } } }),
+            this.prisma.resultadoSimulacao.findMany({ where: { usuarioId }, select: { acertos: true, totalQuestoes: true } }),
+            this.prisma.tentativaProva.findMany({ where: { usuarioId, concluidoEm: { not: null } }, select: { provaId: true, totalAcertos: true, totalQuestoes: true } }),
+            this.prisma.resultadoProva.findMany({ where: { usuarioId }, select: { provaId: true, acertos: true, totalQuestoes: true } }),
         ]);
-
-        const minhasAulas = porAluno.find((item) => item.usuarioId === usuarioId)?._count._all ?? 0;
-        const outrosAlunos = totalAlunos - 1;
-        const atras = outrosAlunos > 0
-            ? porAluno.filter((item) => item.usuarioId !== usuarioId && item._count._all < minhasAulas).length
-              + (minhasAulas > 0 ? totalAlunos - porAluno.length : 0)
-            : 0;
 
         const dias = new Set(progressos.map((item) => chaveDoDia(item.dataConclusao)));
         const semana = Array.from({ length: 7 }, (_, indice) => {
@@ -166,13 +196,20 @@ export class UsuariosService {
                 percentual: Math.round((item.totalAcertos / item.totalQuestoes) * 100),
             }));
         const ordenados = [...quizzesFeitos].sort((a, b) => b.percentual - a.percentual);
+        const treinos = simulacoes.filter(item => item.totalQuestoes > 0);
+        const totalSimulacoes = treinos.reduce((total, item) => total + item.totalQuestoes, 0) + phishing.length;
+        const acertosSimulacoes = treinos.reduce((total, item) => total + item.acertos, 0) + phishing.filter(item => item.acertou).length;
+        const provasFinalizadas = provas.filter(item => item.totalQuestoes > 0);
+        const idsComTentativa = new Set(provasFinalizadas.map(item => item.provaId));
+        const notas = [
+            ...provasFinalizadas.map(item => item.totalAcertos / item.totalQuestoes * 100),
+            ...resultadosLegados.filter(item => item.totalQuestoes > 0 && !idsComTentativa.has(item.provaId)).map(item => item.acertos / item.totalQuestoes * 100),
+        ];
 
         return {
-            comparativo: {
-                aulasConcluidas: minhasAulas,
-                totalAlunos,
-                percentil: outrosAlunos > 0 ? Math.round((atras / outrosAlunos) * 100) : null,
-            },
+            aulas: { total: totalAulas, concluidas: aulasConcluidas },
+            simulacoes: { realizadas: treinos.length + phishing.length, acertos: acertosSimulacoes, totalQuestoes: totalSimulacoes, aproveitamento: totalSimulacoes ? Math.round(acertosSimulacoes / totalSimulacoes * 100) : null },
+            avaliacoes: { realizadas: notas.length, media: notas.length ? Math.round(notas.reduce((sum, nota) => sum + nota, 0) / notas.length) : null, melhor: notas.length ? Math.round(Math.max(...notas)) : null },
             ritmo: {
                 diasSeguidos,
                 aulasNaSemana: semana.reduce((total, item) => total + item.aulas, 0),

@@ -9,8 +9,8 @@ export function CookieConsent() {
 
   useEffect(() => { setVisible(!document.cookie.split('; ').some((cookie) => cookie.startsWith('cybereduca_cookie_consent='))) }, [])
 
-  const saveChoice = (choice: 'accepted' | 'rejected') => {
-    document.cookie = `cybereduca_cookie_consent=${choice}; Max-Age=31536000; Path=/; SameSite=Lax${window.location.protocol === 'https:' ? '; Secure' : ''}`
+  const acknowledge = () => {
+    document.cookie = `cybereduca_cookie_consent=essential; Max-Age=31536000; Path=/; SameSite=Lax${window.location.protocol === 'https:' ? '; Secure' : ''}`
     setVisible(false)
   }
 
@@ -18,11 +18,10 @@ export function CookieConsent() {
 
   return <section className="cookie-consent" aria-label="Preferências de cookies">
     <div className="cookie-consent-copy">
-      <div className="cookie-consent-title"><strong>Controle a sua privacidade</strong><span>AdOpt</span></div>
-      <p>Usamos cookies para melhorar sua navegação e entender como a plataforma é utilizada.</p>
-      <div className="cookie-consent-notice">Usamos cookies para compartilhar dados de análise, publicidade, dados de usuários e personalização de anúncios com parceiros.</div>
+      <div className="cookie-consent-title"><strong>Cookies necessários</strong></div>
+      <p>Usamos cookies para manter sua sessão e lembrar a exibição deste aviso. Não utilizamos rastreamento opcional de publicidade ou análise de navegação.</p>
       <div className="cookie-consent-links"><a href="/politicas#politica-de-privacidade">Política de Privacidade</a><span>•</span><a href="/politicas#termos-de-uso">Termos de uso</a></div>
     </div>
-    <div className="cookie-consent-actions"><button type="button" className="cookie-customize">Personalizar</button><button type="button" className="cookie-reject" onClick={() => saveChoice('rejected')}>Rejeitar</button><button type="button" className="cookie-accept" onClick={() => saveChoice('accepted')}>Aceitar</button></div>
+    <div className="cookie-consent-actions"><button type="button" className="cookie-accept" onClick={acknowledge}>Entendi</button></div>
   </section>
 }

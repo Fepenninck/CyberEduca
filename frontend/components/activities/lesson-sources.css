@@ -1,0 +1,25 @@
+.lesson-sources {
+  margin-top: 28px;
+  color: var(--student-subtle, #8497b2);
+  font-size: 12px;
+  line-height: 1.7;
+}
+.lesson-sources > div + div { margin-top: 4px; }
+.lesson-sources a,
+.prose-content .lesson-sources a,
+.track-lesson-content .lesson-sources a {
+  color: inherit;
+  font-size: inherit;
+  font-weight: 400;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.lesson-sources a:hover { color: var(--student-text, #f4f7fb); }
+.prose-content .lesson-source-link,
+.track-lesson-content .lesson-source-link,
+.lesson-source-link {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--student-subtle, #8497b2);
+}
+.lesson-source-link a { color: inherit; font-size: inherit; }

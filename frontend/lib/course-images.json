@@ -1,0 +1,72 @@
+{
+  "cd24b773-00b6-4750-9e38-c1a332554275": {
+    "src": "/images/trilhas/dados.jpg",
+    "alt": "Proteção de dados representada por um cadeado sobre um teclado.",
+    "source": "https://unsplash.com/photos/a-golden-padlock-sitting-on-top-of-a-keyboard-FnA5pAzqhMM"
+  },
+  "02622aa1-56c4-5dad-83ef-02fedcf2bd45": {
+    "src": "/images/trilhas/contas.jpg",
+    "alt": "Cadeado com combinação sobre um teclado, representando a proteção das contas.",
+    "source": "https://unsplash.com/photos/a-combination-lock-rests-on-a-computer-keyboard-WUJmdr8pNwk"
+  },
+  "248ec2f5-b1d8-529d-884c-9a122cdb0b66": {
+    "src": "/images/trilhas/dispositivos.jpg",
+    "alt": "Celular e computador em uma mesa de trabalho.",
+    "source": "https://unsplash.com/photos/a-person-sitting-at-a-desk-with-two-laptops-1ZHvbXBNwaI"
+  },
+  "147170b0-bfb6-5c87-8a62-65402b58a65b": {
+    "src": "/images/trilhas/redes.jpg",
+    "alt": "Cabos conectados a um equipamento de rede.",
+    "source": "https://unsplash.com/photos/a-close-up-of-a-network-with-wires-connected-to-it-dyUp7WPu5q4"
+  },
+  "fd3bf54b-bf52-5d03-8bf2-b78b2aecee56": {
+    "src": "/images/trilhas/privacidade.jpg",
+    "alt": "Cadeado sobre um teclado, representando a privacidade das informações.",
+    "source": "https://unsplash.com/photos/brown-padlock-on-black-computer-keyboard-FGH69mi53Mw"
+  },
+  "8c346dab-0913-58a0-819b-262a36bdb184": {
+    "src": "/images/trilhas/copias.jpg",
+    "alt": "Unidade externa conectada a um computador para guardar arquivos.",
+    "source": "https://unsplash.com/photos/external-hard-drive-connected-to-a-laptop-MBVBzp8WH4E"
+  },
+  "1c3972e4-be84-5537-b160-8d84d3ef064d": {
+    "src": "/images/trilhas/remoto.jpg",
+    "alt": "Pessoa trabalhando em um computador portátil em casa.",
+    "source": "https://unsplash.com/photos/person-using-laptop-LCun3uxh-z0"
+  },
+  "9aadc2ba-7c0b-5be7-b508-30ffb3c52c9e": {
+    "src": "/images/trilhas/acesso.jpg",
+    "alt": "Cadeado aberto sobre um teclado, representando decisões de acesso.",
+    "source": "https://unsplash.com/photos/an-unlocked-padlock-rests-on-a-computer-keyboard-KdCJ1nIkgOU"
+  },
+  "1d55bf99-68d6-54dd-8ebd-45acac79ae56": {
+    "src": "/images/trilhas/malware.jpg",
+    "alt": "Tela de um programa de proteção mostrando verificações de segurança.",
+    "source": "https://unsplash.com/photos/security-privacy-and-performance-status-with-fix-options-7Og0reGku4M"
+  },
+  "ae0b011d-ec14-5b7b-a732-a4feaab55dbe": {
+    "src": "/images/trilhas/configuracao.jpg",
+    "alt": "Equipamentos em uma sala de servidores.",
+    "source": "https://unsplash.com/photos/a-close-up-of-a-server-in-a-server-room-vSprjjDbu60"
+  },
+  "74af628f-672c-5673-9baf-7b741a6d6b6c": {
+    "src": "/images/trilhas/analise.jpg",
+    "alt": "Tela com registros e código para análise técnica.",
+    "source": "https://unsplash.com/photos/a-computer-screen-with-a-bunch-of-code-on-it-ieic5Tq8YMk"
+  },
+  "970a7a66-d764-5ed5-be75-628d89e4a2be": {
+    "src": "/images/trilhas/codigo.jpg",
+    "alt": "Código de programação exibido em um monitor.",
+    "source": "https://unsplash.com/photos/code-is-displayed-on-a-computer-monitor-zUrEj_OwLQM"
+  },
+  "9b98b7a6-5c4d-4e3f-8a2b-1c0d9e8f7a61": {
+    "src": "/images/trilhas/intermediario.jpg",
+    "alt": "Conexões de rede em um equipamento de comunicação.",
+    "source": "https://unsplash.com/photos/a-network-switch-with-ethernet-cables-connected-vE5AKQRUs7c"
+  },
+  "6a7b8c9d-0e1f-4a2b-9c3d-5e6f70819203": {
+    "src": "/images/trilhas/configuracao.jpg",
+    "alt": "Equipamentos em uma sala de servidores.",
+    "source": "https://unsplash.com/photos/a-close-up-of-a-server-in-a-server-room-vSprjjDbu60"
+  }
+}

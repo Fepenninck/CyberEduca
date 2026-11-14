@@ -304,7 +304,7 @@
 }
 .quiz-feedback {
   padding: 26px;
-  border: 1px solid #7b6846;
+  border: 0;
   border-radius: 7px;
   background: #292a26;
 }
@@ -831,4 +831,20 @@
   color: #b2ff00 !important;
   font-size: 24px;
   font-weight: 600;
+}
+.quiz-result .quiz-result-summary {
+  display: block;
+  margin-bottom: 20px;
+  padding: 0;
+  text-align: left;
+}
+.quiz-result .quiz-result-summary h2 {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.4;
+}
+.quiz-result .quiz-result-summary p {
+  margin: 4px 0 0;
+  font-size: 14px;
+  line-height: 1.6;
 }

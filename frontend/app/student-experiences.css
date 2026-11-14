@@ -597,7 +597,7 @@
 }
 .app-shell.dashboard-page .quiz-feedback {
   padding: 26px;
-  border: 1px solid #63533b;
+  border: 0;
   border-radius: 8px;
   background: #28282a;
 }

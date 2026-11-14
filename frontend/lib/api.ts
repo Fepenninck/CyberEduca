@@ -3,6 +3,11 @@ export const API_URL = '/api'
 export const apiFetch = (path: string, options?: RequestInit) => fetch(`${API_URL}${path}`, {
   ...options,
   credentials: 'include',
+}).then(response => {
+  if (response.ok && options?.method?.toUpperCase() === 'POST' && /^\/aulas\/[^/]+\/concluir$/.test(path) && typeof window !== 'undefined') {
+    window.dispatchEvent(new Event('learning-progress-updated'))
+  }
+  return response
 })
 
 export type UserProfile = {
@@ -48,7 +53,9 @@ export type TrackDetail = TrackSummary & {
 }
 
 export type Desempenho = {
-  comparativo: { aulasConcluidas: number; totalAlunos: number; percentil: number | null }
+  aulas: { total: number; concluidas: number }
+  simulacoes: { realizadas: number; acertos: number; totalQuestoes: number; aproveitamento: number | null }
+  avaliacoes: { realizadas: number; media: number | null; melhor: number | null }
   ritmo: { diasSeguidos: number; aulasNaSemana: number; semana: Array<{ dia: string; aulas: number }> }
   phishing: { respondidos: number; acertos: number; porTipo: Array<{ tipo: 'EMAIL' | 'SMS' | 'SITE' | 'REDE_SOCIAL'; total: number; acertos: number }> }
   quizzes: {

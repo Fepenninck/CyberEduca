@@ -158,6 +158,7 @@ export class AprendizagemService {
 
   async listarTrilhas(usuarioId: string) {
     const trilhas = await this.prisma.trilha.findMany({
+      where: { id: { not: '4328594b-f7cb-52d2-862f-e612b1647aa9' }, aulas: { some: {} } },
       orderBy: { ordem: 'asc' },
       include: { _count: { select: { aulas: true } } },
     });
@@ -348,6 +349,8 @@ export class AprendizagemService {
     const anteriores = await this.prisma.trilha.findMany({
       where: {
         ordem: { lt: trilha.ordem },
+        // Esta trilha foi retirada do percurso e não pode bloquear as seguintes.
+        id: { not: '4328594b-f7cb-52d2-862f-e612b1647aa9' },
         // Trilhas sem aulas não podem ser concluídas e não são pré-requisitos.
         aulas: { some: {} },
       },
