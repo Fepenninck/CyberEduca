@@ -1,5 +1,6 @@
 'use client'
 
+import { LoadingScreen } from '@/components/ui/loading-screen'
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { ActivityShell } from '@/components/activities/activity-shell'
@@ -41,7 +42,7 @@ export default function ProvaPage() {
 
   return (
     <ActivityShell section="avaliacoes" title={resultado?.provaTitulo || prova?.titulo || 'Sua próxima conquista.'} description={resultado ? 'Avaliação concluída. Confira sua nota e revise as explicações.' : prova?.descricao || 'Responda no seu ritmo. Sua nota será calculada e salva ao finalizar.'} back="/avaliacoes">
-      {carregando && <p className="provas-vazio" style={{ textAlign: 'center' }}>Carregando avaliação...</p>}
+      {carregando && <LoadingScreen label={"Carregando avaliação..."} />}
       {erro && <p className="prova-erro" style={{ textAlign: 'center' }}>{erro}</p>}
       {resultado ? <ProvaResult resultado={resultado} /> : prova && <ProvaPlayer prova={prova} />}
     </ActivityShell>

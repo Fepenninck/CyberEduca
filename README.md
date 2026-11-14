@@ -163,3 +163,13 @@ No backend: `npm test -- --runInBand` e `npm run build`. No frontend: `npx tsc -
 ### Pendências opcionais
 
 Históricos completos de quizzes e phishing, feedback individual nas provas e gestão dos cenários de phishing continuam como melhorias opcionais. Existem resultados salvos de quizzes e phishing, feedback de quizzes e uma tela administrativa de simulações; essas funcionalidades não cobrem todas as interfaces opcionais.
+
+### Simulações práticas
+
+A listagem de simulações reúne os cenários de phishing existentes e treinos de contas, dispositivos, privacidade, redes, resposta a incidentes e código seguro. Mostra até quatro cartões por página, com imagens, dificuldade e navegação por setas.
+
+No backend, aplique a migration `20261114150000_simulacoes_completas`, gere o cliente Prisma e execute `npm run db:seed:simulacoes`. A importação adiciona 12 treinos com 36 decisões e preserva conteúdos e resultados existentes. Ela também faz parte de `npm run db:seed:activities`.
+
+Os treinos têm nível, duração, contexto fictício e explicação por decisão, editáveis no painel administrativo. A API corrige as respostas no servidor, rejeita respostas incompletas, duplicadas ou de outra simulação e salva o feedback detalhado para consulta posterior. Resultados antigos continuam disponíveis com seu placar original.
+
+Com a API local ativa, `npm run db:verify:simulacoes` verifica os 12 treinos usando contas fictícias temporárias, removidas ao final. O script não utiliza contas reais. Para outro endereço de API, configure `SIMULATION_TEST_API` no ambiente do comando.

@@ -1,4 +1,5 @@
 "use client";
+import { LoadingScreen } from '@/components/ui/loading-screen'
 import { parseLessonMaterial } from "@/lib/lesson-material";
 import { LessonLearningContent } from "@/components/activities/lesson-learning-content";
 
@@ -9,7 +10,7 @@ import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { ArrowLeft, Check, Clock3 } from "lucide-react";
 import { DashboardNavigation } from "@/components/dashboard-navigation";
-import { API_URL } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 import type { TrackDetail } from "@/lib/api";
 import { isLessonUnlocked } from "@/lib/lesson-access";
 import { loadLearningAccess } from '@/lib/course-access';
@@ -61,13 +62,13 @@ export function LessonStudy({
       setLesson(null);
       setError("");
       try {
-        const response = await fetch(API_URL + "/aulas/" + lessonId);
+        const response = await apiFetch("/aulas/" + lessonId);
         if (!response.ok) throw new Error("Não foi possível carregar a aula.");
         const loaded: Lesson = await response.json();
         const unlocked = await loadLearningAccess();
         if (!unlocked.includes(loaded.trilha.id)) throw new Error('Conclua a trilha anterior para liberar este conteúdo.');
-        const trackResponse = await fetch(
-          `${API_URL}/trilhas/${loaded.trilha.id}`,
+        const trackResponse = await apiFetch(
+          `/trilhas/${loaded.trilha.id}`,
           { cache: "no-store" },
         );
         if (!trackResponse.ok)
@@ -99,8 +100,8 @@ export function LessonStudy({
     if (lesson.concluida) { advance(); return; }
     setSaving(true);
     try {
-      const response = await fetch(
-        API_URL + "/aulas/" + lesson.id + "/concluir",
+      const response = await apiFetch(
+        "/aulas/" + lesson.id + "/concluir",
         { method: "POST" },
       );
       if (!response.ok) throw new Error("Não foi possível salvar a conclusão.");
@@ -117,7 +118,7 @@ export function LessonStudy({
     return (
       <main className="app-shell dashboard-page lesson-study-page">
         <DashboardNavigation active="aulas" />
-        <p className="content-wrap">Carregando aula...</p>
+        <LoadingScreen label={"Carregando aula..."} />
       </main>
     );
   if (error || !lesson)

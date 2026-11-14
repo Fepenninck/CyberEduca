@@ -1,9 +1,9 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { ShieldAlert, ShieldCheck } from "lucide-react";
+import { Mail, Shield, Search } from "lucide-react";
+import "./phishing-environments.css";
 import {
   enviarRespostaCenario,
-  nomesTipos,
   type CenarioDetalhe,
   type ResultadoPhishing,
 } from "@/lib/phishing-api";
@@ -19,17 +19,28 @@ export function PhishingSimulator({ cenario }: { cenario: CenarioDetalhe }) {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const lock = useRef(false);
+  const attemptId = useRef('');
+  const [refazer, setRefazer] = useState(false);
+  function startAgain() {
+    if (lock.current) return;
+    attemptId.current = crypto.randomUUID();
+    setRefazer(true); setResultado(null); setEscolha(null); setError(null);
+  }
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('refazer') === '1') startAgain();
+  }, [cenario.id]);
   useEffect(() => {
     if (resultado) document.getElementById("phishing-result-title")?.focus();
   }, [resultado]);
-  async function submit(event: React.FormEvent) {
-    event.preventDefault();
-    if (lock.current || escolha === null) return;
+  async function submit(answer: boolean) {
+    if (lock.current) return;
+    setEscolha(answer);
     lock.current = true;
     setSending(true);
     setError(null);
     try {
-      setResultado(await enviarRespostaCenario(cenario.id, escolha));
+      if (!attemptId.current) attemptId.current = crypto.randomUUID();
+      setResultado(await enviarRespostaCenario(cenario.id, answer, { refazer, tentativaId: attemptId.current }));
     } catch (cause) {
       setError(
         cause instanceof Error
@@ -47,69 +58,16 @@ export function PhishingSimulator({ cenario }: { cenario: CenarioDetalhe }) {
     SITE: PhishingSite,
     REDE_SOCIAL: PhishingSocial,
   }[cenario.tipo];
-  return (
-    <div className={`simulation-layout simulation-type-${cenario.tipo.toLowerCase()}`}>
-      <section className="activity-panel simulation-preview">
-        <div className="activity-section-label">
-          <h2>{nomesTipos[cenario.tipo]}</h2>
-          <span className="activity-tag">Simulação</span>
-        </div>
-        <Preview conteudo={cenario.conteudoMensagem} />
-        <p className="activity-footnote">
-          O conteúdo é uma representação educativa. Endereços e links são
-          apresentados apenas como texto.
-        </p>
-      </section>
-      <aside className="simulation-decision">
-        {resultado && escolha !== null ? (
-          <PhishingFeedback
-            resultado={resultado}
-            escolha={escolha}
-          />
-        ) : (
-          <form className="activity-panel" onSubmit={submit}>
-            <span className="activity-kicker">Sua análise</span>
-            <h2>Você identifica phishing?</h2>
-            <p className="activity-muted">
-              Observe o conteúdo, a urgência e os pedidos da mensagem antes de
-              responder.
-            </p>
-            <fieldset disabled={sending} className="simulation-choices">
-              <legend className="sr-only">Classifique o cenário</legend>
-              <label className={escolha === true ? "is-selected" : ""}>
-                <input
-                  type="radio"
-                  name="phishing"
-                  checked={escolha === true}
-                  onChange={() => setEscolha(true)}
-                  required
-                />
-                <ShieldAlert size={21} />
-                <span>É phishing</span>
-              </label>
-              <label className={escolha === false ? "is-selected" : ""}>
-                <input
-                  type="radio"
-                  name="phishing"
-                  checked={escolha === false}
-                  onChange={() => setEscolha(false)}
-                  required
-                />
-                <ShieldCheck size={21} />
-                <span>Não é phishing</span>
-              </label>
-            </fieldset>
-            {error && <ActivityError error={error} />}
-            <button
-              className="dashboard-button-primary"
-              type="submit"
-              disabled={sending || escolha === null}
-            >
-              {sending ? "Registrando..." : "Confirmar resposta"}
-            </button>
-          </form>
-        )}
-      </aside>
-    </div>
-  );
+  const actions = <div className="phishing-mail-actions"><button type="button" disabled={sending} onClick={() => void submit(true)}><Shield size={16} />Denunciar como phishing</button><button type="button" disabled={sending} onClick={() => void submit(false)}>Manter como confiável</button></div>;
+  return <div className={`phishing-environment phishing-environment-${cenario.tipo.toLowerCase()}`}>
+    {resultado && escolha !== null ? <PhishingFeedback resultado={resultado} escolha={escolha} onRetry={startAgain} /> : <>
+      {cenario.tipo === 'EMAIL' ? <div className="phishing-mail-app"><header><Mail size={22} /><strong>Correio</strong><span><Search size={15} />Pesquisar mensagens</span><small>ana@exemplo.invalid</small></header><div className="phishing-mail-layout"><aside><strong>Pastas</strong><span className="active">Caixa de entrada <b>1</b></span><span>Enviados</span><span>Rascunhos</span><span>Spam</span></aside><section><div className="phishing-mail-subject"><span>Caixa de entrada / mensagem recebida</span><h2>{cenario.titulo}</h2></div><Preview conteudo={cenario.conteudoMensagem} />{actions}</section></div></div>
+      : cenario.tipo === 'SMS' ? <div className="phishing-message-desk"><div className="phishing-message-device"><Preview conteudo={cenario.conteudoMensagem} /><div className="phishing-device-actions">{actions}</div></div><aside><h2>Uma mensagem acabou de chegar.</h2><p>Abra os links dentro da conversa e confira o pedido antes de decidir o que fazer com a mensagem.</p><small>Celular de demonstração. Nenhum link abre fora deste ambiente.</small></aside></div>
+      : cenario.tipo === 'REDE_SOCIAL' ? <div className="phishing-social-app"><header><strong>Conecta</strong><span>Início</span><span>Mensagens</span><small>Ana Exemplo</small></header><div className="phishing-social-layout"><aside><span>Meu perfil</span><span>Contatos</span><span>Mensagens recebidas</span></aside><section><Preview conteudo={cenario.conteudoMensagem} />{actions}</section></div></div>
+      : <div className="phishing-browser-app"><header><span className="phishing-browser-tab">Página recebida</span><small>Navegador de demonstração</small></header><Preview conteudo={cenario.conteudoMensagem} /><footer><span>Como deseja tratar esta página?</span>{actions}</footer></div>}
+      {error && <ActivityError error={error} />}
+      {sending && <p role="status" className="phishing-save-status">Registrando sua ação…</p>}
+      <p className="phishing-scene-note">Conteúdo fictício. Links, anexos e dados funcionam apenas nesta simulação.</p>
+    </>}
+  </div>;
 }

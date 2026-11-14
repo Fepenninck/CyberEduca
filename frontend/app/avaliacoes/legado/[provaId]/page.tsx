@@ -1,5 +1,6 @@
 'use client'
 
+import { LoadingScreen } from '@/components/ui/loading-screen'
 import { ArrowLeft, CheckCircle2 } from 'lucide-react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
@@ -110,7 +111,7 @@ export default function IniciarAvaliacaoPage() {
         <Link href="/avaliacoes" className="mb-6 inline-flex items-center gap-2 text-sm text-slate-400 transition hover:text-white"><ArrowLeft size={16} /> Voltar às avaliações</Link>
         {erro && <p role="alert" className="mb-5 rounded-xl border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-sm text-rose-200">{erro}</p>}
 
-        {carregando ? <div className="h-80 animate-pulse rounded-2xl border border-[#29394f] bg-[#101b2a]" /> : mostrarResultado && resultado ? (
+        {carregando ? <LoadingScreen /> : mostrarResultado && resultado ? (
           <section aria-live="polite" className="rounded-2xl border border-[#29394f] bg-[#101b2a] p-6 sm:p-8">
             <div className="mx-auto max-w-2xl text-center">
               <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-[#b2ff00]/10 text-[#b2ff00]"><CheckCircle2 size={30} /></span>

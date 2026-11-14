@@ -1,0 +1,65 @@
+.app-shell.simulation-hub .simulation-hub-wrap { width: min(calc(100% - 48px), 1440px); margin: 0 auto; padding: 44px 0 52px; }
+.simulation-hub-heading { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(280px, .8fr); align-items: center; gap: 64px; margin-bottom: 36px; }
+.simulation-eyebrow { color: #8fa5bf; font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; }
+.app-shell.simulation-hub .simulation-hub-heading h1 { margin: 14px 0 0; color: #f1f5fc; font-size: clamp(30px, 3vw, 40px); font-weight: 500; letter-spacing: -.035em; line-height: 1.22; }
+.simulation-hub-heading > div > p { max-width: 660px; margin-top: 16px; color: #a7b8ce; font-size: 14px; line-height: 1.8; }
+.simulation-header-summary { padding-left: 28px; border-left: 1px solid #304158; }
+.simulation-header-summary > span { color: #90a6c2; font-size: 11px; }
+.simulation-header-summary > div { display: flex; gap: 36px; margin-top: 12px; }
+.simulation-header-summary > div p { display: flex; flex-direction: column; gap: 7px; color: #8ca3bf; font-size: 11px; }
+.simulation-header-summary strong { color: #ddeafa; font-size: 26px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.simulation-header-summary > p { margin-top: 16px; color: #829cb9; font-size: 11px; line-height: 1.7; }
+.simulation-catalog-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 24px; margin-bottom: 22px; border-top: 1px solid #2a3a50; }
+.simulation-catalog-heading > p { color: #93a7c1; font-size: 12px; }
+.simulation-pager { display: flex; align-items: center; gap: 8px; }
+.simulation-pager > span { margin-right: 8px; color: #9eb1c9; font-size: 12px; font-variant-numeric: tabular-nums; }
+.simulation-pager button { display: grid; place-items: center; width: 40px; height: 36px; border-radius: 4px; background: #293b52; color: #e8f2ff; cursor: pointer; transition: background .15s; }
+.simulation-pager button:hover:not(:disabled) { background: #374e6b; }
+.simulation-pager button:disabled { opacity: .3; cursor: not-allowed; }
+.simulation-page-region { min-width: 0; overflow: hidden; }
+.simulation-card-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; animation: simulation-page-in .24s ease-out both; }
+@keyframes simulation-page-in { from { opacity: .25; transform: translateX(calc(var(--slide-direction, 1) * 18px)); } to { opacity: 1; transform: translateX(0); } }
+.simulation-card { display: flex; flex-direction: column; min-width: 0; overflow: hidden; border: 0; border-radius: 7px; background: #0e1929; }
+.simulation-card-image { position: relative; height: 120px; flex-shrink: 0; overflow: hidden; background: #1b2c40; }
+.simulation-card-image img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.simulation-card-image::after { content: ''; position: absolute; inset: 45% 0 0; background: linear-gradient(transparent, #091421b3); pointer-events: none; }
+.simulation-card-image .simulation-difficulty { position: absolute; z-index: 1; bottom: 12px; left: 14px; padding: 5px 9px; background: #0b1626e8; border-radius: 3px; }
+.simulation-card-body { padding: 16px; display: flex; flex-direction: column; flex: 1; }
+.simulation-card-tags { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.simulation-category { color: #8db6d1; font-size: 10px; font-weight: 500; letter-spacing: .02em; }
+.simulation-difficulty { display: inline-flex; align-items: center; gap: 5px; color: #55c1f0; font-size: 10px; }
+.simulation-difficulty[data-level='INTERMEDIARIO'] { color: #ffd34e; }
+.simulation-difficulty[data-level='AVANCADO'] { color: #ff91a1; }
+.app-shell.simulation-hub .simulation-card h2 { margin-top: 8px; min-height: 46px; color: #eaf1fc; font-size: 16px; font-weight: 500; line-height: 1.45; }
+.simulation-card-body > p { margin-top: 6px; min-height: 40px; color: #91a8c4; font-size: 12px; line-height: 1.65; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.simulation-card-meta { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; margin-top: auto; padding-top: 12px; color: #88a1bf; font-size: 11px; }
+.simulation-card { aspect-ratio: 1 / 1.08; }
+.simulation-type-picker { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 24px; }
+.simulation-type-picker > span { color: #c5d4e7; font-size: 13px; }
+.simulation-type-picker > .simulation-type-order { color: #8ca3bf; font-size: 11px; }
+.simulation-type-dropdown { position: relative; max-width: 100%; width: 280px; }
+.simulation-type-dropdown summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 42px; padding: 10px 14px; color: #dfebfb; background: #24364c; border: 0; border-radius: 4px; font-size: 13px; cursor: pointer; list-style: none; }
+.simulation-type-dropdown summary::-webkit-details-marker { display: none; }
+.simulation-type-dropdown summary svg { flex-shrink: 0; color: #93abc7; transition: transform .15s; }
+.simulation-type-dropdown[open] summary svg { transform: rotate(180deg); }
+.simulation-type-options { position: absolute; top: calc(100% + 8px); left: 0; width: 100%; z-index: 20; max-height: 300px; overflow-y: auto; padding: 6px; border-radius: 5px; background: #1b2b40; box-shadow: 0 12px 30px #07101d66; }
+.simulation-type-options button { display: block; width: 100%; padding: 11px 12px; border: 0; border-radius: 3px; color: #b4c7df; background: transparent; text-align: left; font-size: 12px; cursor: pointer; }
+.simulation-type-options button:hover, .simulation-type-options button[aria-pressed='true'] { background: #2b4059; color: #edf4ff; }
+.app-shell.dashboard-page.simulation-hub .simulation-type-dropdown :is(summary, button):focus { outline: none; box-shadow: none; border-color: transparent; }
+.app-shell.dashboard-page.simulation-hub .simulation-type-dropdown :is(summary, button):focus-visible { outline: 1px solid #71869e; outline-offset: -1px; box-shadow: none; }
+.simulation-card-body .simulation-completed { display: block; color: #9bbdcd; font-size: 10px; margin-top: 10px; }
+.simulation-card-body > a { display: flex; align-items: center; justify-content: center; padding: 11px 10px; margin-top: 18px; border-radius: 4px; background: #b2f511; color: #152100; font-size: 12px; font-weight: 600; text-align: center; }
+.simulation-card-body > a:hover { background: #c0ff30; }
+.simulation-card-body > a[data-completed='true'] { background: #26394f; color: #d7e5f6; }
+.simulation-card-body > a[data-completed='true']:hover { background: #314860; }
+.simulation-card-body > a.simulation-card-retry { padding: 6px 10px; margin-top: 6px; color: #9db9d5; background: transparent; font-weight: 400; font-size: 11px; }
+.simulation-card-body > a.simulation-card-retry:hover { color: #e3effd; background: #1b2b3f; }
+.simulation-footer-note { margin-top: 26px; color: #7c93ae; font-size: 11px; line-height: 1.8; }
+.simulation-lesson-context { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; font-size: 12px; color: #9eb3cd; margin-bottom: 20px; }
+.simulation-lesson-context a { color: #62c1ed; }
+.app-shell.dashboard-page.simulation-hub :is(a, button):focus-visible,
+.app-shell.dashboard-page.simulation-hub .simulation-page-region:focus-visible { outline: 2px solid #7292b5; outline-offset: 2px; }
+@media (max-width: 1050px) { .simulation-card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .simulation-card-image { height: 180px; } .simulation-hub-heading { gap: 32px; } }
+@media (max-width: 700px) { .simulation-hub-heading { grid-template-columns: 1fr; gap: 24px; } .simulation-header-summary { border-left: 0; padding-left: 0; } .simulation-header-summary > div { gap: 30px; } .simulation-header-summary strong { font-size: 23px; } }
+@media (max-width: 500px) { .app-shell.simulation-hub .simulation-hub-wrap { width: calc(100% - 32px); padding-top: 30px; } .simulation-card-grid { grid-template-columns: 1fr; } .simulation-card h2, .simulation-card-body > p { min-height: 0; } .simulation-card-image { height: 180px; } }
+@media (prefers-reduced-motion: reduce) { .simulation-card-grid { animation: none; } .simulation-card-image img { transition: none; } }

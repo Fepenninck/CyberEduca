@@ -1,4 +1,5 @@
 import { AchievementCelebration } from '@/components/achievement-celebration'
+import { LoadingProvider } from '@/components/loading-provider'
 import type { Metadata, Viewport } from 'next'
 import { SiteScrollbar } from '@/components/site-scrollbar'
 import { CookieConsent } from '@/components/cookie-consent'
@@ -19,5 +20,5 @@ export const metadata: Metadata = {
 export const viewport: Viewport = { colorScheme: 'dark', themeColor: '#111a14' }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="pt-BR" className="bg-background"><body className="antialiased">{children}<AchievementCelebration /><SiteScrollbar /><CookieConsent /></body></html>
+  return <html lang="pt-BR" className="bg-background"><body className="antialiased"><LoadingProvider />{children}<AchievementCelebration /><SiteScrollbar /><CookieConsent /></body></html>
 }

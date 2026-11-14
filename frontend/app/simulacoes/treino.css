@@ -1,0 +1,93 @@
+.simulation-training-wrap { width: min(calc(100% - 48px), 1120px); margin: 0 auto; padding: 32px 0 56px; }
+.simulation-training-back { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: #99b0cc; margin-bottom: 28px; }
+.simulation-training-back:hover { color: #e6f0fe; }
+.simulation-training-heading { max-width: 850px; margin-bottom: 28px; }
+.app-shell.simulation-training :is(.simulation-training-heading, .simulation-result-heading) h1 { font-size: clamp(26px, 3vw, 35px); font-weight: 500; letter-spacing: -.03em; color: #edf4ff; margin-top: 14px; line-height: 1.3; }
+.simulation-training-heading .simulation-card-tags { justify-content: flex-start; gap: 20px; }
+.simulation-training-heading > p, .simulation-result-heading p { margin-top: 14px; color: #9fb3cc; font-size: 14px; line-height: 1.8; }
+.simulation-training-time { display: inline-flex; gap: 6px; align-items: center; font-size: 11px; color: #8ea5c2; }
+.simulation-training-layout { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 28px; align-items: start; }
+.simulation-decision { padding: 26px; background: #0e1929; border-radius: 8px; min-width: 0; }
+.simulation-decision-position { display: flex; justify-content: space-between; gap: 15px; color: #8ea5c2; font-size: 11px; }
+.simulation-decision-progress { height: 3px; background: #24364c; margin: 14px 0 24px; }
+.simulation-decision-progress > span { display: block; height: 100%; background: var(--simulation-color); transition: width .2s; }
+.simulation-context { overflow: hidden; margin-bottom: 28px; border-radius: 5px; background: #192a3d; }
+.simulation-context > div { display: flex; align-items: center; gap: 8px; padding: 12px 16px; font-size: 12px; color: #c6d9ed; background: #21344b; }
+.simulation-context > div svg { flex-shrink: 0; color: var(--simulation-color); }
+.simulation-context pre { margin: 0; padding: 18px; font-family: inherit; font-size: 13px; line-height: 1.9; color: #b4c7df; white-space: pre-wrap; overflow-wrap: anywhere; }
+.simulation-context.is-technical pre { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12px; white-space: pre; overflow-x: auto; }
+.simulation-choices { min-width: 0; border: 0; margin: 0; padding: 0; }
+.simulation-choices legend { margin-bottom: 20px; color: #e4effe; font-size: 19px; font-weight: 500; line-height: 1.6; }
+.simulation-choices label { display: flex; align-items: flex-start; gap: 12px; padding: 16px; margin-top: 10px; border-radius: 5px; background: #19283c; color: #b6c8df; font-size: 13px; line-height: 1.7; cursor: pointer; }
+.simulation-choices label:hover { background: #20324a; }
+.simulation-choices label.is-selected { background: #283e58; color: #edf5ff; }
+.simulation-choices input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.simulation-choices label:focus-within { outline: 2px solid #7899ba; outline-offset: 2px; }
+.simulation-choice-letter { display: grid; place-items: center; width: 23px; height: 23px; flex-shrink: 0; border-radius: 3px; background: #0e1c2e; color: #a6bdd6; font-size: 11px; }
+.is-selected .simulation-choice-letter { background: #3c5876; color: #f0f7ff; }
+.simulation-decision-actions { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 26px; }
+.simulation-decision-actions > button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 16px; font-size: 13px; border-radius: 4px; background: #25374e; color: #c3d6ed; cursor: pointer; }
+.simulation-training .simulation-training-primary { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 18px; border-radius: 4px; background: #b2f511; color: #142000; font-size: 13px; font-weight: 600; cursor: pointer; }
+.simulation-training button:disabled { opacity: .4; cursor: not-allowed; }
+.simulation-training-aside { padding: 22px; border-radius: 6px; background: #1c2b3e; }
+.simulation-training-aside h2 { font-size: 13px; font-weight: 500; color: #d4e3f5; }
+.simulation-training-aside ol { display: grid; gap: 18px; list-style: none; padding: 0; margin: 22px 0; }
+.simulation-training-aside li button { display: flex; align-items: center; gap: 12px; text-align: left; cursor: pointer; }
+.simulation-training-aside li button > span { display: grid; place-items: center; width: 28px; height: 28px; flex-shrink: 0; border-radius: 50%; background: #30465f; color: #bfd3ed; font-size: 11px; }
+.simulation-training-aside li button[aria-current] > span { background: #466586; color: #f2f8ff; }
+.simulation-training-aside strong { font-size: 12px; color: #bfd2ea; font-weight: 500; }
+.simulation-training-aside small { display: block; margin-top: 4px; font-size: 10px; color: #8da5c3; line-height: 1.5; }
+.simulation-training-help { padding-top: 20px; border-top: 1px solid #34475f; color: #8eabc9; }
+.simulation-training-help p { margin-top: 10px; font-size: 12px; line-height: 1.9; }
+.simulation-training-error { padding: 16px 20px; margin-bottom: 24px; border-radius: 6px; background: #352636; color: #f6b6c2; font-size: 13px; line-height: 1.7; }
+.simulation-training-error button { margin-top: 12px; text-decoration: underline; }
+.simulation-training-loading { padding: 48px 24px; border-radius: 6px; background: #101e30; color: #8ea7c6; font-size: 14px; }
+.simulation-training-loading a { display: block; margin-top: 16px; color: #7abce0; }
+.simulation-result-heading { display: flex; align-items: center; justify-content: space-between; gap: 28px; margin-bottom: 28px; }
+.simulation-result-score { flex-shrink: 0; padding: 20px; border-radius: 6px; background: #21334a; text-align: center; }
+.simulation-result-score strong { font-size: 30px; color: #a8d4ef; font-weight: 500; }
+.simulation-result-score span { display: block; margin-top: 6px; color: #9eb4d0; font-size: 11px; }
+.simulation-result-list { display: grid; gap: 22px; margin-bottom: 28px; }
+.simulation-result-item { padding: 28px; border: 0; border-radius: 8px; background: #0e1929; min-width: 0; }
+.simulation-result-card-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.simulation-result-step { color: #8ea5c2; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; }
+.simulation-result-status { padding: 5px 10px; border-radius: 4px; color: #91d4b5; background: #1b3533; font-size: 11px; font-weight: 500; }
+.is-review .simulation-result-status { color: #edca87; background: #353025; }
+.simulation-training .simulation-result-item h2 { margin: 18px 0 22px; color: #e5eefb; font-size: 19px; font-weight: 500; line-height: 1.55; }
+.simulation-result-answers { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 14px; }
+.simulation-result-answer { padding: 18px 20px; border-radius: 5px; background: #19283b; min-width: 0; }
+.simulation-result-answer > span { color: #91a7c2; font-size: 11px; font-weight: 500; }
+.simulation-result-answer.is-recommended { background: #172d32; }
+.simulation-result-answer.is-recommended > span { color: #92c9b8; }
+.simulation-result-item p { margin: 8px 0 0; color: #bfcee2; font-size: 14px; line-height: 1.8; overflow-wrap: anywhere; }
+.simulation-result-explanation { margin-top: 22px; }
+.simulation-training .simulation-result-explanation h3 { margin: 0; color: #d2dff0; font-size: 12px; font-weight: 600; }
+.simulation-result-explanation p { color: #9fb3cc; }
+.simulation-result-heading { align-items: flex-end; margin-bottom: 24px; }
+.simulation-result-heading > div { max-width: 760px; }
+.simulation-result-back { display: inline-flex; align-items: center; gap: 8px; color: #a7bdd6; font-size: 12px; white-space: nowrap; padding-block: 8px; }
+.simulation-result-back:hover { color: #e5effb; }
+.simulation-result-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; background: #1e2e43; border-radius: 8px; padding: 24px 28px; margin: 0 0 36px; }
+.simulation-result-summary dt { color: #9fb3cc; font-size: 12px; margin-bottom: 8px; }
+.simulation-result-summary dd { margin: 0; color: #edf4ff; font-size: 30px; font-weight: 500; line-height: 1.3; }
+.simulation-result-summary dd > span { font-size: 13px; color: #a7bdd6; font-weight: 400; }
+.simulation-result-summary > div:first-child dd { color: #68c6ef; }
+.simulation-training .simulation-review-heading h2, .simulation-training .simulation-result-footer h2 { margin: 0; color: #e5eefb; font-size: 19px; font-weight: 500; }
+.simulation-review-heading p, .simulation-result-footer p { color: #95acc8; font-size: 13px; line-height: 1.7; margin: 8px 0 0; }
+.simulation-review-heading { margin-bottom: 20px; }
+.simulation-result-item { padding: 26px 28px; }
+.simulation-result-answers { display: grid; grid-template-columns: 1fr; gap: 18px; }
+.simulation-result-answer { padding: 0; background: transparent; }
+.simulation-result-answer.is-recommended { padding: 16px 18px; background: #192f35; }
+.simulation-result-explanation { margin-top: 24px; padding-top: 0; }
+.simulation-result-explanation p { margin-top: 6px; }
+.simulation-result-footer { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-top: 34px; padding: 26px 28px; background: #1e2e43; border-radius: 8px; }
+.simulation-result-footer .simulation-training-primary { flex-shrink: 0; }
+@media (max-width: 800px) { .simulation-result-heading { align-items: flex-start; flex-direction: column; gap: 12px; } .simulation-result-footer { align-items: flex-start; flex-direction: column; } }
+@media (max-width: 550px) { .simulation-result-summary { padding: 20px 16px; gap: 12px; } .simulation-result-summary dt { font-size: 11px; } .simulation-result-summary dd { font-size: 25px; } .simulation-result-summary dd > span { display: block; font-size: 11px; margin-top: 4px; } .simulation-result-item, .simulation-result-footer { padding: 20px; } }
+@media (max-width: 550px) { .simulation-result-item { padding: 20px; } .simulation-result-answer { padding: 16px; } .simulation-training .simulation-result-item h2 { font-size: 17px; } }
+.simulation-training-note, .simulation-legacy-result { margin-top: 16px; font-size: 12px; color: #8ba4c1; line-height: 1.8; }
+.simulation-legacy-result { margin-bottom: 24px; }
+.app-shell.dashboard-page.simulation-training :is(a, button):focus-visible { outline: 2px solid #7899ba; outline-offset: 2px; }
+@media (max-width: 800px) { .simulation-training-layout { grid-template-columns: 1fr; } .simulation-training-aside { order: -1; padding: 16px; } .simulation-training-aside ol { display: flex; justify-content: space-between; gap: 12px; margin: 14px 0 0; } .simulation-training-aside li button { gap: 8px; } .simulation-training-aside small, .simulation-training-help { display: none; } }
+@media (max-width: 550px) { .simulation-training-wrap { width: calc(100% - 32px); } .simulation-decision { padding: 18px; } .simulation-result-heading { align-items: flex-start; flex-direction: column; } .simulation-result-score { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; } .simulation-result-score span { margin: 0; } .simulation-decision-actions { gap: 10px; } .simulation-decision-actions > button { padding-inline: 10px; font-size: 11px; } }

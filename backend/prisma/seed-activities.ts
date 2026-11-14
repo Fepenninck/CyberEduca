@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
 import { buildCatalog } from './content/catalog';
+import { seedSimulacoes } from './seed-simulacoes';
 
 const prisma = new PrismaClient();
 
@@ -38,6 +39,7 @@ async function main() {
     await prisma.cenarioPhishing.upsert({ where: { id: cenario.id }, update: {},
       create: { ...cenario, status: 'PUBLICADO' } });
   }
+  await seedSimulacoes(prisma);
   console.log('Importação concluída. Conteúdos existentes, tentativas e progressos preservados.');
 }
 

@@ -18,7 +18,7 @@ export type CenarioResumo = {
   descricao: string;
   tipo: TipoCenario;
   aulaId: string;
-  aula: AulaAtividade;
+  aula: AulaAtividade & { trilha?: { nivel: 'BASICO' | 'INTERMEDIARIO' | 'AVANCADO' } };
 };
 export type CenarioDetalhe = CenarioResumo & { conteudoMensagem: string; resultado?: ResultadoPhishing | null };
 export type ResultadoPhishing = {
@@ -43,8 +43,9 @@ export const buscarCenario = (id: string, signal?: AbortSignal) =>
 export const enviarRespostaCenario = (
   id: string,
   respostaEhPhishing: boolean,
+  tentativa?: { refazer: boolean; tentativaId: string },
 ) =>
   activityRequest<ResultadoPhishing>(
     `/phishing/cenarios/${encodeURIComponent(id)}/tentativas`,
-    jsonBody({ respostaEhPhishing }),
+    jsonBody({ respostaEhPhishing, ...tentativa }),
   );

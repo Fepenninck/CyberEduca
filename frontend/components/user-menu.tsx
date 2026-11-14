@@ -2,9 +2,9 @@
 
 import Link from 'next/link'
 import { Cog, LogOut, ShieldCheck, UserRound } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { useRouter } from 'next/navigation'
-import { apiFetch, getCurrentUser } from '@/lib/api'
+import { apiFetch, getCurrentUser, getCachedCurrentUser, getServerCurrentUser, subscribeCurrentUser } from '@/lib/api'
 import { ProfilePicture } from '@/components/cyber-avatar'
 
 type Profile = { nome: string; email: string; foto?: string | null; avatar?: string | null }
@@ -13,15 +13,13 @@ const defaultProfile: Profile = { nome: '', email: '' }
 
 export function UserMenu() {
   const [open, setOpen] = useState(false)
-  const [profile, setProfile] = useState<Profile>(defaultProfile)
+  const profile = useSyncExternalStore(subscribeCurrentUser, getCachedCurrentUser, getServerCurrentUser) ?? defaultProfile
   const menuRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
 
   useEffect(() => {
-    const update = () => getCurrentUser()
-      .then((user) => setProfile({ nome: user.nome, email: user.email, foto: user.foto, avatar: user.avatar }))
-      .catch(() => setProfile(defaultProfile))
-    update()
+    const update = () => { void getCurrentUser().catch(() => undefined) }
+    if (!getCachedCurrentUser()) update()
     window.addEventListener('profile-updated', update)
     return () => window.removeEventListener('profile-updated', update)
   }, [])

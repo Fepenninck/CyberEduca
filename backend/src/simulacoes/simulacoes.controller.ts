@@ -10,8 +10,8 @@ export class SimulacoesController {
   constructor(private readonly simulacoesService: SimulacoesService) {}
 
   @Get()
-  listar() {
-    return this.simulacoesService.listarParaAluno();
+  listar(@Req() request: { user: { id: string } }) {
+    return this.simulacoesService.listarParaAluno(request.user.id);
   }
 
   @Get('categorias')

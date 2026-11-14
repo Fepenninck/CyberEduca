@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 import {
   Check,
 } from 'lucide-react'
-import { API_URL, getCurrentUser, getDesempenho, type Desempenho, TrackDetail, TrackSummary } from '@/lib/api'
+import { apiFetch, getCurrentUser, getDesempenho, type Desempenho, TrackDetail, TrackSummary } from '@/lib/api'
 import { DashboardNavigation } from '@/components/dashboard-navigation'
 import { ProfilePicture } from '@/components/cyber-avatar'
 import { DashboardInsights } from '@/components/dashboard-insights'
@@ -34,7 +34,7 @@ export default function DashboardPage() {
   useEffect(() => {
     getCurrentUser().then((user) => { setUserName(user.nome); setPicture({ foto: user.foto, avatar: user.avatar }) }).catch(() => router.replace('/login'))
     getDesempenho().then(setDesempenho).catch(() => setDesempenho(null))
-    const loadTracks = () => fetch(`${API_URL}/trilhas`, { cache: 'no-store' })
+    const loadTracks = () => apiFetch(`/trilhas`, { cache: 'no-store' })
       .then((response) => response.ok ? response.json() : Promise.reject(new Error('Não foi possível carregar as trilhas.')))
       .then(setTracks)
       .catch(() => setTracks([]))
@@ -58,7 +58,7 @@ export default function DashboardPage() {
 
     const controller = new AbortController()
     setLessons([])
-    fetch(`${API_URL}/trilhas/${selectedTrack.id}`, { cache: 'no-store', signal: controller.signal })
+    apiFetch(`/trilhas/${selectedTrack.id}`, { cache: 'no-store', signal: controller.signal })
       .then((response) => response.ok ? response.json() : Promise.reject(new Error('Não foi possível carregar as aulas.')))
       .then((track: TrackDetail) => { if (!controller.signal.aborted) setLessons(track.aulas) })
       .catch(() => { if (!controller.signal.aborted) setLessons([]) })

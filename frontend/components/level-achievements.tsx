@@ -1,5 +1,6 @@
 'use client'
 
+import { LoadingScreen } from '@/components/ui/loading-screen'
 import { useEffect, useState } from 'react'
 import { apiFetch } from '@/lib/api'
 import './level-achievements.css'
@@ -37,7 +38,7 @@ export function LevelAchievements() {
   return <article className="profile-card level-achievements">
     <h2>Conquistas</h2>
     <p className="achievement-intro">Conclua todas as aulas de um nível para ganhar sua insígnia.</p>
-    {error ? <p role="status">Não foi possível carregar suas conquistas. Volte a esta janela para tentar novamente.</p> : !data.length ? <p role="status">Carregando conquistas...</p> : <div className="achievement-grid">
+    {error ? <p role="status">Não foi possível carregar suas conquistas. Volte a esta janela para tentar novamente.</p> : !data.length ? <LoadingScreen label={"Carregando conquistas..."} /> : <div className="achievement-grid">
       {LEVEL_BADGES.map(badge => {
         const progress = data.find(item => item.nivel === badge.level)
         return <div className={`achievement-item ${progress?.conquistada ? 'is-earned' : 'is-locked'}`} key={badge.level}>

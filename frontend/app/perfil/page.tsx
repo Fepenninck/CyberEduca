@@ -1,10 +1,11 @@
 'use client'
 
+import { LoadingScreen } from '@/components/ui/loading-screen'
 import Link from 'next/link'
 import { ChevronLeft, Pencil } from 'lucide-react'
 import { ChangeEvent, PointerEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { API_URL, getCurrentUser, TrackSummary, updateCurrentUser } from '@/lib/api'
+import { apiFetch, getCurrentUser, TrackSummary, updateCurrentUser } from '@/lib/api'
 import { DashboardNavigation } from '@/components/dashboard-navigation'
 import type { CSSProperties } from 'react'
 import { AvatarPicker } from '@/components/avatar-picker'
@@ -30,7 +31,7 @@ export default function PerfilPage() {
     getCurrentUser()
       .then((user) => setProfile({ nome: user.nome, email: user.email, foto: user.foto, avatar: user.avatar }))
       .catch(() => router.replace('/login'))
-    fetch(`${API_URL}/trilhas`).then((response) => response.ok ? response.json() : []).then(setTracks).catch(() => setTracks([]))
+    apiFetch(`/trilhas`).then((response) => response.ok ? response.json() : []).then(setTracks).catch(() => setTracks([]))
   }, [router])
 
   const stats = useMemo(() => {
@@ -122,7 +123,7 @@ export default function PerfilPage() {
             const percentage = level.totalAulas ? Math.round(level.aulasConcluidas / level.totalAulas * 100) : 0
             const name = level.nivel === 'BASICO' ? 'Básico' : level.nivel === 'INTERMEDIARIO' ? 'Intermediário' : 'Avançado'
             return <div key={level.nivel}><div><span>{name}</span><strong>{percentage}%</strong></div><div className="profile-progress" role="progressbar" aria-label={name} aria-valuenow={percentage} aria-valuemin={0} aria-valuemax={100}><span style={{ width: `${percentage}%`, background: levelColors[level.nivel] }} /></div></div>
-          }) : <p>Carregando seu progresso...</p>}</div></article>
+          }) : <LoadingScreen label={"Carregando seu progresso..."} />}</div></article>
           <article className="profile-card"><h2>Ritmo de estudo</h2><div className="profile-study-metrics"><div><strong>{stats.completed}</strong><span>Aulas concluídas</span></div><div><strong>{stats.rate}%</strong><span>Taxa de conclusão</span></div><div><strong>{stats.total}</strong><span>Aulas disponíveis</span></div></div><p className="profile-note">A frequência semanal aparecerá quando o histórico de atividades estiver disponível.</p></article>
         </div>
         <aside className="profile-side"><article className="profile-card profile-avatar-card"><span className="profile-card-label">Seu avatar</span><strong>{profile.foto ? 'Foto personalizada' : currentAvatar?.nome ?? 'Nenhum avatar escolhido'}</strong><p>{profile.foto ? 'Você está usando uma foto enviada por você.' : currentAvatar?.descricao ?? 'Escolha um avatar que combine com o seu jeito de proteger o mundo digital.'}</p><button className="dashboard-button-secondary" type="button" onClick={() => setPickerOpen(true)}>{currentAvatar || profile.foto ? 'Trocar avatar' : 'Escolher avatar'}</button></article><article className="profile-card"><span className="profile-card-label">Resumo</span><strong>{stats.basic >= 80 ? 'Nível básico concluído' : 'Nível básico em andamento'}</strong><p>{stats.completed} aulas concluídas e {stats.overall}% de progresso geral.</p></article><article className="profile-card"><h2>Atividade semanal</h2><p>O histórico semanal será exibido quando a API registrar as datas de estudo.</p></article></aside>

@@ -1,5 +1,6 @@
 'use client'
 
+import { SimpleLoading } from '@/components/ui/simple-loading'
 import { BarChart3, ClipboardCheck } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import {
@@ -90,7 +91,7 @@ export default function AdminResultadosPage() {
       <div role="tabpanel" aria-labelledby={`aba-${aba}`} className="overflow-hidden rounded-2xl border border-[#29394f] bg-[#101b2a]">
         {carregando ? (
           <div className="space-y-3 p-5" aria-label="Carregando resultados">
-            {[1, 2, 3].map((item) => <div key={item} className="h-12 animate-pulse rounded-lg bg-[#0b1522]" />)}
+            <SimpleLoading />
           </div>
         ) : linhas.length ? (
           <div className="overflow-x-auto">

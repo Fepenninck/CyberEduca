@@ -1,5 +1,6 @@
 'use client'
 
+import { SimpleLoading } from '@/components/ui/simple-loading'
 import { BookOpen, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { FormularioAula } from '@/components/admin/formulario-aula'
@@ -109,7 +110,7 @@ export default function AdminAulasPage() {
 
       {carregando ? (
         <div className="space-y-3">
-          {[1, 2, 3].map((item) => <div key={item} className="h-28 animate-pulse rounded-2xl border border-[#29394f] bg-[#101b2a]" />)}
+          <SimpleLoading />
         </div>
       ) : aulas.length ? (
         <div className="space-y-3">

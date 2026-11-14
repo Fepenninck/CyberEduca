@@ -1,4 +1,5 @@
 'use client'
+import { LoadingScreen } from '@/components/ui/loading-screen'
 import Link from 'next/link'
 import { Camera, ChevronLeft } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
@@ -144,7 +145,7 @@ export default function ConfiguracoesPage() {
               <button className="dashboard-button-primary" type="submit">{saving ? 'Salvando...' : 'Salvar alterações'}</button>
             </footer>
           </fieldset>
-          {loading && <p className="settings-feedback" role="status">Carregando...</p>}
+          {loading && <LoadingScreen label={"Carregando..."} />}
           {message && <p className="settings-feedback" role="status">{message}</p>}
           {error && <p className="settings-feedback" role="alert">{error}</p>}
         </form>

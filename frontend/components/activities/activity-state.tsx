@@ -1,14 +1,12 @@
 "use client";
 import Link from "next/link";
-import { AlertCircle, LoaderCircle, Inbox } from "lucide-react";
+import { AlertCircle, Inbox } from "lucide-react";
+import { LoadingScreen } from '@/components/ui/loading-screen';
 import { ActivityApiError } from "@/lib/activities-api";
 
 export function ActivityLoading() {
   return (
-    <div className="activity-state" role="status">
-      <LoaderCircle className="activity-spin" size={28} />
-      <p>Carregando atividade...</p>
-    </div>
+    <LoadingScreen label="Carregando atividade…" />
   );
 }
 export function ActivityError({

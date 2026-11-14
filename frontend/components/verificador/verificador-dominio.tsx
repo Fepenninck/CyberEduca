@@ -1,6 +1,7 @@
 "use client";
+import { GooeyLoader } from '@/components/ui/gooey-loader'
 import { useEffect, useRef, useState } from "react";
-import { Search, Globe, LoaderCircle } from "lucide-react";
+import { Search, Globe } from "lucide-react";
 import { consultarDominio, type ConsultaDominio } from "@/lib/consulta-seguranca-api";
 import { ActivityError } from "@/components/activities/activity-state";
 import { DomainReport } from "./domain-report";
@@ -79,7 +80,7 @@ export function VerificadorDominio() {
                 disabled={sending || !dominio.trim()}
                 className="dashboard-button-primary"
               >
-                {sending ? <LoaderCircle className="activity-spin" size={17} aria-hidden="true" /> : <Search size={17} aria-hidden="true" />}
+                {sending ? <GooeyLoader label="Carregando…" size={28} /> : <Search size={17} aria-hidden="true" />}
                 {sending ? "Consultando..." : "Investigar domínio"}
               </button>
             </div>
@@ -90,7 +91,7 @@ export function VerificadorDominio() {
 
         {sending && (
           <div className="domain-loading" role="status">
-            <LoaderCircle className="activity-spin" size={22} aria-hidden="true" />
+            <GooeyLoader label="Carregando…" size={28} />
             <div><strong>Consultando o relatório de reputação</strong><p>Aguarde o retorno da integração com o VirusTotal.</p></div>
           </div>
         )}

@@ -1,5 +1,6 @@
 'use client'
 
+import { SimpleLoading } from '@/components/ui/simple-loading'
 import { ArrowLeft, Check, CircleHelp, Plus } from 'lucide-react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
@@ -122,8 +123,8 @@ export default function EditarProvaPage() {
 
       {carregando ? (
         <div className="space-y-5">
-          <div className="h-72 animate-pulse rounded-2xl border border-[#29394f] bg-[#101b2a]" />
-          <div className="h-48 animate-pulse rounded-2xl border border-[#29394f] bg-[#101b2a]" />
+          <SimpleLoading />
+          <SimpleLoading />
         </div>
       ) : prova ? (
         <>

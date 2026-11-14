@@ -1,5 +1,6 @@
 'use client'
 
+import { SimpleLoading } from '@/components/ui/simple-loading'
 import { Pencil, Plus, ShieldAlert, Trash2 } from 'lucide-react'
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import { FormularioSimulacao } from '@/components/admin/formulario-simulacao'
@@ -140,7 +141,7 @@ export default function AdminSimulacoesPage() {
         </div>
         {carregando ? (
           <div className="space-y-3 p-5" aria-label="Carregando simulações">
-            {[1, 2, 3].map((item) => <div key={item} className="h-12 animate-pulse rounded-lg bg-[#0b1522]" />)}
+            <SimpleLoading />
           </div>
         ) : simulacoes.length ? (
           <div className="overflow-x-auto">

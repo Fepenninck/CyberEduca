@@ -1,5 +1,6 @@
 'use client'
 
+import { SimpleLoading } from '@/components/ui/simple-loading'
 import { ArrowLeft, ClipboardCheck } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -54,7 +55,7 @@ export default function NovoQuizPage() {
 
       {erro && <p role="alert" className="mb-5 rounded-xl border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-sm text-rose-200">{erro}</p>}
       {carregando ? (
-        <div className="h-72 animate-pulse rounded-2xl border border-[#29394f] bg-[#101b2a]" aria-label="Carregando aulas" />
+        <SimpleLoading />
       ) : (
         <FormularioQuiz aulas={aulas} onSubmit={salvarQuiz} />
       )}

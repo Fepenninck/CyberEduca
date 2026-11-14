@@ -1,5 +1,6 @@
 'use client'
 
+import { SimpleLoading } from '@/components/ui/simple-loading'
 import { ArrowRight, ClipboardCheck, Plus, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
@@ -78,7 +79,7 @@ export default function AdminQuizzesPage() {
 
       {carregando ? (
         <div className="grid gap-4 md:grid-cols-2">
-          {[1, 2].map((item) => <div key={item} className="h-40 animate-pulse rounded-2xl border border-[#29394f] bg-[#101b2a]" />)}
+          <SimpleLoading />
         </div>
       ) : quizzes.length ? (
         <div className="grid gap-4 md:grid-cols-2">

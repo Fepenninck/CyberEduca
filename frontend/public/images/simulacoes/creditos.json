@@ -1,0 +1,117 @@
+{
+  "license": "https://unsplash.com/license",
+  "images": {
+    "permissoes-equipe": {
+      "src": "/images/simulacoes/permissoes-equipe.jpg",
+      "source": "https://unsplash.com/photos/account-preferences-screen-with-verification-prompt-hvbjTynPt7A",
+      "image": "https://images.unsplash.com/photo-1762340275855-ae8f4c2c144e?auto=format&fit=crop&w=900&h=540&q=82&fm=jpg",
+      "author": "Zulfugar Karimov",
+      "sha256": "43b0303cc649c7dda3793f0d70bd145a303ec57442ca6444b2ea18474a7cb57c"
+    },
+    "acesso-desconhecido": {
+      "src": "/images/simulacoes/acesso-desconhecido.jpg",
+      "source": "https://unsplash.com/photos/a-person-holding-a-phone-Uw_8vSroCSc",
+      "image": "https://images.unsplash.com/photo-1667453466805-75bbf36e8707?auto=format&fit=crop&w=900&h=540&q=82&fm=jpg",
+      "author": "Onur Binay",
+      "sha256": "b06ec3d4c1c24a1c18d5367316310ab5b70b51458aa6e5b40ad929e3f65f798e"
+    },
+    "instalar-apps": {
+      "src": "/images/simulacoes/instalar-apps.jpg",
+      "source": "https://unsplash.com/photos/a-screenshot-of-a-phone-RMIsZlv8qv4",
+      "image": "https://images.unsplash.com/photo-1651235732694-0d057ace2f30?auto=format&fit=crop&w=900&h=540&q=82&fm=jpg",
+      "author": "Ed Hardie",
+      "sha256": "fe5c9245249adfb3493cf392cb56cd02b1f202106859a1be112d030a39c2fe5a"
+    },
+    "publicar-foto": {
+      "src": "/images/simulacoes/publicar-foto.jpg",
+      "source": "https://unsplash.com/photos/papers-and-documents-scattered-on-the-floor-YkcFA_tMNrA",
+      "image": "https://images.unsplash.com/photo-1774535852012-0c634d8f2da0?auto=format&fit=crop&w=900&h=540&q=82&fm=jpg",
+      "author": "Paige Prevost",
+      "sha256": "b4e6b53b188658ea56cc9bde64c0e62981e1c70034afaddfa7c594338e78b771"
+    },
+    "arquivo-bloqueado": {
+      "src": "/images/simulacoes/arquivo-bloqueado.jpg",
+      "source": "https://unsplash.com/photos/a-dell-laptop-computer-with-a-red-screen-1C5F88Af9ZU",
+      "image": "https://images.unsplash.com/photo-1642783327704-2500e96fe3d9?auto=format&fit=crop&w=900&h=540&q=82&fm=jpg",
+      "author": "Ed Hardie",
+      "sha256": "ec9d51d45cea338afa1c2b799a22df9ae20e60184df493597d9338b86753d663"
+    },
+    "pasta-privada": {
+      "src": "/images/simulacoes/pasta-privada.jpg",
+      "source": "https://unsplash.com/photos/paper-documents-on-white-shelf-cwKwug-yyXM",
+      "image": "https://images.unsplash.com/photo-1786911354420-3495e4728c03?auto=format&fit=crop&w=900&h=540&q=82&fm=jpg",
+      "author": "Hansheng Zhao",
+      "sha256": "3ae39ec1ad13e8f2760447c9bfc615b7567333e6b39b1988be24fec16828cea7"
+    },
+    "rede-equipe": {
+      "src": "/images/simulacoes/rede-equipe.jpg",
+      "source": "https://unsplash.com/s/photos/network-server",
+      "image": "https://images.unsplash.com/flagged/photo-1579274216947-86eaa4b00475?auto=format&fit=crop&w=900&h=540&q=82&fm=jpg",
+      "author": null,
+      "sha256": "5b8fbb89f1aa768430aaa3f54d9ff667adeca6b5bc86e137a6c008e565f11451"
+    },
+    "wifi-publico": {
+      "src": "/images/simulacoes/wifi-publico.jpg",
+      "source": "https://unsplash.com/photos/free-wifi-print-board-KRAk_61pgTo",
+      "image": "https://images.unsplash.com/photo-1563168206-f0f627c83ca8?auto=format&fit=crop&w=900&h=540&q=82&fm=jpg",
+      "author": "Paul Hanaoka",
+      "sha256": "a847692b4112672459debac9b5623626a058f461f379988f9a6d113bc2a3da6a"
+    },
+    "depois-clique": {
+      "src": "/images/simulacoes/depois-clique.jpg",
+      "source": "https://unsplash.com/photos/a-person-wearing-a-mask-using-a-laptop-56CjIvG10lo",
+      "image": "https://images.unsplash.com/photo-1674049405160-9b800f5645f5?auto=format&fit=crop&w=900&h=540&q=82&fm=jpg",
+      "author": "Bermix Studio",
+      "sha256": "a828af1e6dc0c6e976e44359e657423a800e3e4f4211a2a838e1b606c3909c68"
+    },
+    "triagem": {
+      "src": "/images/simulacoes/triagem.jpg",
+      "source": "https://unsplash.com/photos/programming-code-is-shown-in-a-colorful-display-8l_9yVcKiJE",
+      "image": "https://images.unsplash.com/photo-1742072594105-1efb79e6dd18?auto=format&fit=crop&w=900&h=540&q=82&fm=jpg",
+      "author": "Peaky Frames",
+      "sha256": "7cbe59a027d7ab9cee2613051920371be46fb9466e7d6dc68c31bbf633fed30b"
+    },
+    "codigo-autorizacao": {
+      "src": "/images/simulacoes/codigo-autorizacao.jpg",
+      "source": "https://unsplash.com/photos/laptop-screen-displaying-colorful-code-8qEB0fTe9Vw",
+      "image": "https://images.unsplash.com/photo-1607799279861-4dd421887fb3?auto=format&fit=crop&w=900&h=540&q=82&fm=jpg",
+      "author": "Mohammad Rahmani",
+      "sha256": "01fcdb0bcd7a2bd5a0886d8a96dc88eceed57b3e3596dd29d0ab913531905a18"
+    },
+    "codigo-consulta": {
+      "src": "/images/simulacoes/codigo-consulta.jpg",
+      "source": "https://unsplash.com/photos/a-computer-screen-with-a-bunch-of-code-on-it-1HCb2gPk3ik",
+      "image": "https://images.unsplash.com/photo-1569748130764-3fed0c102c59?auto=format&fit=crop&w=900&h=540&q=82&fm=jpg",
+      "author": "Fili Santillan",
+      "sha256": "ecd43f6e813e56bae33744a7b9aa974cccb55ffa9aefd18b50ddb564312d7a5c"
+    },
+    "email": {
+      "src": "/images/simulacoes/email.jpg",
+      "source": "https://unsplash.com/photos/closeup-of-mail-app-icon-on-phone-LPZy4da9aRo",
+      "image": "https://images.unsplash.com/photo-1596526131083-e8c633c948d2?auto=format&fit=crop&w=900&h=540&q=82&fm=jpg",
+      "author": "Brett Jordan",
+      "sha256": "9fb64f5dc8e98f87a0d75e5d7f4412c7dac2a21e515544b514d116cc188c5180"
+    },
+    "social": {
+      "src": "/images/simulacoes/social.jpg",
+      "source": "https://unsplash.com/photos/instagram-login-screen-with-username-and-password-fields-sVswkI_MQUo",
+      "image": "https://images.unsplash.com/photo-1762330466873-9a7dba6135b4?auto=format&fit=crop&w=900&h=540&q=82&fm=jpg",
+      "author": "Zulfugar Karimov",
+      "sha256": "d1c4b26e708ea57227b680cb26e27c29186a265895f885b202f99e587f737d43"
+    },
+    "sms": {
+      "src": "/images/simulacoes/sms.jpg",
+      "source": "https://unsplash.com/photos/a-close-up-of-a-cell-phone-with-a-keyboard-qbwGUYHiYnI",
+      "image": "https://images.unsplash.com/photo-1720069004713-f72d26684a87?auto=format&fit=crop&w=900&h=540&q=82&fm=jpg",
+      "author": "Samuel Angor",
+      "sha256": "b95ef2775e159fef834eb9a2376a29e11330a6ced8578f04fdd0efff22c35beb"
+    },
+    "site": {
+      "src": "/images/simulacoes/site.jpg",
+      "source": "https://unsplash.com/photos/a-padlock-rests-on-a-computer-keyboard-QP7RBa5r8HM",
+      "image": "https://images.unsplash.com/photo-1774898989484-0b9becf69efb?auto=format&fit=crop&w=900&h=540&q=82&fm=jpg",
+      "author": "Sasun Bughdaryan",
+      "sha256": "04ea2742e89f9ae794163c2ac277d91b7cfa7fec9179937543513a568ff750d9"
+    }
+  }
+}

@@ -6,6 +6,8 @@ import { AlertCircle } from 'lucide-react'
 import './login.css'
 import { useRouter } from 'next/navigation'
 import { apiFetch, getCurrentUser } from '@/lib/api'
+import { beginLoading, beginRouteLoading } from '@/lib/loading-state'
+import { waitForBackend } from '@/lib/backend-ready'
 
 type Errors = { email?: string; password?: string }
 
@@ -26,6 +28,7 @@ export default function LoginPage() {
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
   event.preventDefault()
+  if (loading) return
   const nextErrors: Errors = {}
   if (!email.trim()) nextErrors.email = 'Informe seu e-mail.'
   else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) nextErrors.email = 'Digite um e-mail válido.'
@@ -36,6 +39,7 @@ export default function LoginPage() {
 
   setApiError('')
   setLoading(true)
+  const end = beginLoading('Entrando na sua conta…')
 
   try {
     const resposta = await apiFetch('/auth/login', {
@@ -55,13 +59,30 @@ export default function LoginPage() {
     const requestedPage = new URLSearchParams(window.location.search).get('next')
     const studentPages = ['/aulas', '/simulacoes', '/quizzes', '/avaliacoes', '/verificador']
     const destination = requestedPage && studentPages.includes(requestedPage) ? requestedPage : '/dashboard'
+    beginRouteLoading()
     router.push(usuario.papel === 'ADMIN' ? '/admin' : destination)
   } catch {
     setApiError('Erro de conexão com o servidor.')
   } finally {
     setLoading(false)
+    end()
   }
 }
+
+  const enterWithGoogle = async () => {
+    if (loading) return
+    setLoading(true); setApiError('')
+    const end = beginLoading('Preparando entrada com Google…')
+    try {
+      await waitForBackend()
+      // Keep this document covered until the OAuth navigation actually starts.
+      window.addEventListener('pageshow', () => { end(); setLoading(false) }, { once: true })
+      window.location.assign('/api/auth/google')
+    } catch (error) {
+      setApiError(error instanceof Error ? error.message : 'Não foi possível iniciar o acesso com Google.')
+      setLoading(false); end()
+    }
+  }
 
   return <main className="login-page">
     <div className="login-shell">
@@ -74,11 +95,11 @@ export default function LoginPage() {
           <div className="login-field"><label htmlFor="password">Senha</label><div className={`login-input${errors.password ? ' is-invalid' : ''}`}><input id="password" name="password" type={showPassword ? 'text' : 'password'} autoComplete="current-password" value={password} onChange={(event) => { setPassword(event.target.value); setErrors((current) => ({ ...current, password: undefined })) }} aria-invalid={Boolean(errors.password)} aria-describedby={errors.password ? 'password-error' : undefined} /><button type="button" className="password-toggle" onClick={() => setShowPassword((visible) => !visible)} aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}>{showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}</button></div>{errors.password && <p className="login-error" id="password-error">{errors.password}</p>}</div>
           <div className="login-options"><Link href="/esqueci-senha">Esqueceu sua senha?</Link></div>
           {apiError && <p className="login-error">{apiError}</p>}
-          <button className="login-submit" type="submit" aria-disabled={!formIsValid}>Entrar</button>
+          <button className="login-submit" type="submit" disabled={loading} aria-disabled={!formIsValid || loading}>Entrar</button>
         </form>
         <div className="login-divider"><span>ou</span></div>
         <div className="social-login" aria-label="Outras opções de acesso">
-                    <button type="button" onClick={() => { window.location.href = '/api/auth/google' }}><svg className="google-icon" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7A19.9 19.9 0 0 0 24 4 20 20 0 1 0 44 24c0-1.4-.1-2.7-.4-4Z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8A12 12 0 0 1 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7A19.9 19.9 0 0 0 24 4 20 20 0 0 0 6.3 14.7Z"/><path fill="#4CAF50" d="M24 44c5.2 0 10-2 13.5-5.2l-6.2-5.2A11.9 11.9 0 0 1 12.9 28l-6.5 5A20 20 0 0 0 24 44Z"/><path fill="#1976D2" d="M43.6 20H42V20H24v8h11.3a12 12 0 0 1-4 5.6l6.2 5.2C37.1 39.2 44 34 44 24c0-1.4-.1-2.7-.4-4Z"/></svg>Entrar com Google</button>
+                    <button type="button" disabled={loading} onClick={() => void enterWithGoogle()}><svg className="google-icon" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7A19.9 19.9 0 0 0 24 4 20 20 0 1 0 44 24c0-1.4-.1-2.7-.4-4Z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8A12 12 0 0 1 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7A19.9 19.9 0 0 0 24 4 20 20 0 0 0 6.3 14.7Z"/><path fill="#4CAF50" d="M24 44c5.2 0 10-2 13.5-5.2l-6.2-5.2A11.9 11.9 0 0 1 12.9 28l-6.5 5A20 20 0 0 0 24 44Z"/><path fill="#1976D2" d="M43.6 20H42V20H24v8h11.3a12 12 0 0 1-4 5.6l6.2 5.2C37.1 39.2 44 34 44 24c0-1.4-.1-2.7-.4-4Z"/></svg>Entrar com Google</button>
         </div>
         <p className="login-signup">Novo no CyberEduca+?<Link href="/cadastro"><span className="login-link-label">Criar minha conta</span></Link></p>
       </section>

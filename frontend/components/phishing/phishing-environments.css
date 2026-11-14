@@ -1,0 +1,52 @@
+.phishing-environment { margin-top: 12px; }
+.phishing-mail-app { color: #42556d; background: #f4f6fa; border-radius: 7px; overflow: hidden; }
+.phishing-mail-app > header { display: flex; align-items: center; gap: 15px; padding: 22px 26px; background: #e8eef6; color: #526e91; }
+.phishing-mail-app > header strong { font-size: 20px; }
+.phishing-mail-app > header > span { display: flex; align-items: center; gap: 18px; padding: 10px 25px; margin-left: 25px; background: #dce5f1; font-size: 11px; border-radius: 5px; color: #8c9db2; }
+.phishing-mail-app > header > small { margin-left: auto; color: #7d8fa7; font-size: 10px; }
+.phishing-mail-layout { display: grid; grid-template-columns: 190px 1fr; min-height: 500px; }
+.phishing-mail-layout > aside { display: grid; align-content: start; gap: 24px; padding: 30px 20px; background: #eaf0f8; color: #8b9cb1; font-size: 12px; }
+.phishing-mail-layout > aside .active { color: #4273ab; }
+.phishing-mail-layout > aside b { float: right; font-size: 10px; }
+.phishing-mail-layout > section { padding: 30px; min-width: 0; }
+.phishing-mail-subject > span { color: #9aa8ba; font-size: 10px; }
+.phishing-mail-subject h2 { color: #354c6a; font-size: 23px; margin: 16px 0 25px; }
+.phishing-mail-app .simulation-window { background: #fff; border: 0; box-shadow: none; color: #455b75; }
+.phishing-mail-app .simulation-toolbar { background: #f0f4f9; color: #8193ab; }
+.phishing-mail-app .simulation-email-header { color: #4f6887; border: 0; }
+.phishing-mail-app .simulation-email-header small { color: #91a1b7; }
+.phishing-mail-app .simulation-message { color: #50657f; }
+.phishing-mail-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 25px; }
+.phishing-mail-actions > button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; border: 0; border-radius: 4px; background: #365f89; color: #e3eef9; padding: 12px 17px; font-size: 12px; cursor: pointer; }
+.phishing-mail-actions > button:last-child { background: #dce6f2; color: #4e6e93; }
+.phishing-mail-actions > button:disabled { opacity: .5; cursor: wait; }
+.phishing-message-desk { display: flex; justify-content: center; align-items: center; gap: 70px; padding: 35px; border-radius: 8px; background: #243447; }
+.phishing-message-device { width: 360px; max-width: 100%; border: 7px solid #090f18; border-radius: 33px; overflow: hidden; background: #101d2e; flex-shrink: 0; }
+.phishing-message-device .simulation-phone { border: 0; border-radius: 0; width: 100%; max-width: none; box-shadow: none; }
+.phishing-message-device .simulation-phone-bottom { display: none; }
+.phishing-device-actions { padding: 0 20px 24px; }
+.phishing-device-actions .phishing-mail-actions { flex-direction: column; }
+.phishing-message-desk > aside { max-width: 260px; color: #9eb3cc; }
+.phishing-message-desk > aside h2 { font-size: 25px; font-weight: 500; color: #dbe9f9; line-height: 1.5; }
+.phishing-message-desk > aside p { font-size: 13px; line-height: 1.9; }
+.phishing-message-desk > aside small { font-size: 10px; }
+.phishing-social-app { color: #58647e; background: #e9edf4; border-radius: 7px; overflow: hidden; }
+.phishing-social-app > header { display: flex; align-items: center; gap: 30px; padding: 22px 28px; background: #fff; color: #8795ad; font-size: 12px; }
+.phishing-social-app > header strong { color: #596eaf; font-size: 24px; }
+.phishing-social-app > header small { margin-left: auto; }
+.phishing-social-layout { display: grid; grid-template-columns: 170px minmax(0,600px); justify-content: center; gap: 30px; padding: 35px; }
+.phishing-social-layout > aside { display: grid; align-content: start; gap: 28px; color: #8b97ad; font-size: 12px; padding-top: 20px; }
+.phishing-social-layout > section { min-width: 0; padding: 25px; border-radius: 7px; background: #fff; }
+.phishing-social-app .simulation-window { background: #f0f3f8; border: 0; box-shadow: none; }
+.phishing-social-app .simulation-toolbar { background: #e4eaf4; color: #6980a4; }
+.phishing-social-app .simulation-message { color: #536783; }
+.phishing-browser-app { background: #19283b; border-radius: 8px; overflow: hidden; }
+.phishing-browser-app > header { display: flex; gap: 30px; justify-content: space-between; padding: 15px 22px; background: #2a3a50; color: #a6bbd5; font-size: 12px; }
+.phishing-browser-app > header small { font-size: 10px; color: #7f98b7; }
+.phishing-browser-app .simulation-window { border: 0; border-radius: 0; box-shadow: none; }
+.phishing-browser-app > footer { padding: 22px; background: #203249; }
+.phishing-browser-app > footer > span { color: #92acca; font-size: 12px; }
+.phishing-scene-note, .phishing-save-status { font-size: 11px; color: #849dbb; line-height: 1.9; margin-top: 20px; }
+.phishing-environment :is(button, input, select):focus-visible { outline: 1px solid #849cbb; outline-offset: 2px; box-shadow: none; }
+@media(max-width:750px) { .phishing-mail-layout, .phishing-social-layout { grid-template-columns: 1fr; } .phishing-mail-layout > aside, .phishing-social-layout > aside { display: none; } .phishing-mail-app > header > span { display: none; } .phishing-message-desk { padding: 22px; gap: 25px; } .phishing-message-desk > aside { display: none; } .phishing-social-layout { padding: 18px; } }
+@media(max-width:500px) { .phishing-mail-layout > section { padding: 18px; } .phishing-mail-app > header { padding: 17px; } .phishing-mail-app > header > small { font-size: 8px; } .phishing-message-desk { padding: 15px; } .phishing-social-app > header { gap: 14px; padding: 18px; } .phishing-social-app > header > span { display: none; } .phishing-mail-actions { flex-direction: column; } }

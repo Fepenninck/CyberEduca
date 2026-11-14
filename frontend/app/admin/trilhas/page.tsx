@@ -1,5 +1,6 @@
 'use client'
 
+import { SimpleLoading } from '@/components/ui/simple-loading'
 import { GraduationCap, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { FormularioTrilha } from '@/components/admin/formulario-trilha'
@@ -101,7 +102,7 @@ export default function AdminTrilhasPage() {
 
       {carregando ? (
         <div className="grid gap-4 md:grid-cols-2">
-          {[1, 2].map((item) => <div key={item} className="h-36 animate-pulse rounded-2xl border border-[#29394f] bg-[#101b2a]" />)}
+          <SimpleLoading />
         </div>
       ) : trilhas.length ? (
         <div className="grid gap-4 md:grid-cols-2">

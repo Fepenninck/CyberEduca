@@ -119,6 +119,8 @@ model Simulacao {
   id          String               @id @default(uuid())
   titulo      String
   descricao   String
+  nivel       NivelTrilha          @default(BASICO)
+  duracaoMinutos Int               @default(5)
   criadoEm    DateTime             @default(now())
   categoriaId String
   categoria   CategoriaSimulacao   @relation(fields: [categoriaId], references: [id], onDelete: Restrict)
@@ -140,11 +142,12 @@ model ResultadoSimulacao {
   simulacaoId   String
   acertos       Int
   totalQuestoes Int
+  respostas     Json?
   criadoEm      DateTime  @default(now())
   usuario       Usuario   @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
   simulacao     Simulacao @relation(fields: [simulacaoId], references: [id], onDelete: Cascade)
 
-  @@unique([usuarioId, simulacaoId])
+  @@index([usuarioId, simulacaoId, criadoEm])
 }
 
 model ResultadoProva {
@@ -163,6 +166,9 @@ model ResultadoProva {
 model QuestaoSimulacao {
   id           String                 @id @default(uuid())
   enunciado    String
+  contexto     String                 @default("")
+  explicacao   String                 @default("")
+  ordem        Int                    @default(0)
   simulacaoId  String
   simulacao    Simulacao              @relation(fields: [simulacaoId], references: [id], onDelete: Cascade)
   alternativas AlternativaSimulacao[]
@@ -171,6 +177,7 @@ model QuestaoSimulacao {
 model AlternativaSimulacao {
   id        String           @id @default(uuid())
   texto     String
+  ordem     Int              @default(0)
   isCorreta Boolean          @default(false)
   questaoId String
   questao   QuestaoSimulacao @relation(fields: [questaoId], references: [id], onDelete: Cascade)

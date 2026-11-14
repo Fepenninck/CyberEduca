@@ -1,3 +1,4 @@
+import { PhishingInteractiveContent } from "./phishing-interactive-content";
 import { Globe, MoreHorizontal } from "lucide-react";
 export function PhishingSite({ conteudo }: { conteudo: string }) {
   return (
@@ -13,7 +14,7 @@ export function PhishingSite({ conteudo }: { conteudo: string }) {
         </span>
         <MoreHorizontal size={18} />
       </div>
-      <div className="simulation-message simulation-site-body">{conteudo}</div>
+      <div className="simulation-message simulation-site-body"><PhishingInteractiveContent content={conteudo} site /></div>
     </div>
   );
 }

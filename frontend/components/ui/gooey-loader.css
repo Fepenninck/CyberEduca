@@ -1,0 +1,5 @@
+.gooey-loader { position: relative; display: grid; place-items: center; flex-shrink: 0; }
+.gooey-loader-canvas { flex: none; pointer-events: none; }
+.site-loading-screen { display: flex; min-height: 220px; flex-direction: column; align-items: center; justify-content: center; gap: 18px; background: transparent; color: #a5bad4; }
+.site-loading-screen > p { margin: 0; font-size: 13px; line-height: 1.8; text-align: center; }
+.site-loading-screen.is-fullscreen { position: fixed; inset: 0; min-height: 100dvh; z-index: 10000; padding: 24px; background: inherit; }

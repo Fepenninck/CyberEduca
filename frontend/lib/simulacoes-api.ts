@@ -5,6 +5,10 @@ export type SimulacaoDisponivel = {
   titulo: string
   descricao: string
   criadoEm: string
+  nivel: 'BASICO' | 'INTERMEDIARIO' | 'AVANCADO'
+  duracaoMinutos: number
+  categoria: { id: string; nome: string }
+  resultados: Array<{ acertos: number; totalQuestoes: number; criadoEm: string }>
   _count: { questoes: number }
 }
 
@@ -19,6 +23,7 @@ export type CategoriaSimulacaoDisponivel = {
 export type QuestaoTreino = {
   id: string
   enunciado: string
+  contexto?: string
   alternativas: Array<{ id: string; texto: string }>
 }
 
@@ -26,6 +31,9 @@ export type SimulacaoTreino = {
   id: string
   titulo: string
   descricao: string
+  nivel: 'BASICO' | 'INTERMEDIARIO' | 'AVANCADO'
+  duracaoMinutos: number
+  categoria: { id: string; nome: string }
   questoes: QuestaoTreino[]
 }
 
@@ -41,6 +49,10 @@ export type ResultadoTreino = {
     correta: boolean
     alternativaCorretaId: string | null
     textoCorreto: string | null
+    enunciado?: string
+    contexto?: string
+    explicacao?: string
+    textoEscolhido?: string | null
   }>
 }
 
@@ -48,7 +60,7 @@ export type CorrecaoTreino = Pick<ResultadoTreino, 'respostas'>
 
 export type StatusSimulacao = {
   concluida: boolean
-  resultado: { acertos: number; totalQuestoes: number; criadoEm: string; titulo: string } | null
+  resultado: { acertos: number; totalQuestoes: number; criadoEm: string; titulo: string; respostas?: ResultadoTreino['respostas'] } | null
 }
 
 async function requestJson<T>(path: string, options?: RequestInit): Promise<T> {
@@ -68,8 +80,8 @@ async function requestJson<T>(path: string, options?: RequestInit): Promise<T> {
   return body as T
 }
 
-export function listarSimulacoesDisponiveis(): Promise<SimulacaoDisponivel[]> {
-  return requestJson('/simulacoes')
+export function listarSimulacoesDisponiveis(signal?: AbortSignal): Promise<SimulacaoDisponivel[]> {
+  return requestJson('/simulacoes', { signal, cache: 'no-store' })
 }
 
 export function listarCategoriasSimulacao(): Promise<CategoriaSimulacaoDisponivel[]> {
@@ -102,8 +114,10 @@ export function verificarStatusSimulacao(id: string): Promise<StatusSimulacao> {
 export function finalizarSimulacao(
   id: string,
   dados: {
-    acertos: number
-    totalQuestoes: number
+    refazer?: boolean
+    tentativaId?: string
+    acertos?: number
+    totalQuestoes?: number
     respostas: Array<{ questaoId: string; alternativaId: string }>
   },
 ): Promise<ResultadoTreino> {

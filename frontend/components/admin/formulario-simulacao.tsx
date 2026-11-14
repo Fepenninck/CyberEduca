@@ -16,6 +16,8 @@ const campoClass = 'mt-2 w-full rounded-lg border border-[#35465c] bg-[#091321] 
 function novaQuestao() {
   return {
     enunciado: '',
+    contexto: '',
+    explicacao: '',
     alternativas: [
       { texto: '', isCorreta: false },
       { texto: '', isCorreta: false },
@@ -31,6 +33,8 @@ export function FormularioSimulacao({
 }: FormularioSimulacaoProps) {
   const [titulo, setTitulo] = useState(initialValues?.titulo ?? '')
   const [descricao, setDescricao] = useState(initialValues?.descricao ?? '')
+  const [nivel, setNivel] = useState<NonNullable<SimulacaoInput['nivel']>>(initialValues?.nivel ?? 'BASICO')
+  const [duracaoMinutos, setDuracaoMinutos] = useState(initialValues?.duracaoMinutos ?? 5)
   const [categoriaId, setCategoriaId] = useState(initialValues?.categoriaId ?? categorias[0]?.id ?? '')
   const [questoes, setQuestoes] = useState<SimulacaoInput['questoes']>(initialValues?.questoes ?? [])
   const [salvando, setSalvando] = useState(false)
@@ -63,8 +67,12 @@ export function FormularioSimulacao({
         titulo: titulo.trim(),
         descricao: descricao.trim(),
         categoriaId,
+        nivel,
+        duracaoMinutos,
         questoes: questoes.map((questao) => ({
           enunciado: questao.enunciado.trim(),
+          contexto: questao.contexto?.trim() ?? '',
+          explicacao: questao.explicacao?.trim() ?? '',
           alternativas: questao.alternativas.map((alternativa) => ({
             texto: alternativa.texto.trim(),
             isCorreta: alternativa.isCorreta,
@@ -81,6 +89,10 @@ export function FormularioSimulacao({
   return (
     <form onSubmit={enviar} className="rounded-2xl border border-[#34465d] bg-[#101b2a] p-5 sm:p-6">
       <div className="grid gap-5">
+        <div className="grid gap-5 sm:grid-cols-2">
+          <label className="text-sm font-medium text-slate-200">Dificuldade<select className={campoClass} value={nivel} onChange={event => setNivel(event.target.value as typeof nivel)}><option value="BASICO">Básico</option><option value="INTERMEDIARIO">Intermediário</option><option value="AVANCADO">Avançado</option></select></label>
+          <label className="text-sm font-medium text-slate-200">Duração estimada (minutos)<input className={campoClass} type="number" min={1} max={60} step={1} required value={duracaoMinutos} onChange={event => setDuracaoMinutos(Number(event.target.value))} /></label>
+        </div>
         <label className="text-sm font-medium text-slate-200">
           Título
           <input className={campoClass} value={titulo} onChange={(event) => setTitulo(event.target.value)} required maxLength={160} />
@@ -119,9 +131,14 @@ export function FormularioSimulacao({
                 </button>
               </div>
               <label className="block text-sm font-medium text-slate-200">
+                Contexto fictício da decisão (opcional)
+                <textarea className={`${campoClass} min-h-24 resize-y font-mono`} value={questao.contexto ?? ''} onChange={event => setQuestoes(values => values.map((item, index) => index === indice ? { ...item, contexto: event.target.value } : item))} maxLength={10000} placeholder="Primeira linha: título da tela fictícia. Demais linhas: informações que o aluno deve analisar." />
+              </label>
+              <label className="mt-4 block text-sm font-medium text-slate-200">
                 Enunciado
                 <textarea className={`${campoClass} min-h-24 resize-y`} value={questao.enunciado} onChange={(event) => setQuestoes((atuais) => atuais.map((item, i) => i === indice ? { ...item, enunciado: event.target.value } : item))} required maxLength={3000} />
               </label>
+              <label className="mt-4 block text-sm font-medium text-slate-200">Explicação exibida no resultado<textarea className={`${campoClass} min-h-24 resize-y`} value={questao.explicacao ?? ''} onChange={event => setQuestoes(values => values.map((item, index) => index === indice ? { ...item, explicacao: event.target.value } : item))} maxLength={4000} placeholder="Explique por que a ação recomendada é adequada a esta situação." /></label>
 
               <div className="mt-4 space-y-3">
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Alternativas</p>

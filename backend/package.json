@@ -23,8 +23,10 @@
     "db:seed": "ts-node prisma/seed.ts",
     "db:seed:avaliacoes": "ts-node prisma/seed-avaliacoes.ts",
     "db:seed:activities": "ts-node prisma/seed-activities.ts",
+    "db:seed:simulacoes": "ts-node prisma/seed-simulacoes.ts",
     "db:verify:activities": "ts-node scripts/verify-activities.ts",
     "db:verify:completion": "ts-node scripts/verify-activity-completion.ts",
+    "db:verify:simulacoes": "ts-node scripts/verificar-simulacoes.ts",
     "db:studio": "prisma studio",
     "db:reset": "prisma migrate reset"
   },

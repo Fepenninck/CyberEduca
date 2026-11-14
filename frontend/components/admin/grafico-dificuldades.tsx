@@ -1,5 +1,6 @@
 'use client'
 
+import { SimpleLoading } from '@/components/ui/simple-loading'
 import { useEffect, useState } from 'react'
 import {
   Bar,
@@ -61,7 +62,7 @@ export default function GraficoDificuldades() {
       </div>
 
       {carregando ? (
-        <div className="h-80 animate-pulse rounded-xl bg-white/[0.04]" aria-label="Carregando gráfico" />
+        <SimpleLoading />
       ) : erro ? (
         <p role="alert" className="rounded-xl border border-rose-400/30 bg-rose-400/10 p-4 text-sm text-rose-100">
           {erro}

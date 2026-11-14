@@ -2,15 +2,18 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { LoadingScreen } from '@/components/ui/loading-screen'
+import { beginRouteLoading } from '@/lib/loading-state'
 
 function GoogleCallback() {
   const router = useRouter()
 
   useEffect(() => {
+    beginRouteLoading()
     router.replace('/dashboard')
   }, [router])
 
-  return <main style={{ padding: '2rem', textAlign: 'center' }}>Entrando...</main>
+  return <main className="login-page"><LoadingScreen fullscreen /></main>
 }
 
 export default function GoogleCallbackPage() {

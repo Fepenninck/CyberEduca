@@ -79,10 +79,14 @@ export type AlternativaSimulacaoInput = {
 
 export type QuestaoSimulacaoInput = {
   enunciado: string
+  contexto?: string
+  explicacao?: string
   alternativas: AlternativaSimulacaoInput[]
 }
 
 export type SimulacaoInput = {
+  nivel?: 'BASICO' | 'INTERMEDIARIO' | 'AVANCADO'
+  duracaoMinutos?: number
   titulo: string
   descricao: string
   categoriaId: string

@@ -1,7 +1,9 @@
 'use client'
 
-import { ArrowLeft, MonitorPlay } from 'lucide-react'
+import { LoadingScreen } from '@/components/ui/loading-screen'
+import { MonitorPlay } from 'lucide-react'
 import Link from 'next/link'
+import { SimulationBack } from '@/components/activities/simulation-back'
 import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { DashboardNavigation } from '@/components/dashboard-navigation'
@@ -26,9 +28,9 @@ export default function CategoriaSimulacaoPage() {
     <main className="app-shell dashboard-page min-h-screen">
       <DashboardNavigation active="simulacoes" />
       <section className="mx-auto max-w-6xl px-5 py-8 sm:px-8 lg:py-12">
-        <Link href="/simulacoes" className="mb-6 inline-flex items-center gap-2 text-sm text-slate-400 transition hover:text-white"><ArrowLeft size={16} /> Todas as categorias</Link>
+        <SimulationBack />
         {erro && <p role="alert" className="mb-5 rounded-xl border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-sm text-rose-200">{erro}</p>}
-        {carregando ? <div className="h-48 animate-pulse rounded-2xl border border-[#29394f] bg-[#101b2a]" /> : categoria && (
+        {carregando ? <LoadingScreen /> : categoria && (
           <>
             <header className="mb-8">
               <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#b2ff00]">Categoria de simulações</p>

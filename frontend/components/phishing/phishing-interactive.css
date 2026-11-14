@@ -1,0 +1,18 @@
+.phishing-inspection { margin-bottom: 18px; }
+.phishing-inspection button { padding: 8px 12px; background: #283c54; color: #bfd5ee; border: 0; border-radius: 4px; font-size: 12px; cursor: pointer; }
+.phishing-inspection p { padding: 14px; color: #b3c8e1; background: #1e3047; border-radius: 4px; font-size: 12px; line-height: 1.8; overflow-wrap: anywhere; }
+.phishing-interactive-message { white-space: pre-wrap; overflow-wrap: anywhere; }
+.phishing-interactive .phishing-inline-link { display: inline; padding: 0; border: 0; background: transparent; color: #65bee9; text-decoration: underline; cursor: pointer; overflow-wrap: anywhere; text-align: left; }
+.phishing-attachment { display: inline-flex; padding: 10px 14px; margin: 8px 0; background: #2a3d55; color: #d3e2f6; border: 0; border-radius: 4px; cursor: pointer; }
+.phishing-destination { margin-top: 24px; background: #18293d; border-radius: 6px; overflow: hidden; white-space: normal; }
+.phishing-fake-address { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 18px; background: #2c4059; color: #b8cce3; font-size: 11px; overflow-wrap: anywhere; }
+.phishing-fake-address button { color: #d9e6f5; background: transparent; border: 0; cursor: pointer; }
+.phishing-fake-page { padding: 26px; max-width: 420px; margin: auto; }
+.phishing-fake-page > span { color: #8fa9c7; font-size: 10px; }
+.phishing-fake-page h3 { color: #e6effa; font-size: 21px; margin: 16px 0; }
+.phishing-fake-page p { color: #a5bad4; font-size: 13px; line-height: 1.8; }
+.phishing-fake-page label { display: grid; gap: 8px; font-size: 12px; color: #a5bdd7; margin-top: 16px; }
+.phishing-fake-page input { width: 100%; box-sizing: border-box; padding: 12px; border: 0; border-radius: 4px; background: #273c54; color: #a5bad4; }
+.phishing-fake-page > button { display: block; width: 100%; margin-top: 14px; padding: 12px; background: #345573; color: #e2edf9; border: 0; border-radius: 4px; cursor: pointer; font-size: 12px; }
+.phishing-interaction-notice { background: #263e55; padding: 16px; margin-top: 20px; color: #c5daf0; border-radius: 5px; font-size: 12px; line-height: 1.8; white-space: normal; }
+.phishing-interactive :is(button, input):focus-visible { outline: 1px solid #8aa6c7; outline-offset: 2px; box-shadow: none; }

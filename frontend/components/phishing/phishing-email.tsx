@@ -1,3 +1,4 @@
+import { PhishingInteractiveContent } from "./phishing-interactive-content";
 import { Mail, MoreHorizontal } from "lucide-react";
 export function PhishingEmail({ conteudo }: { conteudo: string }) {
   return (
@@ -14,7 +15,7 @@ export function PhishingEmail({ conteudo }: { conteudo: string }) {
           <small>Analise as informações apresentadas abaixo</small>
         </div>
       </div>
-      <div className="simulation-message">{conteudo}</div>
+      <div className="simulation-message"><PhishingInteractiveContent content={conteudo} /></div>
     </div>
   );
 }

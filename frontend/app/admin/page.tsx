@@ -1,4 +1,5 @@
 'use client'
+
 import GraficoConteudos from '@/components/admin/grafico-conteudos'
 
 
@@ -97,7 +98,7 @@ export default function AdminDashboardPage() {
                 <p className="text-sm font-medium text-slate-300">{label}</p>
                 <p className="mt-5 text-4xl font-semibold tracking-tight text-white">
                   {carregando ? (
-                    <span className="inline-block h-10 w-20 animate-pulse rounded-md bg-white/10" aria-label="Carregando" />
+                    <span role="status">Carregando...</span>
                   ) : erro ? (
                     '—'
                   ) : (

@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import { DashboardNavigation } from "@/components/dashboard-navigation";
 import type { ReactNode } from "react";
 import "./activities.css";
+import { SimulationBack } from './simulation-back';
 
 export function ActivityShell({
   section,
@@ -23,11 +24,11 @@ export function ActivityShell({
     <main className={`app-shell dashboard-page activity-page ${section}-page`}>
       <DashboardNavigation active={section} />
       <div className="dashboard-wrap">
-        {back && (
+        {back && (section === 'simulacoes' ? <SimulationBack href={back} /> : (
           <Link className="activity-back" href={back}>
             <ArrowLeft size={16} /> Voltar à lista
           </Link>
-        )}
+        ))}
         <header className={`dashboard-welcome activity-heading${resumo ? " has-summary" : ""}`}>
           <div>
             <h1>{title}</h1>

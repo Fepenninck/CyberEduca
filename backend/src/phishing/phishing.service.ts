@@ -211,6 +211,7 @@ export class PhishingService {
           select: {
             id: true,
             titulo: true,
+            trilha: { select: { nivel: true } },
           },
         },
       },
@@ -256,7 +257,8 @@ export class PhishingService {
   ) {
     return this.executarTransacao(async (tx) => {
       const concluida = await tx.tentativaPhishing.findFirst({ where: { usuarioId, cenarioId } });
-      if (concluida) throw new ConflictException('Atividade já concluída. Consulte seu resultado.');
+      if (concluida && !dto.refazer && !dto.tentativaId) throw new ConflictException('Atividade já concluída. Consulte seu resultado.');
+      if (dto.refazer && !dto.tentativaId) throw new BadRequestException('Identifique a nova tentativa.');
       const cenario = await tx.cenarioPhishing.findFirst({
         where: {
           id: cenarioId,
@@ -276,8 +278,19 @@ export class PhishingService {
       const acertou =
         dto.respostaEhPhishing === cenario.ehPhishing;
 
+      if (dto.tentativaId) {
+        const anterior = await tx.tentativaPhishing.findFirst({ where: { id: dto.tentativaId } });
+        if (anterior) {
+          if (anterior.usuarioId !== usuarioId || anterior.cenarioId !== cenarioId) throw new BadRequestException('Tentativa inválida.');
+          return { tentativaId: anterior.id, cenarioId, acertou: anterior.acertou, respostaEhPhishing: anterior.respostaEhPhishing,
+            concluido: true, progressoAtualizado: false, explicacao: cenario.explicacao };
+        }
+      }
+      if (concluida && !dto.refazer) throw new ConflictException('Atividade já concluída. Consulte seu resultado.');
+
       const tentativa = await tx.tentativaPhishing.create({
         data: {
+          ...(dto.tentativaId ? { id: dto.tentativaId } : {}),
           usuarioId,
           cenarioId,
           respostaEhPhishing: dto.respostaEhPhishing,

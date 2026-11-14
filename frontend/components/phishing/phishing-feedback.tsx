@@ -4,9 +4,11 @@ import type { ResultadoPhishing } from "@/lib/phishing-api";
 export function PhishingFeedback({
   resultado,
   escolha,
+  onRetry,
 }: {
   resultado: ResultadoPhishing;
   escolha: boolean;
+  onRetry?: () => void;
 }) {
   return (
     <section
@@ -31,6 +33,7 @@ export function PhishingFeedback({
       </p>
       <p className="feedback-explanation">{resultado.explicacao}</p>
       <div className="activity-actions">
+        {onRetry && <button type="button" className="dashboard-button-primary" onClick={onRetry}>Refazer simulação</button>}
         <Link className="dashboard-button-primary" href="/simulacoes">
           Explorar outras simulações
         </Link>

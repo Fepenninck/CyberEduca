@@ -1,3 +1,4 @@
+import { PhishingInteractiveContent } from "./phishing-interactive-content";
 import { ChevronLeft, MessageSquare } from "lucide-react";
 export function PhishingSms({ conteudo }: { conteudo: string }) {
   return (
@@ -9,7 +10,7 @@ export function PhishingSms({ conteudo }: { conteudo: string }) {
         <MessageSquare size={18} />
       </div>
       <p className="simulation-time">Mensagem do cenário</p>
-      <div className="simulation-bubble simulation-message">{conteudo}</div>
+      <div className="simulation-bubble simulation-message"><PhishingInteractiveContent content={conteudo} /></div>
       <div className="simulation-phone-bottom" />
     </div>
   );

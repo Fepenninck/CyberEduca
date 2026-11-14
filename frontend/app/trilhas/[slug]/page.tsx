@@ -1,4 +1,5 @@
 "use client";
+import { LoadingScreen } from '@/components/ui/loading-screen'
 import { parseLessonMaterial } from "@/lib/lesson-material";
 import { LessonLearningContent } from "@/components/activities/lesson-learning-content";
 
@@ -166,7 +167,7 @@ function TrackModulePage({ params }: { params: Promise<{ slug: string; lesson?: 
     return (
       <main className="app-shell dashboard-page track-module-page">
         <DashboardHeader />
-        <p className="content-wrap">Carregando trilha...</p>
+        <LoadingScreen label={"Carregando trilha..."} />
       </main>
     );
 
@@ -283,7 +284,7 @@ function TrackModulePage({ params }: { params: Promise<{ slug: string; lesson?: 
                   </p>
                 </div>
                 {loadingLesson ? (
-                  <div className="track-lesson-loading">Carregando aula...</div>
+                  <LoadingScreen label={"Carregando aula..."} />
                 ) : lessonBody ? (
                   <div className="track-lesson-content">
                     {lessonBody.videos.map((source) => (

@@ -1,5 +1,6 @@
 'use client'
 
+import { SimpleLoading } from '@/components/ui/simple-loading'
 import { Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { TabelaUsuarios } from '@/components/admin/tabela-usuarios'
@@ -57,7 +58,7 @@ export default function AdminUsuariosPage() {
       )}
 
       {carregando ? (
-        <div className="h-64 animate-pulse rounded-2xl border border-[#29394f] bg-[#101b2a]" aria-label="Carregando usuários" />
+        <SimpleLoading />
       ) : (
         <TabelaUsuarios usuarios={usuarios} onDelete={removerUsuario} />
       )}
