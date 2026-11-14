@@ -137,7 +137,7 @@ export default function EditarProvaPage() {
                 trilhas={trilhas}
                 initialValues={{
                   ...prova,
-                  status: prova.status === 'PUBLICADA' ? 'PUBLICADO' : prova.status,
+                  status: prova.status,
                 }}
                 permitirQuestoes={false}
                 submitLabel="Salvar dados da prova"

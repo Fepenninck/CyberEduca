@@ -1,4 +1,6 @@
 'use client'
+import GraficoConteudos from '@/components/admin/grafico-conteudos'
+
 
 import { BookOpen, GraduationCap, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -114,6 +116,7 @@ export default function AdminDashboardPage() {
         ))}
       </div>
 
+      {!carregando && !erro && resumo && <GraficoConteudos resumo={resumo} />}
       <GraficoDificuldades />
     </section>
   )

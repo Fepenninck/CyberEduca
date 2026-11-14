@@ -1,8 +1,8 @@
 import { IsIn } from 'class-validator';
 
 export class AtualizarStatusProvaDto {
-  @IsIn(['RASCUNHO', 'PUBLICADA', 'ARQUIVADA'], {
-    message: 'O status deve ser RASCUNHO, PUBLICADA ou ARQUIVADA.',
+  @IsIn(['RASCUNHO', 'PUBLICADO', 'ARQUIVADO'], {
+    message: 'O status deve ser RASCUNHO, PUBLICADO ou ARQUIVADO.',
   })
-  status: 'RASCUNHO' | 'PUBLICADA' | 'ARQUIVADA';
+  status: 'RASCUNHO' | 'PUBLICADO' | 'ARQUIVADO';
 }

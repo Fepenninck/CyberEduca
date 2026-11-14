@@ -54,7 +54,7 @@ export type QuizAdminInput = {
 }
 
 export type StatusPublicacao = 'RASCUNHO' | 'PUBLICADO' | 'ARQUIVADO'
-export type StatusProvaAdmin = StatusPublicacao | 'PUBLICADA'
+export type StatusProvaAdmin = StatusPublicacao
 
 export type QuizAdmin = QuizAdminInput & {
   id: string

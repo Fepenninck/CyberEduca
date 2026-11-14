@@ -23,8 +23,8 @@ describe('ProvasController', () => {
     student.finalizar('p1', req, body);
     admin.listar(); admin.criar(body, req); admin.atualizar('p1', body, req); admin.criarQuestao('p1', body, req);
     admin.criarAlternativa('p1', 'q1', body, req);
-    admin.alterarStatus('p1', { status: 'PUBLICADA' } as any, req);
-    admin.alterarStatus('p1', { status: 'ARQUIVADA' } as any, req);
+    admin.alterarStatus('p1', { status: 'PUBLICADO' } as any, req);
+    admin.alterarStatus('p1', { status: 'ARQUIVADO' } as any, req);
     admin.alterarStatus('p1', { status: 'RASCUNHO' } as any, req);
 
     expect(service.listarProvas).toHaveBeenCalledWith('trilha-1');

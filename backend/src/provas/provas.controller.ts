@@ -77,11 +77,11 @@ export class AdminProvasController {
     @Body() dados: AtualizarStatusProvaDto,
     @Request() req: any,
   ) {
-    if (dados.status === 'PUBLICADA') {
+    if (dados.status === 'PUBLICADO') {
       return this.service.publicarProva(provaId, req.user.id);
     }
 
-    if (dados.status === 'ARQUIVADA') {
+    if (dados.status === 'ARQUIVADO') {
       return this.service.arquivarProva(provaId, req.user.id);
     }
 

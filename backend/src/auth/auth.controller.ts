@@ -1,3 +1,4 @@
+import { LoginRateLimitGuard } from './login-rate-limit.guard';
 import {
   Controller,
   Post,
@@ -37,6 +38,7 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
+  @UseGuards(LoginRateLimitGuard)
   async login(
     @Body() loginDto: LoginDto,
     @Req() request: Request,

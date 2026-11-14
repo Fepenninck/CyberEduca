@@ -5,12 +5,11 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { alterarStatusProva, excluirProva, listarProvasAdmin, type ProvaAdmin, type StatusProvaAdmin } from '@/lib/admin-api'
 
-const statusOptions: StatusProvaAdmin[] = ['RASCUNHO', 'PUBLICADO', 'PUBLICADA', 'ARQUIVADO']
+const statusOptions: StatusProvaAdmin[] = ['RASCUNHO', 'PUBLICADO', 'ARQUIVADO']
 
 const statusClass: Record<StatusProvaAdmin, string> = {
   RASCUNHO: 'bg-slate-700/60 text-slate-300',
   PUBLICADO: 'bg-[#b2ff00]/10 text-[#d5ff86]',
-  PUBLICADA: 'bg-[#b2ff00]/10 text-[#d5ff86]',
   ARQUIVADO: 'bg-amber-300/10 text-amber-200',
 }
 

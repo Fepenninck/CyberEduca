@@ -1,3 +1,4 @@
+import { LoginRateLimitGuard } from './login-rate-limit.guard';
 import { Module, Provider } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
@@ -32,7 +33,7 @@ const googleStrategyProvider: Provider = {
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, PrismaService, JwtStrategy, googleStrategyProvider],
+  providers: [LoginRateLimitGuard, AuthService, PrismaService, JwtStrategy, googleStrategyProvider],
   exports: [JwtModule, PassportModule],
 })
 export class AuthModule {}

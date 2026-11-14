@@ -246,12 +246,12 @@ export class ProvasService {
       );
     }
 
-    return this.alterarStatusProva(provaId, StatusProva.PUBLICADA, atorId);
+    return this.alterarStatusProva(provaId, StatusProva.PUBLICADO, atorId);
   }
 
   async arquivarProva(provaId: string, atorId: string) {
     await this.garantirProvaExiste(provaId);
-    return this.alterarStatusProva(provaId, StatusProva.ARQUIVADA, atorId);
+    return this.alterarStatusProva(provaId, StatusProva.ARQUIVADO, atorId);
   }
 
   async alterarStatusProva(
@@ -280,7 +280,7 @@ export class ProvasService {
   async listarProvas(trilhaId?: string) {
     const provas = await this.prisma.prova.findMany({
       where: {
-        status: { in: [StatusProva.PUBLICADA, StatusProva.PUBLICADO] },
+        status: { in: [StatusProva.PUBLICADO] },
         ...(trilhaId ? { trilhaId } : {}),
       },
       orderBy: { criadoEm: 'desc' },
@@ -329,7 +329,7 @@ export class ProvasService {
       throw new NotFoundException('Prova nao encontrada.');
     }
 
-    if (prova.status !== StatusProva.PUBLICADA && prova.status !== StatusProva.PUBLICADO) {
+    if (prova.status !== StatusProva.PUBLICADO) {
       throw new ForbiddenException('Esta prova nao esta disponivel.');
     }
 
@@ -366,7 +366,7 @@ export class ProvasService {
       throw new NotFoundException('Prova nao encontrada.');
     }
 
-    if (prova.status !== StatusProva.PUBLICADA && prova.status !== StatusProva.PUBLICADO) {
+    if (prova.status !== StatusProva.PUBLICADO) {
       throw new ForbiddenException('Esta prova nao esta disponivel.');
     }
 
@@ -423,7 +423,7 @@ export class ProvasService {
 
   listarPublicadas() {
     return this.prisma.prova.findMany({
-      where: { status: { in: [StatusProva.PUBLICADO, StatusProva.PUBLICADA] } },
+      where: { status: { in: [StatusProva.PUBLICADO] } },
       orderBy: { criadoEm: 'desc' },
       select: {
         id: true,
@@ -445,7 +445,7 @@ export class ProvasService {
     }
 
     const prova = await this.prisma.prova.findFirst({
-      where: { id, status: { in: [StatusProva.PUBLICADO, StatusProva.PUBLICADA] } },
+      where: { id, status: { in: [StatusProva.PUBLICADO] } },
       select: {
         id: true,
         titulo: true,
@@ -624,7 +624,7 @@ export class ProvasService {
     }
 
     const prova = await this.prisma.prova.findFirst({
-      where: { id: provaId, status: { in: [StatusProva.PUBLICADO, StatusProva.PUBLICADA] } },
+      where: { id: provaId, status: { in: [StatusProva.PUBLICADO] } },
       select: {
         questoes: {
           select: {

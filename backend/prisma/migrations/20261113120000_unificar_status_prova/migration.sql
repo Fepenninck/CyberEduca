@@ -1,0 +1,9 @@
+BEGIN;
+ALTER TYPE "StatusProva" RENAME TO "StatusProva_antigo";
+CREATE TYPE "StatusProva" AS ENUM ('RASCUNHO', 'PUBLICADO', 'ARQUIVADO');
+ALTER TABLE "Prova" ALTER COLUMN "status" DROP DEFAULT;
+ALTER TABLE "Prova" ALTER COLUMN "status" TYPE "StatusProva"
+USING (CASE "status"::text WHEN 'PUBLICADA' THEN 'PUBLICADO' WHEN 'ARQUIVADA' THEN 'ARQUIVADO' ELSE "status"::text END)::"StatusProva";
+ALTER TABLE "Prova" ALTER COLUMN "status" SET DEFAULT 'RASCUNHO';
+DROP TYPE "StatusProva_antigo";
+COMMIT;

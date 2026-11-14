@@ -22,7 +22,7 @@ Desenvolvido como **Projeto Final de Curso (PFC)** da **Universidade de Mogi das
 
 À medida que os ciberataques (phishing, golpes, força bruta) se tornam mais frequentes, cresce a necessidade de capacitação prática em segurança digital. O **CyberEduca+** propõe um site educacional com trilhas de aprendizagem, aulas, quizzes de avaliação e um simulador de phishing, incluindo autenticação de usuário, perfil básico e um painel administrativo para gestão de conteúdos e acompanhamento de desempenho.
 
-**Fora do escopo do MVP:** aplicativo móvel, login social, notificações push e integrações externas não obrigatórias.
+**Fora do escopo do MVP:** aplicativo mobile e push. Google OAuth pode ser habilitado por ambiente.
 
 <br clear="right"/>
 
@@ -73,7 +73,7 @@ O front-end (**Next.js**) consome a API REST do back-end (**NestJS**) via HTTPS,
 | **Back-end** | Node.js, NestJS, TypeScript, JWT (autenticação), RBAC (permissões), validação de DTOs, Logs (auditoria) |
 | **Banco de Dados** | PostgreSQL, Prisma ORM, Neon (PostgreSQL Serverless) |
 | **Deploy** | Vercel (front-end), Servidor Cloud (back-end — ex.: Render, Railway ou similar), Neon (banco de dados), GitHub (repositório e CI/CD) |
-| **Qualidade** | ESLint, Jest, testes unitários e de integração |
+| **Qualidade** | Oxlint, Jest, testes unitários e de integração |
 
 ## Como rodar o projeto localmente
 
@@ -94,7 +94,7 @@ Crie um banco PostgreSQL local chamado `cybereduca` e rode as migrations:
 
 ```bash
 npx prisma migrate dev
-npm run db:seed        # popula uma trilha e uma aula vazias
+npm run db:seed        # carrega os dados iniciais
 npm run start:dev
 ```
 
@@ -133,12 +133,12 @@ Projeto em desenvolvimento ativo, seguindo o cronograma do PFC (2026).
 - [x] Definição de escopo e arquitetura
 - [x] Modelagem inicial de dados
 - [x] Módulo de trilhas e aulas 
-- [ ] Autenticação e autorização (JWT + RBAC) — hoje a API usa um usuário demo fixo
-- [ ] Módulo de quizzes
-- [ ] Simulador de phishing
-- [ ] Painel administrativo
+- [x] JWT e RBAC implementados
+- [x] Quizzes implementados
+- [x] Simulador de phishing
+- [x] Painel administrativo
 - [ ] Dashboards de desempenho (a página de progresso do frontend já consome a API, mas segue em evolução)
-- [ ] Testes automatizados
+- [x] Testes automatizados
 
 ## Licença e uso de dados
 
@@ -147,3 +147,19 @@ O uso de bibliotecas, APIs e demais recursos de terceiros é identificado e docu
 ## Instituição
 
 Projeto desenvolvido para a **Universidade de Mogi das Cruzes - UMC** · Mogi das Cruzes - SP, 2026.
+
+## Controles e manutenção
+
+- POST/PATCH de trilhas e aulas exigem JWT e perfil ADMIN. Alunos autenticados podem concluir aulas.
+- POST `/auth/login` permite 5 tentativas por e-mail e 30 por IP por janela de 15 minutos. Todas as tentativas contam, inclusive logins válidos. O excesso retorna HTTP 429 e `Retry-After` em segundos. A auditoria das credenciais inválidas permanece no serviço de autenticação.
+- Os contadores ficam em memória por processo e reiniciam com a API. Múltiplas instâncias precisam de armazenamento compartilhado. O IP vem do Express; configure proxies confiáveis de acordo com a infraestrutura antes de aceitar cabeçalhos encaminhados.
+- O painel apresenta indicadores de usuários, trilhas e aulas, distribuição dos conteúdos e desempenho por prova.
+- `StatusProva` usa RASCUNHO, PUBLICADO e ARQUIVADO. A migration `20261113120000_unificar_status_prova` converte os valores antigos preservando as provas. Aplique com `npm run deploy` no backend e gere o cliente com `npx prisma generate` antes de iniciar a nova versão.
+
+### Verificação
+
+No backend: `npm test -- --runInBand` e `npm run build`. No frontend: `npx tsc --noEmit` e `npm run build`.
+
+### Pendências opcionais
+
+Históricos completos de quizzes e phishing, feedback individual nas provas e gestão dos cenários de phishing continuam como melhorias opcionais. Existem resultados salvos de quizzes e phishing, feedback de quizzes e uma tela administrativa de simulações; essas funcionalidades não cobrem todas as interfaces opcionais.

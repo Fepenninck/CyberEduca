@@ -1,3 +1,4 @@
+import { AdminGuard } from '../auth/admin.guard';
 import { Body, Controller, Get, Param, Patch, Post, Request, UseGuards, } from '@nestjs/common';
 import { AprendizagemService } from './aprendizagem.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -14,6 +15,7 @@ export class TrilhasController {
   }
 
   @Post()
+  @UseGuards(AdminGuard)
   criar(
     @Body()
     dados: {
@@ -26,6 +28,7 @@ export class TrilhasController {
 }
 
 @Patch(':id')
+  @UseGuards(AdminGuard)
 editar(
   @Param('id') id: string,
   @Body()
@@ -55,6 +58,7 @@ buscar(@Param('id') id: string, @Request() req: any) {
   }
 
 @Post()
+  @UseGuards(AdminGuard)
 criar(
   @Body()
   dados: {
@@ -68,6 +72,7 @@ criar(
 }
 
 @Patch(':id')
+  @UseGuards(AdminGuard)
 editar(
   @Param('id') id: string,
   @Body()

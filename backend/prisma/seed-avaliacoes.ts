@@ -10,7 +10,7 @@ async function main() {
     // Questões, respostas e histórico dessas provas permanecem intactos.
     await tx.prova.updateMany({
       where: { id: { in: [1, 2, 3].map(i => `ce000000-0000-4000-8001-${String(i).padStart(12, '0')}`) } },
-      data: { status: 'ARQUIVADA' },
+      data: { status: 'ARQUIVADO' },
     });
     for (const [indice, avaliacao] of avaliacoes.entries()) {
       const trilha = await tx.trilha.findUnique({ where: { id: avaliacao.trilhaId } });
@@ -31,7 +31,7 @@ async function main() {
           titulo: avaliacao.titulo,
           descricao: avaliacao.descricao,
           trilhaId: trilha.id,
-          status: 'PUBLICADA',
+          status: 'PUBLICADO',
           questoes: { create: avaliacao.questoes.map((questao, ordem) => ({
             enunciado: questao.pergunta,
             explicacao: `${questao.explicacao}\nAula de referência: ${questao.aula}.`,
