@@ -21,6 +21,7 @@ export type QuestaoQuiz = {
 };
 export type QuizDetalhe = Omit<QuizResumo, "_count"> & {
   resultado?: ResultadoQuiz | null;
+  resultadoAnterior?: ResultadoQuiz | null;
   questoes: QuestaoQuiz[];
 };
 export type RespostaQuiz = { questaoId: string; alternativaId: string };

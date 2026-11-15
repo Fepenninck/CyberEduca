@@ -8,6 +8,7 @@ import {
 import { ActivityError } from "@/components/activities/activity-state";
 import { QuizQuestion } from "./quiz-question";
 import { QuizResult } from "./quiz-result";
+import { QuizAchievement } from "@/components/quiz-achievement";
 export function QuizPlayer({ quiz }: { quiz: QuizDetalhe }) {
   const [respostas, setRespostas] = useState<Record<string, string>>({});
   const [resultado, setResultado] = useState<ResultadoQuiz | null>(quiz.resultado ?? null);
@@ -34,6 +35,7 @@ export function QuizPlayer({ quiz }: { quiz: QuizDetalhe }) {
           })),
         ),
       );
+      window.dispatchEvent(new Event('quiz-progress-updated'));
     } catch (cause) {
       setError(
         cause instanceof Error
@@ -47,10 +49,13 @@ export function QuizPlayer({ quiz }: { quiz: QuizDetalhe }) {
   }
   if (resultado)
     return (
+      <>
       <QuizResult
         quiz={quiz}
         resultado={resultado}
       />
+      <QuizAchievement key={resultado.tentativaId} earnedOnly />
+      </>
     );
   if (!quiz.questoes.length)
     return (
@@ -60,6 +65,7 @@ export function QuizPlayer({ quiz }: { quiz: QuizDetalhe }) {
     );
   return (
     <form onSubmit={submit} className="activity-panel quiz-player">
+      {quiz.resultadoAnterior && <p className="activity-muted" role="status">Este quiz foi atualizado e agora tem {quiz.questoes.length} perguntas. Seu resultado anterior de {quiz.resultadoAnterior.totalAcertos} de {quiz.resultadoAnterior.totalQuestoes} foi preservado. Responda às perguntas da versão atual para concluir.</p>}
       <div className="quiz-progress">
         <span>
           {answered} de {quiz.questoes.length} respondidas

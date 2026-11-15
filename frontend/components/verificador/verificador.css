@@ -53,6 +53,21 @@
   min-width: 0;
   padding-block: 14px;
   font-size: 16px;
+  background: transparent;
+}
+.app-shell.verificador-page .domain-input-wrap input:focus,
+.app-shell.verificador-page .domain-input-wrap input:focus-visible {
+  outline: none;
+  box-shadow: none;
+  background: transparent;
+}
+.app-shell.verificador-page .domain-input-wrap input:is(:autofill, :-webkit-autofill) {
+  box-shadow: inset 0 0 0 1000px var(--student-raised);
+  -webkit-text-fill-color: var(--student-text);
+  caret-color: var(--student-text);
+}
+.app-shell.verificador-page .domain-input-wrap:focus-within {
+  border-color: var(--student-subtle);
 }
 .app-shell.verificador-page .domain-form button {
   min-width: 0;
@@ -210,9 +225,11 @@
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  padding-bottom: 24px;
+  padding-bottom: 20px;
   border-bottom: 1px solid var(--student-line);
 }
+.domain-report-header > div { min-width: 0; }
+.domain-report-domain { margin-top: 6px; color: var(--student-text); font-size: 20px; line-height: 1.5; overflow-wrap: anywhere; }
 .domain-classification {
   display: inline-flex;
   align-items: center;
@@ -224,24 +241,18 @@
   font-size: 12px;
   line-height: 1.5;
 }
-.domain-classification svg {
-  flex: none;
-}
 .domain-verdict {
   display: grid;
-  grid-template-columns: 48px minmax(0, 1fr);
-  gap: 18px;
-  margin: 28px 0;
+  grid-template-columns: minmax(0, 1fr);
+  margin: 24px 0 20px;
+  padding-top: 22px;
+  border-top: 1px solid var(--student-line);
 }
-.domain-verdict-icon {
-  display: grid;
-  place-items: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 8px;
-  background: var(--report-tint);
-  color: var(--report-color);
+.domain-verdict h2#domain-result-title:focus {
+  outline: none;
+  box-shadow: none;
 }
+
 .domain-verdict h2 {
   color: var(--student-text);
   font-size: clamp(23px, 2.4vw, 30px);
@@ -262,9 +273,7 @@
   padding: 22px;
   border-radius: 8px;
   background: var(--student-raised);
-}
-.domain-report-facts > div:first-child {
-  grid-column: 1 / -1;
+  margin-top: 24px;
 }
 .domain-report-facts dt {
   color: var(--student-subtle);
@@ -281,7 +290,7 @@
   font-size: 21px;
 }
 .domain-evidence {
-  margin-top: 30px;
+  margin-top: 22px;
 }
 .domain-section-heading h3,
 .domain-learning h3 {
@@ -300,13 +309,15 @@
 .domain-detections {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 28px;
-  margin: 24px 0 18px;
+  gap: 16px;
+  margin: 16px 0 12px;
 }
 .domain-detection {
   min-width: 0;
-  padding-bottom: 22px;
-  border-bottom: 1px solid var(--student-line);
+  padding: 18px 20px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--student-raised);
 }
 .domain-detection dt {
   color: var(--student-muted);
@@ -318,8 +329,8 @@
 .domain-detection-count {
   display: block;
   color: var(--student-text);
-  font-size: 38px;
-  font-weight: 400;
+  font-size: clamp(36px, 4vw, 46px);
+  font-weight: 500;
   line-height: 1.2;
 }
 .domain-report[data-state="MALICIOSO"] .malicious .domain-detection-count {
@@ -336,9 +347,9 @@
 }
 .domain-learning {
   display: grid;
-  gap: 24px;
-  padding-top: 28px;
-  margin-top: 28px;
+  gap: 16px;
+  padding-top: 22px;
+  margin-top: 22px;
   border-top: 1px solid var(--student-line);
 }
 .domain-learning .domain-eyebrow {
@@ -352,11 +363,47 @@
 }
 .domain-next-step {
   padding: 22px;
+  margin-bottom: 24px;
   border-radius: 8px;
   background: var(--report-tint);
 }
 .domain-next-step h3 {
   color: var(--report-color);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+.domain-next-step ol {
+  display: grid;
+  gap: 10px;
+  margin: 14px 0 0;
+  padding-left: 22px;
+  list-style: decimal;
+  color: var(--student-text);
+  font-size: 14px;
+  line-height: 1.75;
+}
+.domain-next-step li {
+  padding-left: 5px;
+}
+.domain-next-step li strong { display: block; font-weight: 500; }
+.domain-next-step li span { display: block; margin-top: 3px; color: var(--student-muted); font-size: 13px; }
+.domain-next-step li::marker {
+  color: var(--report-color);
+  font-weight: 500;
+}
+.domain-next-step .domain-already-interacted {
+  padding-top: 14px;
+  margin-top: 16px;
+  color: var(--student-muted);
+  font-size: 13px;
+  line-height: 1.75;
+}
+.domain-already-interacted strong {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--report-color);
+  font-weight: 500;
 }
 .domain-report-limit {
   padding-top: 24px;
@@ -429,3 +476,10 @@
     padding: 18px;
   }
 }
+
+.domain-report .domain-verdict { margin: 18px 0; padding-top: 18px; }
+.domain-report .domain-verdict h2 { font-size: clamp(21px, 2vw, 26px); }
+.domain-report .domain-verdict p { margin-top: 8px; line-height: 1.65; }
+.domain-report .domain-next-step { margin-bottom: 16px; padding: 18px 20px; }
+.domain-report .domain-next-step ol { gap: 12px; margin-top: 12px; }
+.domain-report-meta { display: flex; flex-wrap: wrap; gap: 6px 20px; padding-top: 12px; border-top: 1px solid var(--student-line); color: var(--student-subtle); font-size: 11px; line-height: 1.6; }

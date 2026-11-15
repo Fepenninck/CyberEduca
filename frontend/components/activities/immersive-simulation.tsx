@@ -4,6 +4,8 @@ import { useState, type ReactNode } from 'react'
 import { Monitor, Smartphone, Folder, FileText, Wifi, Shield, Settings, Terminal, Code, ChevronLeft, Search, Lock } from 'lucide-react'
 import type { QuestaoTreino } from '@/lib/simulacoes-api'
 import './immersive-simulation.css'
+import { lerCenario } from '@/lib/simulation-scene'
+import { TemplateSimulation } from './template-simulation'
 
 type Props = { title: string; category: string; decision: QuestaoTreino; step: number; selected?: string; disabled: boolean; onChoose: (id: string) => void }
 type Option = QuestaoTreino['alternativas'][number]
@@ -146,6 +148,8 @@ function IdeScene({ props }: { props: Props }) {
 }
 
 export function ImmersiveSimulation(props: Props) {
+  const cenario = lerCenario(props.decision.contexto)
+  if (cenario) return <TemplateSimulation key={props.decision.id} cenario={cenario} alternativas={props.decision.alternativas} selected={props.selected} disabled={props.disabled} onChoose={props.onChoose} />
   const chosen = props.decision.alternativas.find(option => option.id === props.selected)
   const title = props.title
   let environment: ReactNode

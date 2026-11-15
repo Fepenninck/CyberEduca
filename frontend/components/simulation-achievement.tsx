@@ -30,7 +30,7 @@ export function SimulationAchievement({ profile = false, earnedOnly = false }: {
 
   if (earnedOnly && (!data?.conquistada || error)) return null
   const earned = data?.conquistada && !error
-  return <div className={`${profile ? 'achievement-item' : 'simulation-achievement'} ${earned ? 'is-earned' : 'is-locked'}`} role={earned ? 'status' : undefined}>
+  return <div className={`${profile ? 'achievement-item simulation-achievement-badge' : 'simulation-achievement'} ${earned ? 'is-earned' : 'is-locked'}`} role={earned ? 'status' : undefined}>
     <img src="/images/insignias/simulacoes.webp" alt="Insígnia Simulações - Lab Prático" width={900} height={600} loading="lazy" />
     <div className="simulation-achievement-copy">
       {profile ? <h3>Simulações</h3> : <h2>{earned ? 'Você conquistou a insígnia de Simulações!' : 'Sua próxima conquista: Simulações'}</h2>}

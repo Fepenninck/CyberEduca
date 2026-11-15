@@ -4,6 +4,12 @@ export type ResumoDashboard = {
   totalUsuarios: number
   totalTrilhas: number
   totalAulas: number
+  progressoTrilhas?: { iniciadas: number; emAndamento: number; concluidas: number }
+  trilhasPopulares?: Array<{ id: string; titulo: string; iniciadas: number; concluidas: number }>
+  taxaConclusao?: number | null
+  aulasConcluidas?: Array<{ id: string; usuarioId: string; criadoEm: string }>
+  acessos?: Array<{ id: string; usuarioId: string; criadoEm: string }>
+  conclusoesTrilhas?: Array<{ usuarioId: string; nome: string; trilhaId: string; titulo: string; criadoEm: string }>
 }
 
 export type AdminUsuario = {
@@ -44,7 +50,7 @@ export type AulaUpdate = Partial<AulaInput>
 
 export type AdminAula = AulaInput & {
   id: string
-  trilha: { id: string; titulo: string }
+  trilha: { id: string; titulo: string; bloqueada?: boolean }
 }
 
 export type QuizAdminInput = {
@@ -59,7 +65,15 @@ export type StatusProvaAdmin = StatusPublicacao
 export type QuizAdmin = QuizAdminInput & {
   id: string
   status: StatusPublicacao
+  questoes?: QuestaoQuizAdmin[]
 }
+
+export type QuestaoQuizInput = { enunciado: string; explicacao: string; ordem: number; alternativas: { texto: string; correta: boolean; ordem: number }[] }
+export type QuestaoQuizAdmin = QuestaoQuizInput & { id: string }
+
+export function atualizarQuizAdmin(id: string, dados: QuizAdminInput): Promise<QuizAdmin> { return requestJson(`/admin/quizzes/${encodeURIComponent(id)}`, { method: 'PATCH', body: JSON.stringify(dados) }) }
+export function salvarQuestaoQuiz(quizId: string, dados: QuestaoQuizInput, questaoId?: string): Promise<QuestaoQuizAdmin> { return requestJson(`/admin/quizzes/${encodeURIComponent(quizId)}/${questaoId ? `questoes/${encodeURIComponent(questaoId)}` : 'questoes-completas'}`, { method: questaoId ? 'PUT' : 'POST', body: JSON.stringify(dados) }) }
+export function removerQuestaoQuiz(quizId: string, questaoId: string): Promise<void> { return requestJson(`/admin/quizzes/${encodeURIComponent(quizId)}/questoes/${encodeURIComponent(questaoId)}`, { method: 'DELETE' }) }
 
 export type CenarioPhishingInput = {
   titulo: string
@@ -144,6 +158,8 @@ export type ProvaAdmin = Omit<ProvaInput, 'questoes' | 'status'> & {
 }
 
 export type ResultadoProvaAdmin = {
+  aprovado?: boolean | null
+  notaMinima?: number | null
   id: string
   acertos: number
   totalQuestoes: number
@@ -392,4 +408,12 @@ export function alterarStatusProva(id: string, status: StatusProvaAdmin): Promis
 
 export function excluirProva(id: string): Promise<void> {
   return requestJson(`/admin/provas/${encodeURIComponent(id)}`, { method: 'DELETE' })
+}
+export type FiltrosHistorico = { busca?: string; usuarioId?: string; acao?: string; resultado?: string; inicio?: string; fim?: string; pagina?: number; limite?: number }
+export type RegistroHistorico = { id: string; acao: string; entidade: string; entidadeId: string | null; sucesso: boolean; criadoEm: string; ator: { id: string; nome: string; email: string } | null; metodo: string | null; rota: string | null }
+export type PaginaHistorico = { registros: RegistroHistorico[]; total: number; pagina: number; limite: number; paginas: number }
+export function listarHistorico(filtros: FiltrosHistorico, signal?: AbortSignal): Promise<PaginaHistorico> {
+  const query = new URLSearchParams()
+  Object.entries(filtros).forEach(([key, value]) => { if (value !== undefined && value !== '') query.set(key, String(value)) })
+  return requestJson(`/admin/historico?${query}`, { signal })
 }

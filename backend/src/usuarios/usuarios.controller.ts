@@ -36,6 +36,18 @@ export class UsuariosController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @Get('me/conquistas/quizzes')
+    minhaConquistaQuizzes(@Request() req: any) {
+        return this.usuariosService.conquistaQuizzes(req.user.id);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('me/conquistas/laboratorio')
+    minhaConquistaLaboratorio(@Request() req: any) {
+        return this.usuariosService.conquistaLaboratorio(req.user.id);
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Get('me/desempenho')
     meuDesempenho(@Request() req: any) {
         return this.usuariosService.desempenho(req.user.id);

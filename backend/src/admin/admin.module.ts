@@ -10,13 +10,16 @@ import { AdminDashboardService } from './admin-dashboard.service';
 import { AdminGuard } from './admin.guard';
 import { AdminService } from './admin.service';
 import { AdminUsuariosService } from './admin-usuarios.service';
+import { AdminHistoricoService } from './admin-historico.service';
+import { AdminHistoricoController } from './admin-historico.controller';
 
 @Module({
   imports: [AuthModule, AuditoriaModule, ProvasModule, SimulacoesModule],
-  controllers: [AdminController],
+  controllers: [AdminController, AdminHistoricoController],
   providers: [
     AdminGuard,
     AdminService,
+    AdminHistoricoService,
     AdminDashboardService,
     AdminUsuariosService,
     AprendizagemService,

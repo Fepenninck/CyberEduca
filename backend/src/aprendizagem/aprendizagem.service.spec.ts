@@ -123,6 +123,27 @@ describe('AprendizagemService - progresso', () => {
     ).toHaveBeenCalled();
   });
 
+  it('exige a prova anterior mesmo quando as aulas da trilha já foram concluídas', async () => {
+    prismaMock.aula.count.mockResolvedValue(5);
+    prismaMock.progressoAula.count.mockResolvedValue(5);
+    const bloqueada = await service['estaBloqueada'](
+      { id: 'trilha-antiga', nivel: 'INTERMEDIARIO', bloqueada: true, ordem: 2 },
+      'usuario-1', [],
+    );
+    expect(bloqueada).toBe(true);
+    expect(prismaMock.progressoAula.upsert).not.toHaveBeenCalled();
+  });
+
+  it('mantém o pré-requisito de prova para trilhas não concluídas ou vazias', async () => {
+    prismaMock.aula.count.mockResolvedValue(5);
+    prismaMock.progressoAula.count.mockResolvedValue(4);
+    const trilha = { id: 'trilha-nova', nivel: 'INTERMEDIARIO', bloqueada: false, ordem: 2 };
+    expect(await service['estaBloqueada'](trilha, 'usuario-1', [])).toBe(true);
+    prismaMock.aula.count.mockResolvedValue(0);
+    prismaMock.progressoAula.count.mockResolvedValue(0);
+    expect(await service['estaBloqueada'](trilha, 'usuario-1', [])).toBe(true);
+  });
+
   it('deve rejeitar uma aula inexistente', async () => {
     prismaMock.aula.findUnique.mockResolvedValue(null);
 

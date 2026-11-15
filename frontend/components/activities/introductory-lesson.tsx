@@ -2,14 +2,14 @@
 
 import { LessonSources } from './lesson-sources'
 import { useState } from 'react'
-import { ArrowRight, CheckCircle2, PlayCircle } from 'lucide-react'
+import { CheckCircle2 } from 'lucide-react'
+import { LessonDiagram, LessonVideo } from './lesson-media'
 import ReactMarkdown from 'react-markdown'
 import type { LessonMaterial } from '@/lib/lesson-material'
 import { lessonHeadings } from '@/lib/lesson-headings'
 
 export function IntroductoryLesson({ lesson }: { lesson: LessonMaterial }) {
   const [answer, setAnswer] = useState<number | null>(null)
-  const [videoError, setVideoError] = useState(false)
   const intro = lesson.introductory!
   const headings = lessonHeadings(lesson)
 
@@ -25,42 +25,14 @@ export function IntroductoryLesson({ lesson }: { lesson: LessonMaterial }) {
         <ReactMarkdown>{lesson.concept}</ReactMarkdown>
       </section>
 
-      {lesson.diagram && (
-        <section aria-label={lesson.diagram.title} className="rounded-2xl bg-white/[0.03] p-5">
-          <h3 className="!mt-0">{lesson.diagram.title}</h3>
-          <ol className="!m-0 flex !list-none flex-col gap-3 !p-0 sm:flex-row">
-            {lesson.diagram.nodes.map((node, i) => (
-              <li key={node} className="!m-0 flex min-w-0 flex-1 items-center gap-2">
-                <div className="h-full flex-1 rounded-xl bg-[#0d1623] p-4">
-                  <span className="text-xs text-sky-300">0{i + 1}</span>
-                  <strong className="mt-2 block text-sm text-white">{node}</strong>
-                  <span className="mt-2 block text-xs leading-5 text-slate-400">{lesson.diagram!.notes[i]}</span>
-                </div>
-                {i < lesson.diagram!.nodes.length - 1 && <ArrowRight size={16} className="hidden shrink-0 text-sky-300 sm:block" aria-hidden="true" />}
-              </li>
-            ))}
-          </ol>
-          <p className="!mb-0 text-sm text-slate-400">{lesson.diagram.caption}</p>
-        </section>
-      )}
+      {lesson.diagram && <LessonDiagram diagram={lesson.diagram} />}
 
       <section className="rounded-2xl bg-sky-300/5 p-5">
         <h3 className="!mt-0">Acompanhe a história da Ana</h3>
         <ReactMarkdown>{lesson.caseStudy ?? ''}</ReactMarkdown>
       </section>
 
-      {lesson.video && (
-        <section className="lesson-video-material">
-          <h2 className="flex items-center gap-2"><PlayCircle size={22} aria-hidden="true" /> Veja em um vídeo curto</h2>
-          <p>{lesson.video.title}</p>
-          {!videoError && <video key={lesson.video.url} controls playsInline preload="none" poster={intro.image.src} onError={() => setVideoError(true)} aria-label={lesson.video.title} className="w-full rounded-xl !border-0">
-            <source src={lesson.video.url} type="video/mp4" />
-          </video>}
-          {videoError && <p role="status">O vídeo não carregou aqui. Use a página oficial abaixo, que também tem uma descrição em texto.</p>}
-          <p className="lesson-source-link"><a href={lesson.video.source} target="_blank" rel="noreferrer">Assistir na fonte e ler a descrição acessível</a></p>
-          <p className="rounded-xl bg-white/5 p-4 text-sm"><strong>Observe enquanto assiste: </strong>{lesson.video.prompt}</p>
-        </section>
-      )}
+      {lesson.video && <LessonVideo key={lesson.video.url} video={lesson.video} poster={intro.image.src} atividadeNaPagina />}
 
       <section className="rounded-2xl bg-[#b2ff00]/5 p-5">
         <h2 className="!mt-0">E você, o que faria?</h2>

@@ -6,6 +6,7 @@ export type LessonMaterial = {
   title: string;
   concept: string;
   practice: string;
+  takeaway?: string;
   source: string;
   sourceTitle: string;
   caseStudy?: string;

@@ -1,0 +1,14 @@
+.track-lesson-content .lesson-learning-content { min-width: 0; }
+.track-lesson-content .lesson-learning-content > section { margin-block: 28px; }
+.track-lesson-content .lesson-video-material video { display: block; width: 100%; height: auto; max-height: 480px; margin: 16px 0; border-radius: 8px; background: #0b1320; }
+.track-lesson-content .lesson-video-material h3 { font-size: 17px; }
+.track-lesson-content .lesson-reflection { padding: 18px 20px; border-left: 3px solid #b2ff00; border-radius: 0 8px 8px 0; background: rgba(255,255,255,.035); }
+.track-lesson-content .lesson-reflection h2 { margin-top: 0; }
+.track-lesson-content .lesson-reflection p:last-child { margin-bottom: 0; }
+.track-lesson-content .lesson-table-wrap { max-width: 100%; overflow-x: auto; }
+.track-lesson-content .lesson-table-wrap table { width: 100%; border-collapse: collapse; }
+.track-lesson-content .lesson-table-wrap :is(th, td) { padding: 10px 12px; border: 1px solid #2e4056; text-align: left; vertical-align: top; }
+.track-lesson-content .lesson-learning-content :is(p, li, dd, figcaption) { overflow-wrap: anywhere; }
+@media (max-width: 600px) {
+  .track-lesson-content .lesson-reflection { padding: 14px; }
+}

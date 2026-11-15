@@ -107,6 +107,7 @@
 
 .learning-path-progress { height: 4px; margin-top: 10px; overflow: hidden; border-radius: 999px; background: #26354a; }
 .learning-path-progress span { display: block; height: 100%; border-radius: inherit; background: var(--level-color); }
+.learning-path-card.is-locked .learning-path-progress { background: #444c59; }
 .learning-path-meta strong { display: inline-flex; align-items: center; gap: 4px; }
 .learning-path-card.is-done .learning-path-meta strong { color: var(--level-color); }
 

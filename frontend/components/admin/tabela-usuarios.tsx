@@ -1,6 +1,5 @@
 'use client'
 
-import { Pencil, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 import type { AdminUsuario } from '@/lib/admin-api'
@@ -36,11 +35,11 @@ export function TabelaUsuarios({ usuarios, onDelete }: TabelaUsuariosProps) {
 
   return (
     <div>
-      {erro && <p role="alert" className="mb-4 rounded-xl border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-sm text-rose-200">{erro}</p>}
-      <div className="overflow-hidden rounded-2xl border border-[#29394f] bg-[#101b2a]">
+      {erro && <p role="alert" className="mb-4 rounded-xl border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-sm text-rose-700">{erro}</p>}
+      <div className="overflow-hidden rounded-2xl border border-[#dce1e8] bg-[#ffffff]">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[760px] border-collapse text-left text-sm">
-            <thead className="bg-[#152235] text-xs uppercase tracking-wide text-slate-400">
+            <thead className="bg-[#f5f7fa] text-xs uppercase tracking-wide text-[#626c79]">
               <tr>
                 <th scope="col" className="px-5 py-4 font-semibold">Nome</th>
                 <th scope="col" className="px-5 py-4 font-semibold">Email</th>
@@ -49,24 +48,25 @@ export function TabelaUsuarios({ usuarios, onDelete }: TabelaUsuariosProps) {
                 <th scope="col" className="px-5 py-4 text-right font-semibold">Ações</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#29394f]">
+            <tbody className="divide-y divide-[#dce1e8]">
               {usuarios.map((usuario) => (
                 <tr key={usuario.id} className="transition hover:bg-white/[0.025]">
-                  <td className="px-5 py-4 font-medium text-white">{usuario.nome}</td>
-                  <td className="px-5 py-4 text-slate-300">{usuario.email}</td>
+                  <td className="px-5 py-4 font-medium text-[#242a33]">{usuario.nome}</td>
+                  <td className="px-5 py-4 text-slate-600">{usuario.email}</td>
                   <td className="px-5 py-4">
-                    <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${usuario.papel === 'ADMIN' ? 'bg-[#b2ff00]/10 text-[#c8ff5e]' : 'bg-slate-700/60 text-slate-300'}`}>
+                    <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${usuario.papel === 'ADMIN' ? 'bg-[#1768bd]/10 text-[#315b8e]' : 'bg-slate-100 text-slate-600'}`}>
                       {usuario.papel}
                     </span>
                   </td>
-                  <td className="px-5 py-4 text-slate-400">{formatarData(usuario.criadoEm)}</td>
+                  <td className="px-5 py-4 text-[#626c79]">{formatarData(usuario.criadoEm)}</td>
                   <td className="px-5 py-4">
                     <div className="flex justify-end gap-2">
-                      <Link href={`/admin/usuarios/${encodeURIComponent(usuario.id)}/editar`} aria-label={`Editar usuário ${usuario.nome}`} className="rounded-lg border border-[#35465c] p-2 text-slate-300 transition hover:border-[#b2ff00] hover:text-[#b2ff00]">
-                        <Pencil aria-hidden="true" size={16} />
+                      <Link className="rounded-lg border border-[#d4dce6] p-2 text-slate-600" href={`/admin/historico?usuarioId=${encodeURIComponent(usuario.id)}`}>Histórico</Link>
+                      <Link href={`/admin/usuarios/${encodeURIComponent(usuario.id)}/editar`} aria-label={`Editar usuário ${usuario.nome}`} className="rounded-lg border border-[#d4dce6] p-2 text-slate-600 transition hover:border-[#1768bd] hover:text-[#1768bd]">
+                        Editar
                       </Link>
-                      <button type="button" aria-label={`Excluir usuário ${usuario.nome}`} disabled={excluindoId === usuario.id} onClick={() => void excluir(usuario.id)} className="rounded-lg border border-[#35465c] p-2 text-slate-300 transition hover:border-rose-400 hover:text-rose-300 disabled:opacity-50">
-                        <Trash2 aria-hidden="true" size={16} />
+                      <button type="button" aria-label={`Excluir usuário ${usuario.nome}`} disabled={excluindoId === usuario.id} onClick={() => void excluir(usuario.id)} className="rounded-lg border border-[#d4dce6] p-2 text-slate-600 transition hover:border-rose-400 hover:text-rose-700 disabled:opacity-50">
+                        Excluir
                       </button>
                     </div>
                   </td>
@@ -74,7 +74,7 @@ export function TabelaUsuarios({ usuarios, onDelete }: TabelaUsuariosProps) {
               ))}
               {usuarios.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-5 py-12 text-center text-slate-400">Nenhum usuário encontrado.</td>
+                  <td colSpan={5} className="px-5 py-12 text-center text-[#626c79]">Nenhum usuário encontrado.</td>
                 </tr>
               )}
             </tbody>

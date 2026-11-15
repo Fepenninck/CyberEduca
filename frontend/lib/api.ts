@@ -94,17 +94,37 @@ export type TrackDetail = TrackSummary & {
   aulas: Array<{ id: string; titulo: string; ordem: number; concluida: boolean }>
 }
 
+type ResumoResultados = {
+  conclusao: number
+  feitas: number
+  melhorResultado: { id: string; titulo: string; acertos: number; totalQuestoes: number; percentual: number } | null
+  piorResultado: { id: string; titulo: string; acertos: number; totalQuestoes: number; percentual: number } | null
+}
+
 export type Desempenho = {
   aulas: { total: number; concluidas: number }
-  simulacoes: { realizadas: number; acertos: number; totalQuestoes: number; aproveitamento: number | null }
-  avaliacoes: { realizadas: number; media: number | null; melhor: number | null }
+  simulacoes: ResumoResultados & { realizadas: number; acertos: number; erros: number; totalQuestoes: number; aproveitamento: number | null }
+  avaliacoes: ResumoResultados & {
+    acertos: number
+    erros: number
+    realizadas: number
+    media: number | null
+    melhor: number | null
+    notas: Array<{ nivel: string; nota: number }>
+    melhorNivel: { nivel: string; media: number; tentativas: number } | null
+    nivelRevisar: { nivel: string; media: number; tentativas: number } | null
+  }
   ritmo: { diasSeguidos: number; aulasNaSemana: number; semana: Array<{ dia: string; aulas: number }> }
   phishing: { respondidos: number; acertos: number; porTipo: Array<{ tipo: 'EMAIL' | 'SMS' | 'SITE' | 'REDE_SOCIAL'; total: number; acertos: number }> }
   quizzes: {
+    conclusao: number
     feitos: number
+    tentativas: number
+    acertos: number
+    erros: number
     media: number | null
-    melhor: { quizId: string; titulo: string; percentual: number } | null
-    revisar: { quizId: string; titulo: string; percentual: number } | null
+    melhor: { quizId: string; titulo: string; acertos: number; totalQuestoes: number; percentual: number } | null
+    pior: { quizId: string; titulo: string; acertos: number; totalQuestoes: number; percentual: number } | null
   }
 }
 

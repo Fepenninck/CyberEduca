@@ -26,6 +26,22 @@ async function main() {
         return key === '$transaction' ? (operation: (client: typeof tx) => unknown) => operation(tx) : Reflect.get(target, key);
       } }) as unknown as PrismaService;
       const service = new QuizzesService(adapter);
+      const antiga = await tx.tentativaQuiz.findFirst({ where: { totalQuestoes: 1, quiz: { status: 'PUBLICADO' } }, include: { respostas: true } });
+      if (antiga) {
+        const detalhe = await service.buscarQuiz(antiga.quizId, antiga.usuarioId);
+        assert.equal(detalhe.questoes.length, 10);
+        assert.equal(detalhe.resultado, null);
+        assert.equal(detalhe.resultadoAnterior?.tentativaId, antiga.id);
+        const resumo = (await service.listarQuizzes(undefined, antiga.usuarioId)).find(item => item.id === antiga.quizId)!;
+        assert.equal(resumo.tentativas.length, 0);
+        const banco = quizzes.find(item => item.id === antiga.quizId)!;
+        const resposta = await service.responderQuiz(antiga.usuarioId, antiga.quizId, { respostas: banco.questoes.map(q => ({ questaoId: q.id, alternativaId: q.alternativas.find(a => a.correta)!.id })) });
+        assert.equal(resposta.totalQuestoes, 10);
+        assert.equal(resposta.totalAcertos, 10);
+        assert.deepEqual(await tx.tentativaQuiz.findUnique({ where: { id: antiga.id }, include: { respostas: true } }), antiga);
+        assert.equal((await service.buscarQuiz(antiga.quizId, antiga.usuarioId)).resultado?.totalQuestoes, 10);
+        await assert.rejects(() => service.responderQuiz(antiga.usuarioId, antiga.quizId, { respostas: [] }), /Atividade já concluída/);
+      }
       for (const targetScore of [10, 5, 0]) {
         const user = await tx.usuario.create({ data: { nome: marker, email: `${marker}-${targetScore}@example.invalid` } });
         const publicQuiz = await service.buscarQuiz(quiz.id, user.id);

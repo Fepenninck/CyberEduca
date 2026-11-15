@@ -1,6 +1,6 @@
 import { IsIn } from 'class-validator';
 
 export class AtualizarStatusQuizDto {
-  @IsIn(['PUBLICADO', 'ARQUIVADO'])
-  status!: 'PUBLICADO' | 'ARQUIVADO';
+  @IsIn(['RASCUNHO', 'PUBLICADO', 'ARQUIVADO'])
+  status!: 'RASCUNHO' | 'PUBLICADO' | 'ARQUIVADO';
 }

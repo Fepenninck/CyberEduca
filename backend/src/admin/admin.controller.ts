@@ -15,7 +15,7 @@ import { AdminDashboardService } from './admin-dashboard.service';
 import { AdminGuard } from './admin.guard';
 import { AdminUsuariosService } from './admin-usuarios.service';
 import { AdminService } from './admin.service';
-import { CriarAulaAdminDto } from './dto/criar-aula-admin.dto';
+import { CriarAulaAdminDto, AtualizarAulaAdminDto } from './dto/criar-aula-admin.dto';
 import { AtualizarTrilhaAdminDto } from './dto/atualizar-trilha-admin.dto';
 import { CriarTrilhaAdminDto } from './dto/criar-trilha-admin.dto';
 import { CriarProvaDto } from './dto/criar-prova.dto';
@@ -120,12 +120,7 @@ export class AdminController {
   editarAula(
     @Param('id') id: string,
     @Body()
-    dados: {
-      titulo?: string;
-      conteudo?: string;
-      ordem?: number;
-      trilhaId?: string;
-    },
+    dados: AtualizarAulaAdminDto,
   ) {
     return this.aprendizagemService.editarAula(id, dados);
   }

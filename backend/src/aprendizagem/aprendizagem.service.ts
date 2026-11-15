@@ -1,11 +1,12 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { AcaoAuditoria, NivelTrilha } from '@prisma/client';
+import { AcaoAuditoria, NivelTrilha, Prisma } from '@prisma/client';
 import { AuditoriaService } from '../auditoria.service';
 import { LEVELS, loadCertificationProgress } from '../certificacoes/certification-progress';
 
@@ -100,6 +101,8 @@ export class AprendizagemService {
         data: { ...dados, ordem },
       });
     } catch (error: unknown) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') throw new ConflictException('Já existe uma aula com essa ordem na trilha selecionada.');
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2003') throw new BadRequestException('A trilha selecionada não está disponível.');
       console.error('Erro Prisma:', error);
       throw new BadRequestException(
         error instanceof Error ? error.message : 'Não foi possível criar a aula.',
@@ -116,10 +119,16 @@ export class AprendizagemService {
       trilhaId?: string;
     },
   ) {
-    return this.prisma.aula.update({
-      where: { id },
-      data: dados,
-    });
+    try {
+      return await this.prisma.aula.update({ where: { id }, data: dados });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') throw new ConflictException('Já existe uma aula com essa ordem na trilha selecionada.');
+        if (error.code === 'P2003') throw new BadRequestException('A trilha selecionada não está disponível.');
+        if (error.code === 'P2025') throw new NotFoundException('Aula não encontrada.');
+      }
+      throw error;
+    }
   }
 
   async excluirAula(id: string) {
@@ -152,7 +161,7 @@ export class AprendizagemService {
         conteudo: true,
         ordem: true,
         trilhaId: true,
-        trilha: { select: { id: true, titulo: true } },
+        trilha: { select: { id: true, titulo: true, bloqueada: true } },
       },
     });
   }
@@ -344,7 +353,7 @@ export class AprendizagemService {
     return Math.round((feitas / total) * 100);
   }
   private async estaBloqueada(
-    trilha: { bloqueada: boolean; ordem: number; nivel?: string },
+    trilha: { id?: string; bloqueada: boolean; ordem: number; nivel?: string },
     usuarioId: string,
     certificacoes?: Awaited<ReturnType<typeof loadCertificationProgress>>,
   ): Promise<boolean> {

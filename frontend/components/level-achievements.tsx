@@ -5,8 +5,10 @@ import { useEffect, useState } from 'react'
 import { apiFetch } from '@/lib/api'
 import './level-achievements.css'
 import { SimulationAchievement } from './simulation-achievement'
+import { QuizAchievement } from './quiz-achievement'
+import { LaboratoryAchievement } from './laboratory-achievement'
 
-type Achievement = { nivel: string; totalAulas: number; aulasConcluidas: number; conquistada: boolean; conquistadaEm: string | null }
+export type Achievement = { nivel: string; totalAulas: number; aulasConcluidas: number; conquistada: boolean; conquistadaEm: string | null; desbloqueado: boolean }
 export const LEVEL_BADGES = [
   { level: 'BASICO', title: 'Básico', src: '/images/insignias/basico.png', color: '#24b4ff' },
   { level: 'INTERMEDIARIO', title: 'Intermediário', src: '/images/insignias/intermediario.png', color: '#ffd34e' },
@@ -34,15 +36,14 @@ export function useAchievements() {
   return { data, error }
 }
 
-export function LevelAchievements() {
-  const { data, error } = useAchievements()
+export function LevelAchievements({ data, error }: { data: Achievement[]; error: boolean }) {
   return <article className="profile-card level-achievements">
     <h2>Conquistas</h2>
-    <p className="achievement-intro">Conclua as aulas e passe na prova de cada nível para ganhar sua insígnia. A insígnia de Simulações exige concluir todos os cenários e treinos.</p>
+    <p className="achievement-intro">Conclua as aulas e passe na prova de cada nível para ganhar sua insígnia. Complete os quizzes e as simulações e faça seu primeiro teste no laboratório para conquistar as insígnias dessas atividades.</p>
     {error ? <p role="status">Não foi possível carregar suas conquistas. Volte a esta janela para tentar novamente.</p> : !data.length ? <LoadingScreen label={"Carregando conquistas..."} /> : <div className="achievement-grid">
       {LEVEL_BADGES.map(badge => {
         const progress = data.find(item => item.nivel === badge.level)
-        return <div className={`achievement-item ${progress?.conquistada ? 'is-earned' : 'is-locked'}`} key={badge.level}>
+        return <div className={`achievement-item achievement-level-${badge.level.toLowerCase()} ${progress?.conquistada ? 'is-earned' : 'is-locked'}`} key={badge.level}>
           <img src={badge.src} alt={`Insígnia de cibersegurança - nível ${badge.title}`} width={240} height={160} />
           <h3>{badge.title}</h3>
           <strong>{progress?.conquistada ? 'Conquistada' : 'Em progresso'}</strong>
@@ -51,6 +52,8 @@ export function LevelAchievements() {
         </div>
       })}
       <SimulationAchievement profile />
+      <QuizAchievement profile />
+      <LaboratoryAchievement profile />
     </div>}
   </article>
 }

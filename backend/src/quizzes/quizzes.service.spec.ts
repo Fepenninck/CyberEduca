@@ -33,10 +33,11 @@ describe('QuizzesService', () => {
   });
 
   it('lista quizzes administrativos e quizzes publicados', async () => {
-    prismaMock.quiz.findMany.mockResolvedValue([{ id: 'quiz-1' }]);
-    await expect(service.listarQuizzesAdmin()).resolves.toEqual([{ id: 'quiz-1' }]);
-    await expect(service.listarQuizzes('aula-1', 'u1')).resolves.toEqual([{ id: 'quiz-1' }]);
-    await expect(service.listarQuizzes()).resolves.toEqual([{ id: 'quiz-1' }]);
+    const lista = [{ id: 'quiz-1', tentativas: [], _count: { questoes: 10 } }];
+    prismaMock.quiz.findMany.mockResolvedValue(lista);
+    await expect(service.listarQuizzesAdmin()).resolves.toEqual(lista);
+    await expect(service.listarQuizzes('aula-1', 'u1')).resolves.toEqual(lista);
+    await expect(service.listarQuizzes()).resolves.toEqual(lista);
     expect(prismaMock.quiz.findMany).toHaveBeenCalledTimes(3);
   });
 
@@ -116,7 +117,7 @@ describe('QuizzesService', () => {
   });
 
   it('busca quiz publicado com o resultado salvo do aluno', async () => {
-    prismaMock.quiz.findFirst.mockResolvedValue({ id: 'quiz-1', titulo: 'Quiz' });
+    prismaMock.quiz.findFirst.mockResolvedValue({ ...quizPublicado, titulo: 'Quiz' });
     prismaMock.tentativaQuiz.findFirst.mockResolvedValue({
       id: 't1', totalQuestoes: 1, totalAcertos: 1,
       respostas: [{ questaoId: 'q1', alternativaId: 'alt1', acertou: true, questao: { explicacao: 'Exp', alternativas: [{ id: 'alt1', correta: true }] } }],
@@ -149,7 +150,8 @@ describe('QuizzesService', () => {
   it('valida as respostas antes de registrar a tentativa', async () => {
     const responder = (respostas: any[]) => service.responderQuiz('u1', 'quiz-1', { respostas } as any);
 
-    prismaMock.tentativaQuiz.findFirst.mockResolvedValueOnce({ id: 't1' });
+    prismaMock.quiz.findFirst.mockResolvedValueOnce(quizPublicado);
+    prismaMock.tentativaQuiz.findFirst.mockResolvedValueOnce({ id: 't1', totalQuestoes: 1, respostas: [{ questaoId: 'q1' }] });
     await expect(responder([])).rejects.toThrow('Atividade já concluída');
 
     prismaMock.quiz.findFirst.mockResolvedValueOnce(null);
@@ -169,6 +171,34 @@ describe('QuizzesService', () => {
     });
     await expect(responder([{ questaoId: 'q1', alternativaId: 'alt1' }])).rejects.toThrow('gabarito inválido');
     expect(prismaMock.tentativaQuiz.create).not.toHaveBeenCalled();
+  });
+
+  it('não trata uma tentativa antiga de uma pergunta como conclusão das dez perguntas atuais', async () => {
+    const anterior = { id: 'antiga', totalQuestoes: 1, totalAcertos: 1, respostas: [{ questaoId: 'q1', alternativaId: 'alt1', acertou: true, questao: { explicacao: 'Exp', alternativas: [{ id: 'alt1', correta: true }] } }] };
+    const ampliado = { ...quizPublicado, questoes: [quizPublicado.questoes[0], ...Array.from({ length: 9 }, (_, i) => ({ ...quizPublicado.questoes[0], id: `q${i + 2}`, ordem: i + 2 }))] };
+    prismaMock.quiz.findFirst.mockResolvedValue(ampliado);
+    prismaMock.tentativaQuiz.findFirst.mockResolvedValue(anterior);
+    const detalhe = await service.buscarQuiz('quiz-1', 'u1');
+    expect(detalhe.questoes).toHaveLength(10);
+    expect(detalhe.resultado).toBeNull();
+    expect(detalhe.resultadoAnterior).toMatchObject({ tentativaId: 'antiga', totalQuestoes: 1 });
+    const original = JSON.stringify(anterior);
+    prismaMock.tentativaQuiz.create.mockResolvedValue({ id: 'nova', totalQuestoes: 10, totalAcertos: 10 });
+    await expect(service.responderQuiz('u1', 'quiz-1', { respostas: ampliado.questoes.map(q => ({ questaoId: q.id, alternativaId: 'alt1' })) })).resolves.toMatchObject({ tentativaId: 'nova', totalQuestoes: 10, totalAcertos: 10 });
+    expect(JSON.stringify(anterior)).toBe(original);
+    prismaMock.tentativaQuiz.findFirst.mockResolvedValue({ id: 'nova', totalQuestoes: 10, respostas: ampliado.questoes.map(q => ({ questaoId: q.id })) });
+    await expect(service.responderQuiz('u1', 'quiz-1', { respostas: [] })).rejects.toThrow('Atividade já concluída');
+    expect(prismaMock.tentativaQuiz.create).toHaveBeenCalledTimes(1);
+  });
+
+  it('lista a versão ampliada como pendente e mantém a conclusão de tentativas com dez perguntas', async () => {
+    prismaMock.quiz.findMany.mockResolvedValue([
+      { id: 'pendente', _count: { questoes: 10 }, tentativas: [{ id: 'antiga', totalQuestoes: 1 }] },
+      { id: 'concluido', _count: { questoes: 10 }, tentativas: [{ id: 'atual', totalQuestoes: 10 }] },
+    ]);
+    const lista = await service.listarQuizzes(undefined, 'u1');
+    expect(lista[0].tentativas).toEqual([]);
+    expect(lista[1].tentativas).toEqual([{ id: 'atual', totalQuestoes: 10 }]);
   });
 
   it('repete a transação em conflito e traduz erros do banco', async () => {

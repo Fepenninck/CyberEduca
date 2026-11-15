@@ -9,7 +9,7 @@ type FormularioCenarioPhishingProps = {
   onSubmit: (dados: CenarioPhishingInput) => Promise<void>
 }
 
-const campoClass = 'mt-2 w-full rounded-lg border border-[#35465c] bg-[#091321] px-3 py-2.5 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-[#b2ff00]'
+const campoClass = 'mt-2 w-full rounded-lg border border-[#d4dce6] bg-[#f5f7fa] px-3 py-2.5 text-sm text-[#242a33] outline-none transition placeholder:text-slate-500 focus:border-[#1768bd]'
 
 const dificuldades: Array<{ valor: Dificuldade; label: string }> = [
   { valor: 'FACIL', label: 'Fácil' },
@@ -44,21 +44,21 @@ export function FormularioCenarioPhishing({ onSubmit }: FormularioCenarioPhishin
   }
 
   return (
-    <form onSubmit={enviar} className="rounded-2xl border border-[#34465d] bg-[#101b2a] p-5 sm:p-6">
+    <form onSubmit={enviar} className="rounded-2xl border border-[#dce1e8] bg-[#ffffff] p-5 sm:p-6">
       <div className="grid gap-5 sm:grid-cols-2">
-        <label className="text-sm font-medium text-slate-200 sm:col-span-2">
+        <label className="text-sm font-medium text-slate-700 sm:col-span-2">
           Título do cenário
           <input className={campoClass} value={titulo} onChange={(event) => setTitulo(event.target.value)} required maxLength={160} />
         </label>
-        <label className="text-sm font-medium text-slate-200 sm:col-span-2">
+        <label className="text-sm font-medium text-slate-700 sm:col-span-2">
           Conteúdo do e-mail
           <textarea className={`${campoClass} min-h-48 resize-y`} value={conteudoEmail} onChange={(event) => setConteudoEmail(event.target.value)} required />
         </label>
-        <label className="text-sm font-medium text-slate-200">
+        <label className="text-sm font-medium text-slate-700">
           Remetente falso
           <input className={campoClass} value={remetenteFalso} onChange={(event) => setRemetenteFalso(event.target.value)} required maxLength={254} placeholder="exemplo@dominio-falso.com" />
         </label>
-        <label className="text-sm font-medium text-slate-200">
+        <label className="text-sm font-medium text-slate-700">
           Dificuldade
           <select className={campoClass} value={dificuldade} onChange={(event) => setDificuldade(event.target.value as Dificuldade)}>
             {dificuldades.map((opcao) => <option key={opcao.valor} value={opcao.valor}>{opcao.label}</option>)}
@@ -66,10 +66,10 @@ export function FormularioCenarioPhishing({ onSubmit }: FormularioCenarioPhishin
         </label>
       </div>
 
-      {erro && <p role="alert" className="mt-4 text-sm text-rose-300">{erro}</p>}
+      {erro && <p role="alert" className="mt-4 text-sm text-rose-700">{erro}</p>}
 
       <div className="mt-6 flex justify-end">
-        <button type="submit" disabled={salvando} className="rounded-lg bg-[#b2ff00] px-4 py-2.5 text-sm font-semibold text-[#132000] transition hover:bg-[#c7ff4b] disabled:cursor-wait disabled:opacity-60">
+        <button type="submit" disabled={salvando} className="rounded-lg bg-[#1768bd] px-4 py-2.5 text-sm font-semibold text-[#ffffff] transition hover:bg-[#12569d] disabled:cursor-wait disabled:opacity-60">
           {salvando ? 'Salvando…' : 'Criar cenário'}
         </button>
       </div>

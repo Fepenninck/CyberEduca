@@ -1,3 +1,4 @@
+import { boasVindas } from './content/boas-vindas';
 import { aulasBasicas, moduloBasico } from './content/modulo-basico';
 import { PrismaClient } from '@prisma/client';
 import 'dotenv/config';
@@ -14,19 +15,7 @@ const AULAS = [
   {
     id: 'b1a2c3d4-1111-2222-3333-444444444441',
     titulo: '00. Boas-vindas e Introdução à Trilha',
-    conteudo: `<iframe width="100%" height="400" src="https://www.youtube.com/embed/doFxojMJwLc" title="Boas-vindas CyberEduca+" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-## Seja muito bem-vindo!
-Esta trilha foi desenhada para dar a você os fundamentos essenciais de Segurança da Informação no dia a dia pessoal e profissional.
-
-## O que você vai aprender
-
-- A importância de proteger dados e credenciais;
-- Como identificar tentativas de phishing e engenharia social;
-- Boas práticas com senhas, 2FA e redes Wi-Fi públicas.
-
-## Como aproveitar o curso
-Assista e leia os conteúdos na ordem sequencial. No final de cada etapa, clique em "Marcar como concluída" para acompanhar seu progresso.`,
+    conteudo: boasVindas,
     ordem: 1,
   },
   ...aulasBasicas,
