@@ -8,6 +8,7 @@ import { PrismaClient } from '@prisma/client';
 import { buildCatalog } from '../prisma/content/catalog';
 import { aulasBasicas } from '../prisma/content/modulo-basico';
 import { boasVindas } from '../prisma/content/boas-vindas';
+const { baselineBefore } = require('./test-migration-baseline.cjs');
 
 async function main() {
   const original = new URL(process.env.DATABASE_URL!);
@@ -22,7 +23,8 @@ async function main() {
   try {
     await admin.$executeRawUnsafe(`CREATE DATABASE "${name}"`);
     created = true;
-    const migrate = spawnSync(process.execPath, [require.resolve('prisma/build/index.js'), 'migrate', 'deploy'], {
+    const baseline = baselineBefore('20261115235000_sincronizar_catalogo_local');
+    const migrate = spawnSync(process.execPath, [require.resolve('prisma/build/index.js'), 'migrate', 'deploy', '--schema', baseline], {
       cwd: resolve(__dirname, '..'), env: { ...process.env, DATABASE_URL: url.toString() }, encoding: 'utf8', shell: false,
     });
     assert.equal(migrate.status, 0, 'Migrações precisam funcionar também em banco vazio.');
@@ -69,7 +71,7 @@ async function main() {
 
     // migrate deploy não reaplica o conteúdo: edições posteriores do administrador ficam intactas.
     await prisma.aula.update({ where: { id: aulas[0].id }, data: { conteudo: 'Edição posterior do administrador.' } });
-    const repeat = spawnSync(process.execPath, [require.resolve('prisma/build/index.js'), 'migrate', 'deploy'], {
+    const repeat = spawnSync(process.execPath, [require.resolve('prisma/build/index.js'), 'migrate', 'deploy', '--schema', baseline], {
       cwd: resolve(__dirname, '..'), env: { ...process.env, DATABASE_URL: url.toString() }, encoding: 'utf8', shell: false,
     });
     assert.equal(repeat.status, 0);

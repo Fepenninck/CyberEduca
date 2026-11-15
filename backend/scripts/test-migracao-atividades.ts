@@ -8,6 +8,7 @@ import { PrismaClient } from '@prisma/client';
 import { buildCatalog, contentId } from '../prisma/content/catalog';
 import { libraryCourses } from '../prisma/content/course-library';
 import { SIMULATION_SEEDS } from '../prisma/content/simulations';
+const { baselineBefore } = require('./test-migration-baseline.cjs');
 
 const simId = (key: string) => {
   const hash = createHash('sha256').update(`cybereduca-simulation:${key}`).digest('hex');
@@ -25,7 +26,8 @@ async function main() {
   let created = false;
   try {
     await admin.$executeRawUnsafe(`CREATE DATABASE "${name}"`); created = true;
-    const migration = spawnSync(process.execPath, [require.resolve('prisma/build/index.js'), 'migrate', 'deploy'], {
+    const baseline = baselineBefore('20261115235000_sincronizar_catalogo_local');
+    const migration = spawnSync(process.execPath, [require.resolve('prisma/build/index.js'), 'migrate', 'deploy', '--schema', baseline], {
       cwd: resolve(__dirname, '..'), env: { ...process.env, DATABASE_URL: url.toString() }, encoding: 'utf8', shell: false,
     });
     assert.equal(migration.status, 0, 'O histórico completo deve funcionar em um banco vazio.');
