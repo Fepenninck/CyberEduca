@@ -5,5 +5,5 @@
     "noEmit": true,
     "incremental": false
   },
-  "include": ["scripts/revisar-aulas-editorial.ts"]
+  "include": ["scripts/revisar-aulas-editorial.ts", "scripts/gerar-migracao-editorial.ts", "scripts/test-migracao-editorial.ts"]
 }
