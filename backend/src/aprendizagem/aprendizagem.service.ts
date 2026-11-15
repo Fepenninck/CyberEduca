@@ -173,18 +173,35 @@ export class AprendizagemService {
       include: { _count: { select: { aulas: true } } },
     });
 
-    const certificacoes = trilhas.some(trilha => trilha.nivel && trilha.nivel !== 'BASICO') ? await loadCertificationProgress(this.prisma, usuarioId) : [];
-    return Promise.all(
-      trilhas.map(async (t: TrilhaListada) => ({
+    if (!trilhas.length) return [];
+    const [progressos, certificacoes] = await Promise.all([
+      this.prisma.progressoAula.findMany({
+        where: { usuarioId, concluida: true, aula: { trilhaId: { in: trilhas.map(trilha => trilha.id) } } },
+        select: { aula: { select: { trilhaId: true } } },
+      }),
+      trilhas.some(trilha => trilha.nivel && trilha.nivel !== 'BASICO') ? loadCertificationProgress(this.prisma, usuarioId) : Promise.resolve([]),
+    ]);
+    const concluidas = new Map<string, number>();
+    for (const progresso of progressos) {
+      const id = progresso.aula.trilhaId;
+      concluidas.set(id, (concluidas.get(id) ?? 0) + 1);
+    }
+    const percentuais = new Map(trilhas.map(trilha => [trilha.id,
+      trilha._count.aulas ? Math.round((concluidas.get(trilha.id) ?? 0) / trilha._count.aulas * 100) : 0]));
+    const bloqueada = (trilha: TrilhaListada) => {
+      if (LEVELS.indexOf(trilha.nivel as typeof LEVELS[number]) > 0 &&
+          !certificacoes.find(item => item.nivel === trilha.nivel)?.desbloqueado) return true;
+      return trilha.bloqueada && trilhas.some(anterior => anterior.ordem < trilha.ordem && (percentuais.get(anterior.id) ?? 0) < 100);
+    };
+    return trilhas.map((t: TrilhaListada) => ({
         id: t.id,
         titulo: t.titulo,
         descricao: t.descricao,
         nivel: t.nivel,
-        bloqueada: await this.estaBloqueada(t, usuarioId, certificacoes),
+        bloqueada: bloqueada(t),
         totalAulas: t._count.aulas,
-        percentual: await this.calcularPercentual(t.id, usuarioId),
-      })),
-    );
+        percentual: percentuais.get(t.id) ?? 0,
+      }));
   }
 
   async detalharTrilha(id: string, usuarioId: string) {

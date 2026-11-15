@@ -33,6 +33,7 @@ describe('AprendizagemService - progresso', () => {
     },
 
     progressoAula: {
+      findMany: jest.fn<(...args: any[]) => Promise<any[]>>(),
       upsert: jest.fn<
         (...args: any[]) => Promise<any>
       >(),
@@ -51,6 +52,7 @@ describe('AprendizagemService - progresso', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
+    prismaMock.progressoAula.findMany.mockResolvedValue([]);
 
     const module: TestingModule =
       await Test.createTestingModule({
@@ -199,6 +201,9 @@ describe('AprendizagemService - progresso', () => {
   });
 
   it('deve calcular 40% quando 2 de 5 aulas foram concluídas', async () => {
+    prismaMock.progressoAula.findMany.mockResolvedValue([
+      { aula: { trilhaId: 'trilha-1' } }, { aula: { trilhaId: 'trilha-1' } },
+    ]);
     prismaMock.trilha.findMany.mockResolvedValue([
       {
         id: 'trilha-1',
@@ -223,17 +228,29 @@ describe('AprendizagemService - progresso', () => {
 
     expect(resultado[0].percentual).toBe(40);
 
-    expect(
-      prismaMock.progressoAula.count,
-    ).toHaveBeenCalledWith({
-      where: {
-        usuarioId: 'usuario-1',
-        concluida: true,
+    expect(prismaMock.progressoAula.findMany).toHaveBeenCalledWith(expect.objectContaining({
+      where: { usuarioId: 'usuario-1', concluida: true, aula: { trilhaId: { in: ['trilha-1'] } } },
+    }));
+    expect(prismaMock.aula.count).not.toHaveBeenCalled();
+    expect(prismaMock.progressoAula.count).not.toHaveBeenCalled();
+  });
 
-        aula: {
-          trilhaId: 'trilha-1',
-        },
-      },
-    });
+  it('calcula pré-requisitos e progresso em lote sem consultar cada trilha separadamente', async () => {
+    prismaMock.trilha.findMany.mockResolvedValue([1, 2, 3].map(ordem => ({
+      id: `trilha-${ordem}`, titulo: `Trilha ${ordem}`, descricao: 'Conteúdo', nivel: 'BASICO', ordem,
+      bloqueada: ordem > 1, _count: { aulas: 2 },
+    })));
+    prismaMock.progressoAula.findMany.mockResolvedValue([
+      { aula: { trilhaId: 'trilha-1' } }, { aula: { trilhaId: 'trilha-1' } },
+      { aula: { trilhaId: 'trilha-2' } },
+    ]);
+    const result = await service.listarTrilhas('usuario-1');
+    expect(result.map(item => ({ percentual: item.percentual, bloqueada: item.bloqueada }))).toEqual([
+      { percentual: 100, bloqueada: false }, { percentual: 50, bloqueada: false }, { percentual: 0, bloqueada: true },
+    ]);
+    expect(prismaMock.trilha.findMany).toHaveBeenCalledTimes(1);
+    expect(prismaMock.progressoAula.findMany).toHaveBeenCalledTimes(1);
+    expect(prismaMock.aula.count).not.toHaveBeenCalled();
+    expect(prismaMock.progressoAula.count).not.toHaveBeenCalled();
   });
 });

@@ -1,12 +1,15 @@
 import { beginLoading } from './loading-state'
 import { waitForBackend } from './backend-ready'
+import { fetchWithTimeout } from './fetch-with-timeout'
 export const API_URL = '/api'
 
 export const apiFetch = async (path: string, options?: RequestInit) => {
-  const end = beginLoading(path === '/auth/login' ? 'Entrando na sua conta…' : 'Carregando…')
+  const method = (options?.method ?? 'GET').toUpperCase()
+  // Consultas e atualizações ao voltar à janela não devem bloquear toda a interface.
+  const end = method === 'GET' || method === 'HEAD' ? () => {} : beginLoading(path === '/auth/login' ? 'Entrando na sua conta…' : 'Carregando…')
   try {
   if (path === '/auth/login' || path === '/auth/register') await waitForBackend()
-  const request = () => fetch(`${API_URL}${path}`, { ...options, credentials: 'include' })
+  const request = () => fetchWithTimeout(`${API_URL}${path}`, { ...options, credentials: 'include' })
   let response = await request()
   if (response.headers.get('content-type')?.includes('text/html')) {
     if ((options?.method ?? 'GET').toUpperCase() === 'GET' && !options?.signal?.aborted) {

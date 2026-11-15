@@ -49,21 +49,22 @@ export default function DashboardPage() {
     ?? availableTracks.find(track => !track.bloqueada && track.percentual < 100)
     ?? availableTracks.filter(track => !track.bloqueada && track.percentual === 100).at(-1)
     ?? availableTracks.filter(track => !track.bloqueada).at(-1)
+  const selectedTrackId = selectedTrack?.id
 
   useEffect(() => {
-    if (!selectedTrack) {
+    if (!selectedTrackId) {
       setLessons([])
       return
     }
 
     const controller = new AbortController()
     setLessons([])
-    apiFetch(`/trilhas/${selectedTrack.id}`, { cache: 'no-store', signal: controller.signal })
+    apiFetch(`/trilhas/${selectedTrackId}`, { cache: 'no-store', signal: controller.signal })
       .then((response) => response.ok ? response.json() : Promise.reject(new Error('Não foi possível carregar as aulas.')))
       .then((track: TrackDetail) => { if (!controller.signal.aborted) setLessons(track.aulas) })
       .catch(() => { if (!controller.signal.aborted) setLessons([]) })
     return () => controller.abort()
-  }, [selectedTrack])
+  }, [selectedTrackId])
 
   const currentLesson = lessons.find((lesson) => !lesson.concluida) ?? lessons.at(-1)
   const trackHref = selectedTrack ? `/aulas/modulo/${selectedTrack.id}` : '/aulas'
