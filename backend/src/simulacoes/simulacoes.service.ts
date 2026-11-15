@@ -122,7 +122,7 @@ export class SimulacoesService {
     return { ...categoria, simulacoes: categoria.simulacoes.map((simulacao) => ({ ...simulacao, concluida: concluidas.has(simulacao.id) })) };
   }
 
-  async buscarParaAluno(id: string, usuarioId?: string) {
+  async buscarParaAluno(id: string, _usuarioId?: string) {
 
     const simulacao = await this.prisma.simulacao.findUnique({
       where: { id },
@@ -227,7 +227,7 @@ export class SimulacoesService {
     }
   }
 
-  async responder(id: string, respostas: RespostaSimulacaoDto[], usuarioId?: string) {
+  async responder(id: string, respostas: RespostaSimulacaoDto[], _usuarioId?: string) {
     const simulacao = await this.prisma.simulacao.findUnique({
       where: { id },
       select: {

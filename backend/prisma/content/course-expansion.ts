@@ -535,7 +535,7 @@ const units: Record<string, Unit[]> = {
 export function expandCourses(courses: LibraryCourse[]) {
   for (const course of courses) {
     const extra = units[course.id.replace("biblioteca-", "")] || [];
-    for (const [i, unit] of extra.entries()) {
+    for (const unit of extra) {
       const index = course.lessons.length;
       const reverse = index % 2 === 1;
       const lesson: LibraryLesson = {
