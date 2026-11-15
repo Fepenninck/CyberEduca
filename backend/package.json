@@ -28,7 +28,11 @@
     "db:verify:completion": "ts-node scripts/verify-activity-completion.ts",
     "db:verify:simulacoes": "ts-node scripts/verificar-simulacoes.ts",
     "db:studio": "prisma studio",
-    "db:reset": "prisma migrate reset"
+    "db:reset": "prisma migrate reset",
+    "db:expand:quizzes": "ts-node --project tsconfig.quizzes.json scripts/expandir-quizzes.ts",
+    "db:verify:quizzes": "ts-node --project tsconfig.quizzes.json scripts/verificar-quizzes-ampliados.ts",
+    "db:prepare:certificacoes": "ts-node --project tsconfig.quizzes.json scripts/preparar-provas-niveis.ts",
+    "db:verify:certificacoes": "ts-node --project tsconfig.quizzes.json scripts/verificar-certificacoes.ts"
   },
   "dependencies": {
     "@nestjs/common": "^12.0.1",

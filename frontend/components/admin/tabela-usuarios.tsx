@@ -13,7 +13,7 @@ type TabelaUsuariosProps = {
 function formatarData(data: string) {
   const valor = new Date(data)
   return Number.isNaN(valor.getTime())
-    ? '—'
+    ? '-'
     : new Intl.DateTimeFormat('pt-BR', { dateStyle: 'medium' }).format(valor)
 }
 

@@ -1,0 +1,33 @@
+html:has(.certification-detail-page), body:has(.certification-detail-page) { height: auto; overflow-y: auto; }
+.certification-detail-page .app-shell.activity-page { height: auto; min-height: 100dvh; overflow: visible; }
+.certification-detail-page .app-shell .dashboard-wrap { box-sizing: border-box; width: min(1040px, calc(100% - 48px)); min-width: 0; height: auto; max-height: none; padding: 36px 0 100px; overflow: visible; }
+.certification-detail-page .activity-heading h1 { font-size: clamp(26px, 3vw, 36px); line-height: 1.3; }
+.certification-detail-page .app-shell.dashboard-page :is(.assessment-player, .assessment-result) { box-sizing: border-box; width: 100%; min-width: 0; height: auto; max-height: none; margin: 0; padding: 0; overflow: visible; background: transparent; border: 0; }
+.certification-detail-page .assessment-player .quiz-progress { flex-wrap: wrap; gap: 8px 20px; padding: 16px 20px; border-radius: 6px; background: var(--student-card); }
+.certification-detail-page .assessment-player .activity-progress { display: block; width: 100%; margin: 12px 0 24px; }
+.certification-detail-page .quiz-question { box-sizing: border-box; display: flow-root; width: 100%; min-inline-size: 0; margin: 0 0 18px; padding: 24px; border: 0; border-radius: 6px; background: var(--student-card); }
+.certification-detail-page .quiz-question legend { float: left; box-sizing: border-box; width: 100%; padding: 0; margin: 0 0 20px; font-size: clamp(17px, 2vw, 20px); line-height: 1.6; }
+.certification-detail-page .quiz-options { clear: both; min-width: 0; }
+.certification-detail-page .quiz-option { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; min-width: 0; gap: 12px; padding: 15px; font-size: 14px; }
+.certification-detail-page .quiz-option input { margin-top: 5px; }
+.certification-detail-page .quiz-option > span { min-width: 0; white-space: normal; overflow-wrap: anywhere; }
+.certification-detail-page fieldset { min-inline-size: 0; }
+.certification-detail-page legend { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+.certification-detail-page .certification-intro { margin-bottom: 28px; padding: 28px; }
+.certification-intro h2 { margin: 0 0 14px; font-size: 22px; font-weight: 500; }
+.certification-intro p { color: var(--student-muted); margin: 12px 0; font-size: 14px; line-height: 1.8; }
+.certification-intro button { margin-top: 12px; }
+.certification-detail-page .prova-opcao { min-width: 0; }
+.certification-result-dialog { position: fixed; inset: 0; box-sizing: border-box; width: min(760px, calc(100% - 40px)); max-width: none; max-height: calc(100dvh - 48px); margin: auto; padding: 32px; overflow-y: auto; overscroll-behavior: contain; border: 0; border-radius: 6px; background: var(--student-card, #101b2b); color: var(--student-text, #f4f7fb); }
+.certification-result-dialog::backdrop { background: rgb(5 12 22 / 76%); }
+.certification-detail-page .certification-result-dialog .assessment-result { padding: 0; background: transparent; }
+.certification-result-dialog .assessment-result > h2 { padding-right: 32px; margin-top: 0; }
+.certification-result-dialog .prova-resultado-resumo { gap: 24px; }
+.certification-result-dialog .prova-resultado-resumo > div:last-child { flex: 1 1 280px; min-width: 0; }
+.certification-detail-page .certification-result-dialog .certification-result-close { position: absolute; top: 16px; right: 16px; display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 4px; background: var(--student-control, #243449); color: var(--student-muted, #a5bad4); }
+.certification-result-dialog .quiz-feedback { min-width: 0; overflow-wrap: anywhere; }
+.certification-result-dialog .activity-actions { justify-content: flex-end; }
+@media(max-width: 600px) { .certification-result-dialog { width: calc(100% - 24px); max-height: calc(100dvh - 24px); padding: 24px 18px; } .certification-result-dialog .prova-resultado-resumo { justify-content: center; } .certification-result-dialog .activity-actions a { width: 100%; } }
+.certification-detail-page .assessment-player .prova-acoes { clear: both; justify-content: flex-end; flex-wrap: wrap; margin-top: 0; padding: 8px 24px 24px; }
+@media(max-width: 600px) { .certification-detail-page .assessment-player .prova-acoes { padding-inline: 16px; } .certification-detail-page .assessment-player .prova-acoes button { width: 100%; } }
+@media(max-width: 600px) { .certification-detail-page .app-shell .dashboard-wrap { width: calc(100% - 32px); padding-top: 24px; } .certification-detail-page .certification-intro { padding: 20px; } .certification-detail-page .quiz-question { padding: 18px 16px; } .certification-detail-page .quiz-option { padding: 12px; } }

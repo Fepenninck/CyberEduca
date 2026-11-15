@@ -156,7 +156,7 @@ export default function AdminSimulacoesPage() {
                       <p className="font-medium text-white">{simulacao.titulo}</p>
                       <p className="mt-1 max-w-lg truncate text-xs text-slate-400">{simulacao.descricao}</p>
                     </td>
-                    <td className="px-5 py-4 text-slate-300">{simulacao.categoria?.nome ?? categorias.find((categoria) => categoria.id === simulacao.categoriaId)?.nome ?? '—'}</td>
+                    <td className="px-5 py-4 text-slate-300">{simulacao.categoria?.nome ?? categorias.find((categoria) => categoria.id === simulacao.categoriaId)?.nome ?? '-'}</td>
                     <td className="px-5 py-4 text-slate-300">{simulacao.questoes.length}</td>
                     <td className="px-5 py-4 text-slate-400">{new Date(simulacao.criadoEm).toLocaleDateString('pt-BR')}</td>
                     <td className="px-5 py-4">

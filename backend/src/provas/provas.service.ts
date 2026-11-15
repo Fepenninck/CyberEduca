@@ -16,6 +16,7 @@ import { AtualizarProvaDto } from './dto/atualizar-prova.dto';
 import { CriarQuestaoProvaDto } from './dto/criar-questao-prova.dto';
 import { CriarAlternativaProvaDto } from './dto/criar-alternativa-prova.dto';
 import { EnviarTentativaProvaDto } from './dto/enviar-tentativa-prova.dto';
+import { isCertificationExam } from '../certificacoes/certification-progress';
 
 type AlternativaPublica = {
   id: string;
@@ -309,6 +310,7 @@ export class ProvasService {
 
   // Nunca retorna o campo "isCorreta": o gabarito so existe no backend.
   async buscarProva(provaId: string) {
+    if (isCertificationExam(provaId)) throw new ForbiddenException('Abra a prova de nível pela página de Trilhas.');
     const prova = await this.prisma.prova.findUnique({
       where: { id: provaId },
       include: {
@@ -357,6 +359,7 @@ export class ProvasService {
     usuarioId: string,
     dados: EnviarTentativaProvaDto,
   ) {
+    if (isCertificationExam(provaId)) throw new ForbiddenException('Envie a prova pela sessão de certificação das Trilhas.');
     const prova = await this.prisma.prova.findUnique({
       where: { id: provaId },
       select: { id: true, status: true },
@@ -611,6 +614,7 @@ export class ProvasService {
     respostas: RespostaQuestaoDto[],
     usuarioId?: string,
   ) {
+    if (isCertificationExam(provaId)) throw new ForbiddenException('A correção da prova de nível só ocorre ao finalizar a sessão.');
     if (usuarioId) {
       const tentativa = await this.prisma.tentativaProva.findFirst({
         where: { usuarioId, provaId, concluidoEm: { not: null } }, select: { id: true },

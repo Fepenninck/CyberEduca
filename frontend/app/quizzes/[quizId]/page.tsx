@@ -8,6 +8,7 @@ import {
 } from "@/components/activities/activity-state";
 import { useActivity } from "@/components/activities/use-activity";
 import { QuizPlayer } from "@/components/quizzes/quiz-player";
+import './quiz-detail.css';
 export default function QuizPage({
   params,
 }: {
@@ -20,9 +21,9 @@ export default function QuizPage({
   );
   const { data, error, loading, retry } = useActivity(loader);
   return (
-    <ActivityShell
+    <div className="quiz-detail-page"><ActivityShell
       section="quizzes"
-      title={data?.titulo || "Quiz educativo"}
+      title={data?.titulo.replace(/\u2014/g, "-") || "Quiz educativo"}
       description={
         data?.descricao ||
         "Prepare-se para colocar seus conhecimentos em prática."
@@ -43,6 +44,6 @@ export default function QuizPage({
           </>
         )
       )}
-    </ActivityShell>
+    </ActivityShell></div>
   );
 }

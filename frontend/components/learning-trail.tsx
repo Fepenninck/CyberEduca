@@ -182,7 +182,7 @@ export function LearningTrail({ children, label }: { children: ReactNode; label:
   }
   return <div className="learning-trail">
     <div className="learning-trail-controls">
-      <span className="trail-active-level" data-level={activeLevel}>{activeLevel === 'BASICO' ? 'Básico' : activeLevel === 'INTERMEDIARIO' ? 'Intermediário' : 'Avançado'}<small>Arraste para explorar o percurso</small></span>
+      <span className="trail-active-level" data-level={activeLevel}><span className="trail-level-caption">Explorando agora</span><strong>{activeLevel === 'BASICO' ? 'Básico' : activeLevel === 'INTERMEDIARIO' ? 'Intermediário' : 'Avançado'}</strong></span><span className="trail-navigation-hint">Arraste o percurso ou use as setas para explorar</span>
       <div>{[-1, 1].map(direction => <button key={direction} type="button"
         onPointerDown={event => {
           if (event.button !== 0) return

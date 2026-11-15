@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import * as bcrypt from 'bcrypt';
+import { loadCertificationProgress } from '../certificacoes/certification-progress';
 
 const DIA_MS = 24 * 60 * 60 * 1000;
 
@@ -28,26 +29,34 @@ export class UsuariosService {
     }
 
     async conquistas(usuarioId: string) {
-        const aulas = await this.prisma.aula.findMany({
-            // Trilha retirada do percurso do aluno; seu histórico é preservado.
-            where: { trilhaId: { not: '4328594b-f7cb-52d2-862f-e612b1647aa9' } },
-            select: {
-                trilha: { select: { nivel: true } },
-                progressos: {
-                    where: { usuarioId, concluida: true },
-                    select: { dataConclusao: true },
-                },
-            },
-        });
-        return (['BASICO', 'INTERMEDIARIO', 'AVANCADO'] as const).map(nivel => {
-            const doNivel = aulas.filter(aula => aula.trilha.nivel === nivel);
-            const concluidas = doNivel.filter(aula => aula.progressos.length > 0);
-            const conquistada = doNivel.length > 0 && concluidas.length === doNivel.length;
-            return {
-                nivel, totalAulas: doNivel.length, aulasConcluidas: concluidas.length, conquistada,
-                conquistadaEm: conquistada ? new Date(Math.max(...concluidas.map(aula => aula.progressos[0].dataConclusao.getTime()))).toISOString() : null,
-            };
-        });
+        return (await loadCertificationProgress(this.prisma, usuarioId)).map(({ nivel, totalAulas, aulasConcluidas, conquistada, conquistadaEm }) => ({ nivel, totalAulas, aulasConcluidas, conquistada, conquistadaEm }));
+    }
+
+    async conquistaSimulacoes(usuarioId: string) {
+        const [simulacoes, cenarios] = await Promise.all([
+            this.prisma.simulacao.findMany({
+                where: { questoes: { some: {} } },
+                select: { resultados: { where: { usuarioId }, orderBy: { criadoEm: 'asc' }, take: 1, select: { criadoEm: true } } },
+            }),
+            this.prisma.cenarioPhishing.findMany({
+                where: { status: 'PUBLICADO' },
+                select: { tentativas: { where: { usuarioId }, orderBy: { concluidoEm: 'asc' }, take: 1, select: { concluidoEm: true } } },
+            }),
+        ]);
+        // As duas modalidades compõem o catálogo de Simulações do aluno.
+        const conclusoes = [
+            ...simulacoes.map(item => item.resultados[0]?.criadoEm),
+            ...cenarios.map(item => item.tentativas[0]?.concluidoEm),
+        ];
+        const totalSimulacoes = conclusoes.length;
+        const datas = conclusoes.filter((data): data is Date => Boolean(data));
+        const conquistada = totalSimulacoes > 0 && datas.length === totalSimulacoes;
+        return {
+            totalSimulacoes,
+            simulacoesConcluidas: datas.length,
+            conquistada,
+            conquistadaEm: conquistada ? new Date(Math.max(...datas.map(data => data.getTime()))).toISOString() : null,
+        };
     }
 
     async criar(nome: string, email: string, senha: string) {

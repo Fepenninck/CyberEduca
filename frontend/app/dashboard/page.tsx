@@ -47,8 +47,8 @@ export default function DashboardPage() {
   const availableTracks = tracks.filter(track => track.totalAulas > 0)
   const selectedTrack = availableTracks.find(track => !track.bloqueada && track.percentual > 0 && track.percentual < 100)
     ?? availableTracks.find(track => !track.bloqueada && track.percentual < 100)
-    ?? availableTracks.filter(track => track.percentual === 100).at(-1)
-    ?? availableTracks.at(-1)
+    ?? availableTracks.filter(track => !track.bloqueada && track.percentual === 100).at(-1)
+    ?? availableTracks.filter(track => !track.bloqueada).at(-1)
 
   useEffect(() => {
     if (!selectedTrack) {

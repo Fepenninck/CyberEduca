@@ -92,10 +92,10 @@ export default function Page() {
             </nav>
             <nav aria-label="Conteúdos">
               <h2>Conteúdos</h2>
-              <Link href="/login?next=/aulas">Trilhas e aulas</Link>
+              <Link href="/login?next=/aulas">Provas nas trilhas</Link>
               <Link href="/login?next=/simulacoes">Simulações</Link>
               <Link href="/login?next=/quizzes">Quizzes</Link>
-              <Link href="/login?next=/avaliacoes">Avaliações</Link>
+              <Link href="/login?next=/aulas">Provas nas trilhas</Link>
               <Link href="/#noticias">Notícias</Link>
             </nav>
             <nav aria-label="Privacidade e segurança">

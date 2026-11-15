@@ -10,7 +10,8 @@ import { LearningTrail } from "@/components/learning-trail";
 import { unlockedLearningCourses } from '@/lib/course-access';
 import { courseButtonLabel } from '@/lib/course-status';
 import courseImages from '@/lib/course-images.json';
-import { TrailAchievement, useAchievements } from '@/components/level-achievements';
+import { LevelExamStop } from '@/components/level-exam-stop';
+import { listarCertificacoes, type CertificationStatus } from '@/lib/certificacoes-api';
 import './aulas.css';
 
 const levels = [
@@ -39,7 +40,21 @@ const levels = [
 ] as const;
 
 export default function AulasPage() {
-  const achievements = useAchievements();
+  const [certifications, setCertifications] = useState<CertificationStatus[]>([]);
+  const [certificationError, setCertificationError] = useState(false);
+  useEffect(() => {
+    const controller = new AbortController();
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const load = () => listarCertificacoes(controller.signal).then(data => {
+      if (controller.signal.aborted) return;
+      setCertifications(data); setCertificationError(false);
+      if (timer) clearTimeout(timer);
+      const deadlines = data.filter(item => item.motivo === 'AGUARDE' && item.proximaTentativaEm).map(item => new Date(item.proximaTentativaEm!).getTime()).filter(time => time > Date.now());
+      if (deadlines.length) timer = setTimeout(load, Math.min(...deadlines) - Date.now() + 500);
+    }).catch(() => { if (!controller.signal.aborted) setCertificationError(true); });
+    void load(); window.addEventListener('focus', load); window.addEventListener('learning-progress-updated', load);
+    return () => { controller.abort(); if (timer) clearTimeout(timer); window.removeEventListener('focus', load); window.removeEventListener('learning-progress-updated', load); };
+  }, []);
   const [tracks, setTracks] = useState<TrackSummary[]>([]);
   const visibleTracks = tracks.filter(track => track.totalAulas > 0 && track.id !== '4328594b-f7cb-52d2-862f-e612b1647aa9');
   const images: Record<string, { src: string; alt: string; source: string }> = courseImages;
@@ -67,7 +82,7 @@ export default function AulasPage() {
           <div>
             <span className="paths-heading-eyebrow">Seu percurso de aprendizagem</span>
             <h1>Trilhas de aprendizagem</h1>
-            <p>Aprenda no seu ritmo. Conclua um nível para desbloquear o próximo.</p>
+            <p>Conclua as aulas e passe na prova do nível para ganhar a insígnia e desbloquear o próximo.</p>
           </div>
           <ol className="paths-journey" aria-label="Progresso por nível">
             {levels.map(level => {
@@ -75,7 +90,6 @@ export default function AulasPage() {
               const progress = group.length ? Math.round(group.reduce((sum, track) => sum + track.percentual, 0) / group.length) : 0;
               return <li key={level.key} className={progress === 100 ? 'is-done' : progress > 0 ? 'is-active' : undefined} style={{ '--level-color': level.color } as CSSProperties}>
                 <div className="paths-level-label"><strong>{level.key === 'BASICO' ? 'Básico' : level.title.replace('Nível ', '')}</strong><small>{progress}%</small></div>
-                <div className="paths-level-meter" role="progressbar" aria-label={`Progresso no ${level.title}`} aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}><span style={{ width: `${progress}%` }} /></div>
                 <span className="paths-level-count">{group.filter(track => track.percentual === 100).length}/{group.length} trilhas concluídas</span>
               </li>;
             })}
@@ -113,7 +127,7 @@ export default function AulasPage() {
                       <div className="learning-path-progress" aria-hidden="true"><span style={{ width: `${track.percentual}%` }} /></div>
                       {!unlocked.includes(track.id) ? (
                         <span className="learning-path-lock">
-                          <LockKeyhole size={14} /> Conclua a trilha anterior
+                          <LockKeyhole size={14} /> Bloqueado
                         </span>
                       ) : (
                         <Link href={`/aulas/modulo/${track.id}`}>
@@ -122,7 +136,7 @@ export default function AulasPage() {
                       )}
                     </div>
                   </article>
-          )), <TrailAchievement key={`badge-${level.key}`} level={level.key} progress={achievements.data.find(item => item.nivel === level.key)} unavailable={achievements.error} />])}
+          )), <LevelExamStop key={`badge-${level.key}`} level={level.key} status={certifications.find(item => item.nivel === level.key)} error={certificationError} />])}
         </LearningTrail>
       </section>
     </main>

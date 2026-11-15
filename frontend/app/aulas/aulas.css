@@ -56,6 +56,7 @@
   width: 100%; height: auto; min-height: 42px; margin-top: 16px; padding: 10px;
   white-space: normal; text-align: center; line-height: 1.5;
 }
+.app-shell.learning-paths-page .learning-trail .learning-path-lock { font-size: 13px; font-weight: 400; }
 .app-shell.learning-paths-page .learning-trail-sign {
   position: relative; flex: 0 0 125px; align-self: flex-end; height: 280px; margin: 0;
 }
@@ -266,4 +267,63 @@ body:has(.learning-paths-page) .site-scrollbar { display: none; }
 @media(max-width: 480px) {
   .app-shell.learning-paths-page .paths-heading .paths-journey { gap: 14px; }
   .paths-level-count { font-size: 11px; }
+}
+
+/* Resumo e navegacao com alinhamento compartilhado. */
+.app-shell.learning-paths-page .paths-heading {
+  grid-template-columns: minmax(0, 1fr) minmax(360px, .9fr); gap: 40px;
+  margin: 0 auto 20px; padding: 20px 0 28px;
+  border: 0; border-radius: 0;
+}
+.paths-heading-eyebrow { margin-bottom: 10px; font-size: 10px; font-weight: 600; letter-spacing: .12em; }
+.app-shell.learning-paths-page .paths-heading h1 { font-size: clamp(26px, 2.5vw, 38px); font-weight: 600; }
+.app-shell.learning-paths-page .paths-heading p { margin-top: 10px; max-width: 520px; font-size: 13px; line-height: 1.6; }
+.app-shell.learning-paths-page .paths-heading .paths-journey { gap: 10px; }
+.app-shell.learning-paths-page .paths-heading .paths-journey li {
+  gap: 10px; padding: 16px; border: 0; border-radius: 6px; background: #1e2d40;
+}
+.paths-level-label { flex-wrap: wrap; gap: 6px; }
+.app-shell.learning-paths-page .paths-heading .paths-level-label strong { font-size: 13px; }
+.app-shell.learning-paths-page .paths-heading .paths-level-label small { font-size: 12px; font-weight: 600; }
+.paths-level-meter, .paths-level-meter > span { border-radius: 999px; }
+.paths-level-count { font-size: 11px; }
+.app-shell.learning-paths-page .learning-trail-controls {
+  display: grid; grid-template-columns: auto 1fr auto; gap: 24px;
+  margin: 0 auto 14px; padding: 0 0 12px;
+}
+.app-shell.learning-paths-page .trail-active-level { flex-direction: column; align-items: flex-start; gap: 4px; transform: none; }
+.trail-level-caption { color: var(--student-subtle); font-size: 10px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; }
+.trail-active-level strong { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
+
+.trail-navigation-hint { justify-self: end; color: var(--student-subtle); font-size: 11px; }
+.app-shell.learning-paths-page .learning-trail-controls > div { grid-column: 3; justify-self: end; gap: 8px; transform: none; }
+.app-shell.learning-paths-page .learning-trail-controls button {
+  width: 40px; height: 40px; border: 0; border-radius: 4px; background: var(--student-control); color: var(--student-text);
+}
+.app-shell.learning-paths-page .learning-trail-controls button:hover { background: #354962; }
+@media(max-width: 1000px) {
+  .app-shell.learning-paths-page .paths-heading { grid-template-columns: 1fr; gap: 18px; padding-top: 8px; padding-bottom: 20px; }
+}
+@media(max-width: 600px) {
+  .app-shell.learning-paths-page .paths-heading { margin-bottom: 12px; gap: 14px; padding-bottom: 16px; }
+  .paths-heading-eyebrow { margin-bottom: 6px; font-size: 9px; }
+  .app-shell.learning-paths-page .paths-heading p { font-size: 12px; margin-top: 6px; }
+  .app-shell.learning-paths-page .paths-heading .paths-journey { gap: 6px; }
+  .app-shell.learning-paths-page .paths-heading .paths-journey li { padding: 10px 8px; gap: 8px; }
+  .app-shell.learning-paths-page .paths-heading .paths-level-label strong { font-size: 11px; }
+  .paths-level-count { font-size: 10px; }
+  .trail-navigation-hint { display: none; }
+  .app-shell.learning-paths-page .learning-trail-controls { grid-template-columns: 1fr auto; gap: 12px; }
+  .app-shell.learning-paths-page .learning-trail-controls > div { grid-column: 2; }
+}
+
+/* Resumo com as superficies planas e a tipografia do dashboard. */
+.app-shell.learning-paths-page .paths-heading .paths-journey li { gap: 8px; padding: 18px 16px; }
+.app-shell.learning-paths-page .paths-heading .paths-level-label { flex-direction: column; align-items: flex-start; gap: 10px; }
+.app-shell.learning-paths-page .paths-heading .paths-level-label strong { color: var(--student-muted); font-size: 12px; font-weight: 500; }
+.app-shell.learning-paths-page .paths-heading .paths-level-label small { color: var(--student-text); font-size: 26px; font-weight: 600; line-height: 1; letter-spacing: -.035em; }
+.paths-level-count { color: var(--student-subtle); font-size: 11px; }
+@media (max-width: 600px) {
+  .app-shell.learning-paths-page .paths-heading .paths-journey li { padding: 12px 10px; }
+  .app-shell.learning-paths-page .paths-heading .paths-level-label small { font-size: 22px; }
 }

@@ -10,6 +10,7 @@ import { ConsultaSegurancaModule } from './consulta-seguranca/consulta-seguranca
 import { AdminModule } from './admin/admin.module';
 import { ProvasModule } from './provas/provas.module';
 import { SimulacoesModule } from './simulacoes/simulacoes.module';
+import { CertificacoesModule } from './certificacoes/certificacoes.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { SimulacoesModule } from './simulacoes/simulacoes.module';
     AdminModule,
     ProvasModule,
     SimulacoesModule,
+    CertificacoesModule,
   ],
 })
 export class AppModule {}

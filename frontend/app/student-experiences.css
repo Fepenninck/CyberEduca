@@ -1000,8 +1000,8 @@
   background: var(--student-raised);
 }
 .app-shell.dashboard-page .avatar-option.is-selected {
-  border-color: var(--student-accent);
-  background: #233629;
+  border-color: transparent;
+  background: #355526;
 }
 .app-shell.dashboard-page .avatar-picker {
   width: min(100%, 640px);
@@ -1047,8 +1047,8 @@
   color: var(--student-text);
 }
 .app-shell.dashboard-page .avatar-option.is-selected {
-  border-color: var(--student-accent);
-  background: #233629;
+  border-color: transparent;
+  background: #355526;
   color: var(--student-text);
 }
 .app-shell.dashboard-page .avatar-option strong {
@@ -1058,7 +1058,7 @@
   overflow-wrap: anywhere;
 }
 .app-shell.dashboard-page .avatar-option-art i {
-  border-color: #233629;
+  border: 0;
   background: var(--student-accent);
 }
 .app-shell.dashboard-page .avatar-picker-caption {

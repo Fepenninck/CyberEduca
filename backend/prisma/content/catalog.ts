@@ -6,6 +6,7 @@ import { lessonVideos, courseDiagrams, courseReadings } from './lesson-media';
 import { glossary, basicLessonDiagram } from './learning-levels';
 import { technicalExample } from './technical-examples';
 import { specificDiagram } from './lesson-specific-material';
+import { buildQuizReview } from './quiz-review';
 
 // Stable UUIDs make imports repeatable without deleting records or attempts.
 export function contentId(key: string): string {
@@ -58,6 +59,17 @@ export function buildCatalog() {
           id: contentId(`pedagogia-v2/${contentId(key)}`),
           titulo: `Prática — ${lesson.title}`,
           descricao: `Revise os conceitos da aula ${lesson.title}.`,
+          revisoes: buildQuizReview(course, index).map((review, reviewIndex) => {
+            const questionKey = `quiz-review-v1/${key}/${review.key}`;
+            return {
+              id: contentId(questionKey), enunciado: review.enunciado,
+              explicacao: review.explicacao, ordem: reviewIndex + 2,
+              alternativas: review.alternativas.map((alternativa, alternativeIndex) => ({
+                id: contentId(`${questionKey}/answer/${alternativeIndex}`),
+                ...alternativa, ordem: alternativeIndex + 1,
+              })),
+            };
+          }),
           questao: {
             id: contentId(`question/${key}`),
             enunciado: lesson.question,

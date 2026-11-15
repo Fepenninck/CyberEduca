@@ -25,7 +25,7 @@ export function ProvaCard({ prova, resultado }: { prova: ProvaResumo; resultado?
         <span>{prova.totalQuestoes} {prova.totalQuestoes === 1 ? 'questão' : 'questões'}</span>
         {resultado && <span className={`activity-status${aprovado ? '' : ' is-low'}`}>{aprovado ? 'Aprovado' : 'Abaixo da média'}: {resultado.totalAcertos} de {resultado.totalQuestoes}</span>}
       </div>
-      <Link className="activity-card-link" href={`/avaliacoes/${prova.id}`}>
+      <Link className="activity-card-link" href={`/aulas/prova/${prova.trilha.nivel}`}>
         {resultado ? 'Ver resultado' : 'Iniciar avaliação'}
       </Link>
     </article>

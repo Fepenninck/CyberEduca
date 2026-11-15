@@ -5,7 +5,7 @@ export function QuizCard({ quiz }: { quiz: QuizResumo }) {
   return (
     <article className="activity-card">
       <span className="activity-kicker">{quiz.aula.titulo}</span>
-      <h2>{quiz.titulo}</h2>
+      <h2>{quiz.titulo.replace(/\u2014/g, "-")}</h2>
       <p>{quiz.descricao}</p>
       <div className="activity-card-footer">
         <span>{quiz._count.questoes} {quiz._count.questoes === 1 ? "questão" : "questões"}</span>
@@ -13,7 +13,7 @@ export function QuizCard({ quiz }: { quiz: QuizResumo }) {
       </div>
       <Link className="activity-card-link" href={`/quizzes/${quiz.id}`}>
         {tentativa ? "Ver resultado" : "Responder quiz"}
-        <span className="sr-only">: {quiz.titulo}</span>
+        <span className="sr-only">: {quiz.titulo.replace(/\u2014/g, "-")}</span>
       </Link>
     </article>
   );

@@ -7,6 +7,7 @@ import {
 import { PrismaService } from '../prisma.service';
 import { AcaoAuditoria, NivelTrilha } from '@prisma/client';
 import { AuditoriaService } from '../auditoria.service';
+import { LEVELS, loadCertificationProgress } from '../certificacoes/certification-progress';
 
 type TrilhaListada = {
   id: string;
@@ -163,13 +164,14 @@ export class AprendizagemService {
       include: { _count: { select: { aulas: true } } },
     });
 
+    const certificacoes = trilhas.some(trilha => trilha.nivel && trilha.nivel !== 'BASICO') ? await loadCertificationProgress(this.prisma, usuarioId) : [];
     return Promise.all(
       trilhas.map(async (t: TrilhaListada) => ({
         id: t.id,
         titulo: t.titulo,
         descricao: t.descricao,
         nivel: t.nivel,
-        bloqueada: await this.estaBloqueada(t, usuarioId),
+        bloqueada: await this.estaBloqueada(t, usuarioId, certificacoes),
         totalAulas: t._count.aulas,
         percentual: await this.calcularPercentual(t.id, usuarioId),
       })),
@@ -284,12 +286,13 @@ export class AprendizagemService {
   }
 
   async concluirAula(aulaId: string, usuarioId: string) {
-    const aula = await this.prisma.aula.findUnique({ where: { id: aulaId } });
+    const aula = await this.prisma.aula.findUnique({ where: { id: aulaId }, include: { trilha: true } });
 
     if (!aula) {
       throw new NotFoundException('Aula nao encontrada');
     }
 
+    if (await this.estaBloqueada(aula.trilha, usuarioId)) throw new ForbiddenException('Conclua as etapas e a prova do nível anterior antes de avançar.');
     await this.prisma.progressoAula.upsert({
       where: {
         usuarioId_aulaId: { usuarioId, aulaId },
@@ -341,9 +344,14 @@ export class AprendizagemService {
     return Math.round((feitas / total) * 100);
   }
   private async estaBloqueada(
-    trilha: { bloqueada: boolean; ordem: number },
+    trilha: { bloqueada: boolean; ordem: number; nivel?: string },
     usuarioId: string,
+    certificacoes?: Awaited<ReturnType<typeof loadCertificationProgress>>,
   ): Promise<boolean> {
+    if (trilha.nivel && LEVELS.indexOf(trilha.nivel as typeof LEVELS[number]) > 0) {
+      const state = (certificacoes ?? await loadCertificationProgress(this.prisma, usuarioId)).find(item => item.nivel === trilha.nivel);
+      if (!state?.desbloqueado) return true;
+    }
     if (!trilha.bloqueada) return false;
 
     const anteriores = await this.prisma.trilha.findMany({

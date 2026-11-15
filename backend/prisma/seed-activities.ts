@@ -27,11 +27,12 @@ async function main() {
         await tx.aula.upsert({ where: { id: aula.id }, update: {},
           create: { id: aula.id, titulo: aula.titulo, conteudo: aula.conteudo,
             ordem: aula.ordem, trilhaId: course.id } });
-        const { questao, ...quiz } = aula.quiz;
-        const { alternativas, ...question } = questao;
+        const { questao, revisoes, ...quiz } = aula.quiz;
         await tx.quiz.upsert({ where: { id: quiz.id }, update: {},
           create: { ...quiz, aulaId: aula.id, status: 'PUBLICADO',
-            questoes: { create: { ...question, alternativas: { create: alternativas } } } } });
+            questoes: { create: [questao, ...revisoes].map(({ alternativas, ...question }) => ({
+              ...question, alternativas: { create: alternativas },
+            })) } } });
       }
     }, { timeout: 60000 });
   }

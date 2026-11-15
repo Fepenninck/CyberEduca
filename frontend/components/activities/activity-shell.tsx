@@ -13,7 +13,7 @@ export function ActivityShell({
   back,
   resumo,
 }: {
-  section: "quizzes" | "simulacoes" | "verificador" | "avaliacoes";
+  section: "quizzes" | "simulacoes" | "verificador" | "avaliacoes" | "aulas";
   title: string;
   description: string;
   children: ReactNode;
@@ -25,8 +25,8 @@ export function ActivityShell({
       <DashboardNavigation active={section} />
       <div className="dashboard-wrap">
         {back && (section === 'simulacoes' ? <SimulationBack href={back} /> : (
-          <Link className="activity-back" href={back}>
-            <ArrowLeft size={16} /> Voltar à lista
+          <Link className={section === 'quizzes' || section === 'avaliacoes' || section === 'aulas' ? 'simulation-back-button' : 'activity-back'} href={back}>
+            <ArrowLeft size={16} aria-hidden="true" /> {section === 'quizzes' ? 'Voltar aos quizzes' : section === 'aulas' ? 'Voltar às trilhas' : section === 'avaliacoes' ? 'Voltar às avaliações' : 'Voltar à lista'}
           </Link>
         ))}
         <header className={`dashboard-welcome activity-heading${resumo ? " has-summary" : ""}`}>

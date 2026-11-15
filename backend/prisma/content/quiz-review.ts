@@ -1,0 +1,120 @@
+import type { LibraryCourse } from './course-library';
+
+// Revisões do conteúdo já ensinado: aula de referência (base zero), enunciado,
+// resposta correta, duas concepções equivocadas e explicação.
+type Review = [number, string, string, string, string, string];
+const reviews: Record<string, Review[]> = {
+  'biblioteca-contas': [
+    [0, 'Depois de um vazamento em uma loja, o e-mail de Luiza continua funcionando. Por que ela deve revisar a senha do e-mail se era igual à da loja?', 'A senha vazada pode ser testada em outros serviços.', 'O e-mail só corre risco se parar de funcionar.', 'Uma senha repetida fica protegida quando a loja troca seu logotipo.', 'O vazamento de uma credencial pode atingir outras contas que reutilizam a mesma senha, mesmo sem sinais visíveis de problema.'],
+    [1, 'Um atendente pede o código que acabou de chegar ao celular para supostamente cancelar um acesso. Qual cuidado é adequado?', 'Não repassar o código e conferir a situação no serviço oficial.', 'Enviar o código porque ele deixa de ser importante depois da senha.', 'Publicar o código para pedir ajuda a outras pessoas.', 'Códigos também protegem o acesso. Um pedido de ajuda não justifica entregá-los a alguém que entrou em contato.'],
+    [2, 'Os contatos de recuperação de uma conta apontam para um número que não é mais usado. O que fazer antes de perder o acesso?', 'Atualizar os contatos pelo serviço oficial e guardar os códigos de reserva com cuidado.', 'Esperar perder o celular para verificar as opções.', 'Enviar a senha para alguém que prometa guardar a conta.', 'Preparar a recuperação enquanto ainda há acesso reduz a dependência de um celular ou contato indisponível.'],
+    [3, 'Ao terminar uma compra no computador de outra pessoa, qual atitude protege melhor a conta?', 'Sair da conta e não deixar a senha salva nesse aparelho.', 'Apenas minimizar a janela da compra.', 'Apagar o atalho do navegador e manter a sessão aberta.', 'Minimizar ou fechar uma janela não equivale a encerrar a sessão. Em um aparelho compartilhado, use a opção de sair e evite salvar a senha.'],
+  ],
+  'biblioteca-golpes': [
+    [0, 'Uma cobrança diz que confirmar por telefone fará você perder um desconto. Como lidar com essa pressão?', 'Parar e conferir a cobrança por um contato conhecido.', 'Pagar primeiro e perguntar depois para não perder a oferta.', 'Usar apenas o telefone novo que a própria cobrança fornece.', 'Impedir a conferência é um sinal de pressão. Um contato previamente conhecido permite verificar o pedido por outro caminho.'],
+    [1, 'Um perfil com a foto de uma colega pede uma transferência. O que a foto comprova?', 'Somente que aquela imagem está sendo usada; o pedido ainda precisa ser confirmado.', 'Que a colega autorizou a transferência.', 'Que a conta nunca poderia ter sido imitada.', 'Nome, foto e outros elementos visuais podem ser copiados. A confirmação deve usar um contato da pessoa que você já conhece.'],
+    [4, 'Ao ler um código de pagamento, o nome do recebedor não combina com o estabelecimento. Qual é a decisão adequada?', 'Não confirmar e conferir o recebedor com o estabelecimento.', 'Confirmar porque a leitura do código funcionou.', 'Pagar uma segunda vez se o primeiro pagamento estiver errado.', 'O funcionamento do código não prova que o destinatário é o esperado. Confira nome, valor e contexto antes de pagar.'],
+    [2, 'Uma pessoa informou a senha em uma página suspeita. Qual reação ajuda a reduzir o risco?', 'Proteger a conta pelo serviço oficial e procurar o suporte adequado.', 'Esconder a situação para evitar qualquer investigação.', 'Continuar usando a senha até que a conta pare de abrir.', 'A resposta deve considerar o que foi informado. Se uma senha foi entregue, agir pelo canal oficial é mais útil do que esperar ou ocultar o problema.'],
+  ],
+  'biblioteca-dispositivos': [
+    [0, 'O aviso de atualização aparece em um anúncio de uma página. Como conferir se há uma atualização legítima?', 'Consultar as configurações do aparelho ou a loja oficial.', 'Baixar imediatamente o arquivo oferecido no anúncio.', 'Confiar apenas na cor e no logotipo da mensagem.', 'A aparência de um anúncio pode ser imitada. Os canais oficiais do aparelho ou aplicativo são o caminho adequado para conferir atualizações.'],
+    [1, 'Um aplicativo deixa usar sua função principal mesmo sem acesso aos contatos. Como avaliar esse acesso?', 'Manter negado se não houver uma necessidade compatível com a função.', 'Liberar porque todo acesso extra aumenta a segurança.', 'Compartilhar os contatos em uma avaliação pública do aplicativo.', 'As permissões precisam fazer sentido para a função usada. Não é necessário liberar informações sem uma finalidade compreensível.'],
+    [2, 'Uma pessoa diminui o brilho da tela e se afasta do notebook. Isso equivale a bloquear o aparelho?', 'Não; o bloqueio deve impedir o uso por outra pessoa.', 'Sim; uma tela escura encerra automaticamente todas as contas.', 'Sim; o brilho baixo impede abrir qualquer aplicativo.', 'O brilho altera a apresentação. O bloqueio de tela altera a condição de acesso e deve ser usado ao se afastar.'],
+    [5, 'Um computador antigo ainda abre os aplicativos, mas o fabricante encerrou as correções de proteção. Qual conclusão é adequada?', 'Funcionar não comprova proteção; é preciso verificar o suporte e planejar uma alternativa.', 'Se os aplicativos abrem, todas as correções estão garantidas.', 'O fim do suporte dispensa atenção com os arquivos.', 'O funcionamento do aparelho e a disponibilidade de correções são condições diferentes. O fim do suporte exige planejamento e orientação adequada.'],
+  ],
+  'biblioteca-backup': [
+    [0, 'Uma exclusão foi repetida automaticamente em todos os aparelhos sincronizados. O que permitiria recuperar o conteúdo anterior?', 'Uma cópia ou versão recuperável que não tenha perdido o conteúdo junto com o original.', 'Abrir a mesma pasta sincronizada em mais telas.', 'Mudar somente o nome da pasta depois da exclusão.', 'Sincronizar pode propagar mudanças e exclusões. Recuperação depende da existência de uma cópia ou versão que preserve o conteúdo necessário.'],
+    [1, 'Uma pasta recebe alterações importantes todos os dias. Como escolher a frequência das cópias?', 'Considerar quanto ela muda e quanto trabalho seria aceitável perder.', 'Usar sempre uma cópia por ano, independentemente das mudanças.', 'Fazer cópias apenas depois de o arquivo desaparecer.', 'A frequência deve acompanhar a importância dos dados e suas mudanças, em vez de depender de uma rotina fixa sem relação com o uso.'],
+    [2, 'Como conferir uma cópia sem arriscar o trabalho original?', 'Recuperar em outro local e verificar se a versão e o conteúdo podem ser abertos.', 'Apagar o original antes de começar a conferência.', 'Conferir apenas se o nome do arquivo aparece na lista.', 'O teste deve demonstrar que a recuperação funciona e preservar o original. Um nome na lista não comprova que o conteúdo está íntegro e utilizável.'],
+    [3, 'O computador foi perdido e todas as cópias estavam em pastas dele. Qual falha de planejamento aparece nesse caso?', 'As cópias compartilhavam a perda do mesmo aparelho.', 'Havia cópias demais em locais independentes.', 'Usar nomes diferentes tornava a perda impossível.', 'Pastas diferentes no mesmo aparelho não protegem contra a perda dele. Uma cópia separada reduz esse ponto comum de falha.'],
+  ],
+  'biblioteca-redes': [
+    [0, 'A senha do Wi-Fi foi alterada, mas o painel administrativo mantém a credencial de fábrica. O que ainda precisa de atenção?', 'A credencial de administração, que permite mudar a configuração do roteador.', 'Nada, pois a senha do Wi-Fi substitui toda credencial administrativa.', 'Somente o nome exibido na lista de redes.', 'A senha de conexão e a senha administrativa têm funções diferentes. Proteger uma não substitui conferir a outra.'],
+    [1, 'Uma rede foi chamada de Visitantes, mas permite alcançar todos os recursos internos. Qual verificação falta?', 'Conferir se as regras realmente isolam o acesso que deve ser limitado.', 'Escolher um nome mais longo para a rede.', 'Considerar o isolamento comprovado apenas pelo nome.', 'O nome da rede não demonstra separação técnica. As regras precisam refletir e comprovar os fluxos permitidos e negados.'],
+    [5, 'Um site apresenta HTTPS e um logotipo conhecido. Qual conclusão a proteção da conexão permite?', 'A conexão pode estar protegida com aquele host, mas isso não garante a honestidade do conteúdo.', 'O site está autorizado a representar qualquer marca exibida.', 'Não é mais necessário conferir o endereço do serviço.', 'TLS protege a conexão com o destino validado. Isso não transforma o conteúdo nem a identidade visual em garantia de legitimidade.'],
+    [6, 'Um serviço precisa aceitar somente uma comunicação específica. Como definir uma regra de rede adequada?', 'Relacionar a necessidade às origens, destinos e serviços que devem ser permitidos.', 'Liberar todas as portas para evitar analisar a necessidade.', 'Usar a cor do equipamento como critério de permissão.', 'Regras úteis partem dos fluxos necessários. Uma liberação geral aumenta o acesso além da finalidade definida.'],
+  ],
+  'biblioteca-privacidade': [
+    [0, 'Um cadastro pede dados que não parecem necessários para entregar o serviço. Qual pergunta ajuda a decidir?', 'Para qual finalidade cada dado é necessário?', 'Quantos dados adicionais posso publicar para acelerar o cadastro?', 'Qual informação mais pessoal posso usar como senha?', 'Relacionar os dados à finalidade ajuda a reduzir coleta e exposição desnecessárias, sem impedir informações realmente necessárias ao serviço.'],
+    [1, 'Uma planilha interna está configurada para qualquer pessoa com o link editar. Como limitar a exposição?', 'Definir destinatários e permissões adequadas e conferir a visão de quem recebe.', 'Tratar o link como um segredo suficiente para qualquer conteúdo.', 'Apenas mudar a cor das células e manter o acesso público.', 'Um link pode ser encaminhado. O controle deve limitar as pessoas e operações permitidas, e a configuração precisa ser verificada.'],
+    [2, 'Um perfil antigo ainda expõe telefone e local de trabalho. O que uma revisão de privacidade deve considerar?', 'O público de cada dado, o conteúdo histórico e conexões que não são mais necessárias.', 'Somente a imagem mais recente do perfil.', 'Publicar uma lista dos dados expostos para facilitar a conferência.', 'A exposição se acumula ao longo do tempo. A revisão deve ser privada e considerar conteúdo e acessos antigos, não apenas a última publicação.'],
+    [5, 'Uma foto parece não mostrar documentos, mas o arquivo mantém informações de localização. O que avaliar antes de compartilhar?', 'Os metadados e a necessidade de mantê-los no arquivo enviado.', 'Apenas o nome dado ao arquivo.', 'Somente a quantidade de pessoas que curtiram outras fotos.', 'Uma imagem pode carregar informações além do que aparece visualmente. Revisar metadados faz parte da avaliação de exposição.'],
+  ],
+  'biblioteca-malware': [
+    [0, 'Dois computadores estão lentos; somente um também gerou alertas após abrir um anexo. Como iniciar a análise?', 'Considerar o contexto e registrar os fatos antes de concluir a causa.', 'Declarar que qualquer lentidão comprova infecção.', 'Ignorar todos os alertas porque lentidão pode ter outra causa.', 'Um sintoma pode ter várias explicações. O contexto ajuda a priorizar a investigação sem transformar um sinal isolado em certeza.'],
+    [1, 'Um colega envia um anexo que não estava combinado. Por que ainda é importante confirmar o envio?', 'A conta conhecida também pode ter sido comprometida.', 'Arquivos recebidos de colegas não precisam de verificação.', 'O nome do remetente garante que o arquivo não executa ações.', 'Reconhecer o contato não comprova a origem do pedido. Confirme por outro canal e siga o procedimento da organização para arquivos inesperados.'],
+    [2, 'Qual benefício há em evitar privilégios administrativos nas atividades comuns?', 'Limitar o alcance de alterações possíveis, sem presumir imunidade a danos.', 'Impedir qualquer problema em todos os arquivos do usuário.', 'Tornar desnecessário verificar a origem dos programas.', 'Privilégios menores reduzem o alcance potencial, mas arquivos e ações do próprio usuário ainda precisam de proteção.'],
+    [5, 'Uma estação da organização apresenta sinais de comprometimento. Como evitar que a resposta agrave a situação?', 'Acionar o procedimento responsável, coordenar a contenção e preservar evidências.', 'Apagar registros imediatamente para eliminar qualquer sinal.', 'Instalar ferramentas aleatórias antes de informar o ocorrido.', 'Intervenções sem coordenação podem destruir evidências ou ampliar o impacto. A resposta deve seguir o processo da organização.'],
+  ],
+  'biblioteca-remoto-ia': [
+    [0, 'Uma chamada de trabalho ocorre em um local onde outras pessoas podem ver a tela. Qual cuidado é adequado?', 'Rever o ambiente, os documentos visíveis e a exposição de áudio e tela.', 'Confiar que a senha da conta impede que alguém veja a tela.', 'Publicar fotos dos documentos para provar que estão protegidos.', 'A proteção inclui o ambiente físico. Identificar quem pode ver ou ouvir ajuda a reduzir exposição durante o trabalho remoto.'],
+    [1, 'Uma pessoa diz ser do suporte e pede acesso remoto sem um chamado conhecido. O que fazer antes de autorizar?', 'Conferir a identidade e a solicitação pelo canal oficial já conhecido.', 'Instalar a ferramenta somente porque seu nome parece legítimo.', 'Confirmar usando apenas um link enviado pela própria pessoa.', 'Uma ferramenta legítima não torna todo pedido autorizado. A confirmação precisa de um canal independente e conhecido.'],
+    [2, 'Uma equipe quer resumir um texto interno com uma ferramenta de IA. Qual preparação é necessária?', 'Conferir a ferramenta aprovada, reduzir os dados enviados e revisar o resultado.', 'Enviar segredos para tornar a resposta mais detalhada.', 'Confiar em qualquer referência apenas porque o texto parece profissional.', 'A escolha da ferramenta, a minimização de dados e a revisão do conteúdo são cuidados complementares. Uma resposta convincente ainda pode conter erros.'],
+    [4, 'Um documento consultado por uma IA manda enviar arquivos para outro serviço. A tarefa autorizada era somente resumir. Qual limite deve prevalecer?', 'O documento é dado da tarefa e não amplia a autorização para enviar arquivos.', 'Qualquer instrução dentro do documento passa a ter prioridade.', 'A autorização de resumo permite publicar todos os documentos acessíveis.', 'Conteúdo externo pode conter instruções indevidas. Ele não concede permissões nem muda o escopo autorizado.'],
+  ],
+  'biblioteca-acesso': [
+    [0, 'Um usuário autenticado consegue chamar uma rota administrativa que não aparece no menu. O que precisa ser corrigido?', 'A verificação da autorização no servidor para aquela operação.', 'Somente a visibilidade do botão no navegador.', 'Somente o texto mostrado na tela de login.', 'Autenticação identifica o usuário, enquanto autorização decide o que ele pode fazer. Esconder elementos não impede requisições diretas.'],
+    [1, 'Ao receber o identificador de um documento, o que o servidor deve conferir antes de retornar seu conteúdo?', 'Se o usuário pode acessar aquele objeto e os campos solicitados.', 'Apenas se o identificador tem um formato difícil de adivinhar.', 'Apenas se o documento existe, independentemente do usuário.', 'Acesso depende da relação e da política aplicável ao objeto. Conhecer um identificador, inclusive um UUID, não concede permissão.'],
+    [4, 'Uma exportação é executada em segundo plano. Qual escopo deve continuar sendo aplicado?', 'A organização e as permissões válidas para os dados processados.', 'Somente o filtro visual que existia na tela inicial.', 'Nenhum, pois tarefas em segundo plano estão sempre autorizadas.', 'O isolamento deve acompanhar todo o processamento. Mudar o local de execução não elimina a necessidade de autorização.'],
+    [6, 'Uma tentativa proibida retorna erro, mas altera o banco antes disso. O teste de autorização pode ser considerado bem-sucedido?', 'Não; o teste também deve verificar que a operação negada não teve efeito.', 'Sim; basta o código HTTP indicar uma falha.', 'Sim; alterações são permitidas desde que a tela não mostre os dados.', 'A negação precisa impedir o efeito protegido. Verificar somente a resposta deixa passar mudanças indevidas.'],
+  ],
+  'biblioteca-configuracao': [
+    [1, 'Uma chave secreta foi incluída no JavaScript enviado ao navegador e depois ofuscada. O segredo está protegido?', 'Não; informações entregues ao cliente podem ser observadas.', 'Sim; ofuscar muda o cliente para um ambiente confiável.', 'Sim; basta ocultar o botão que usa a chave.', 'Ofuscação não estabelece uma fronteira de segredo. Credenciais privadas precisam permanecer fora do código enviado ao navegador.'],
+    [2, 'Uma biblioteca tem nome quase igual ao de um pacote conhecido. O que verificar antes da instalação?', 'A origem, a manutenção e se o pacote é realmente o necessário.', 'Somente se o nome parece familiar.', 'Apenas quantas letras existem no nome do pacote.', 'Nomes parecidos podem induzir à escolha errada. A procedência e a necessidade devem ser verificadas antes de adicionar componentes.'],
+    [4, 'Uma credencial apareceu em um arquivo público que já foi removido. Qual ação ainda é necessária?', 'Revogar a credencial exposta e atualizar os consumidores que dependiam dela.', 'Considerar a chave secreta novamente só porque o arquivo sumiu.', 'Renomear a variável mantendo a mesma chave válida.', 'Cópias da credencial podem existir fora do arquivo original. A resposta envolve revogação e atualização coordenada dos consumidores.'],
+    [6, 'Uma equipe testou uma versão, mas reconstruiu o software sem controle antes de publicar. Qual evidência ficou comprometida?', 'A ligação entre os testes realizados e o artefato efetivamente entregue.', 'A cor exibida na tela inicial.', 'A necessidade de identificar as dependências do projeto.', 'As verificações precisam corresponder à entrega. Sem rastreabilidade, não se pode presumir que outro artefato tenha as mesmas propriedades.'],
+  ],
+  'biblioteca-desenvolvimento': [
+    [0, 'Uma consulta inclui um nome digitado pelo usuário. Como evitar que o valor seja interpretado como parte da estrutura da consulta?', 'Usar parâmetros para os valores.', 'Concatenar tudo após remover um único caractere.', 'Validar apenas a cor do campo no navegador.', 'Consultas parametrizadas separam valores e estrutura. Filtragens improvisadas não substituem essa separação.'],
+    [4, 'O mesmo texto será exibido em HTML e usado em outro contexto. Qual tratamento é adequado?', 'Aplicar a proteção apropriada a cada contexto em que o dado será interpretado.', 'Reutilizar qualquer substituição de texto como solução universal.', 'Executar o texto primeiro para verificar seu comportamento.', 'O risco depende do contexto de saída. Um tratamento adequado para um local não garante proteção em outro.'],
+    [6, 'Uma pessoa clica uma vez, mas a rede repete a requisição de uma operação importante. Qual proteção é necessária?', 'Projetar no servidor a consistência e o tratamento de repetições.', 'Confiar somente no botão desativado da interface.', 'Aceitar duplicações porque o usuário não clicou novamente.', 'Pedidos podem se repetir por fatores fora da interface. A consistência precisa ser garantida também no processamento confiável.'],
+    [8, 'A página esconde o gabarito, mas a API o envia junto das alternativas. Ele está protegido durante a resolução?', 'Não; os dados recebidos pelo navegador podem ser observados.', 'Sim; não renderizar equivale a não transmitir.', 'Sim; trocar o nome do campo impede qualquer leitura.', 'A análise deve considerar o contrato e a resposta da API. Ocultar visualmente um dado já entregue ao cliente não preserva seu sigilo.'],
+  ],
+  'biblioteca-deteccao': [
+    [0, 'Um registro de autenticação inclui a senha informada para facilitar a investigação. Qual é o problema?', 'O próprio registro passa a expor um segredo que não deveria armazenar.', 'Nenhum, desde que o login tenha falhado.', 'A senha só deixa de ser pública se o log tiver muitas linhas.', 'Eventos de autenticação são úteis, mas não devem registrar senhas. A investigação não justifica criar uma nova exposição de credenciais.'],
+    [1, 'Duas falhas foram descobertas no mesmo dia. Como decidir qual tratar primeiro?', 'Considerar exposição, impacto e contexto dos ativos envolvidos.', 'Usar apenas a ordem em que apareceram na lista.', 'Priorizar sempre o sistema com o nome mais conhecido.', 'A prioridade deve refletir risco no ambiente. A data de descoberta, sozinha, não representa o impacto ou a exposição.'],
+    [5, 'Um alerta foi descoberto às 15h, mas há evidência de atividade às 11h. Qual horário marca necessariamente o início do incidente?', 'Nenhum deles, isoladamente; é preciso distinguir descoberta, eventos observados e lacunas.', 'Sempre 15h, porque é o horário de descoberta.', 'Sempre o momento em que o responsável abriu o chamado.', 'Descoberta e ocorrência são momentos distintos. Uma linha do tempo precisa indicar o que é evidência e o que permanece incerto.'],
+    [6, 'Após uma contenção, a página inicial voltou a abrir. O que falta antes de considerar a recuperação encerrada?', 'Validar a causa, os acessos e o funcionamento segundo os critérios definidos.', 'Somente anunciar que o sistema está totalmente seguro.', 'Apagar as evidências para evitar novos alertas.', 'A disponibilidade é parte da recuperação. É necessário conferir correções e condições de acesso e operação antes do encerramento.'],
+  ],
+};
+
+export type ReviewQuestion = {
+  key: string;
+  sourceLessonId: string;
+  enunciado: string;
+  explicacao: string;
+  alternativas: { texto: string; correta: boolean }[];
+};
+
+/** Nove revisões distintas da trilha, além da pergunta original da aula. */
+export function buildQuizReview(course: LibraryCourse, lessonIndex: number): ReviewQuestion[] {
+  const primary = course.lessons[lessonIndex];
+  if (!primary) throw new Error(`Aula ausente em ${course.id}`);
+  const supplements = reviews[course.id];
+  if (!supplements) throw new Error(`Revisões ausentes em ${course.id}`);
+  const checkpoints: ReviewQuestion[] = course.lessons.map(lesson => ({
+    key: `lesson/${lesson.id}`, sourceLessonId: lesson.id,
+    enunciado: lesson.question, explicacao: lesson.explanation,
+    alternativas: lesson.options.map((texto, i) => ({ texto, correta: i === lesson.correct })),
+  })).filter(question => question.sourceLessonId !== primary.id);
+  const extras: ReviewQuestion[] = supplements.map(([source, enunciado, correta, incorreta1, incorreta2, explicacao], index) => {
+    const sourceLesson = course.lessons[source];
+    if (!sourceLesson) throw new Error(`Referência de revisão inválida: ${course.id}/${index}`);
+    const alternativas = [{ texto: correta, correta: true }, { texto: incorreta1, correta: false }, { texto: incorreta2, correta: false }];
+    const offset = (index + lessonIndex) % alternativas.length;
+    return { key: `review/${index + 1}`, sourceLessonId: sourceLesson.id, enunciado, explicacao,
+      alternativas: [...alternativas.slice(offset), ...alternativas.slice(0, offset)] };
+  });
+  // Intercala aplicação e revisão, mantendo aulas relacionadas e sem repetir a original.
+  const pool: ReviewQuestion[] = [];
+  for (let i = 0; i < Math.max(checkpoints.length, extras.length); i++) {
+    if (checkpoints[i]) pool.push(checkpoints[i]);
+    if (extras[i]) pool.push(extras[i]);
+  }
+  const offset = lessonIndex % pool.length;
+  const selected = [...pool.slice(offset), ...pool.slice(0, offset)].filter(question => question.enunciado !== primary.question).slice(0, 9);
+  if (selected.length !== 9 || new Set(selected.map(q => q.enunciado)).size !== 9) {
+    throw new Error(`Revisão insuficiente ou repetida: ${course.id}/${primary.id}`);
+  }
+  return selected;
+}

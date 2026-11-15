@@ -539,11 +539,8 @@ a, button { cursor: pointer; }
 .summary-metrics { gap:8px; background:transparent; }.summary-metrics div { border-radius:6px; background:#101927; }
 .profile-study-metrics { gap:8px; background:transparent; }.profile-study-metrics div { border-radius:6px; background:#101927; }
 .dashboard-track-details { display:flex; align-items:center; gap:14px; margin:-7px 0 20px; color:#8fa2bc; font-size:12px; }.dashboard-track-details span { display:flex; align-items:center; gap:5px; }.dashboard-track-details svg { color:#9fb3cb; }
-.dashboard-nav a[href="/aulas"], .dashboard-mobile-menu nav a[href="/aulas"] { font-size:0; }.dashboard-nav a[href="/aulas"]::after { content:'Trilhas'; font-size:15px; }.dashboard-mobile-menu nav a[href="/aulas"]::after { content:'Trilhas'; font-size:13px; }
-.dashboard-nav a[href="/perfil"], .dashboard-mobile-menu nav a[href="/perfil"] { display:none; }
-.dashboard-nav a[href="/aulas"] { gap:2px; }.dashboard-nav a[href="/aulas"] > svg { display:none; }.dashboard-nav a[href="/aulas"]::before, .dashboard-mobile-menu nav a[href="/aulas"]::before { display:block; width:29px; height:22px; flex:none; background:#8294ad; content:''; mask:url('/trilhas-nav-icon.png') center / contain no-repeat; -webkit-mask:url('/trilhas-nav-icon.png') center / contain no-repeat; }.dashboard-nav a[href="/aulas"]:hover::before, .dashboard-nav a[href="/aulas"].is-active::before { background:#fff; }.dashboard-mobile-menu nav a[href="/aulas"]::before { width:25px; height:19px; }
+.dashboard-nav a[href="/perfil"] { display:none; }
 .profile-note, .profile-side > .profile-card:last-child { display:none; }
-@media (max-width:1180px) and (min-width:901px) { .dashboard-nav a[href="/aulas"]::after { font-size:11px; } }
 .not-found-page { display:grid; min-height:100vh; place-items:center; overflow:hidden; background:#0f1623; padding:32px; }
 .not-found-message { display:flex; align-items:center; gap:14px; color:#61728b; font-size:16px; font-weight:400; letter-spacing:.08em; text-transform:uppercase; }.not-found-message i { width:1px; height:26px; background:#526177; }.not-found-message strong { font:inherit; }
 @media (max-width:700px) { .not-found-page { padding:24px; }.not-found-message { gap:10px; font-size:12px; letter-spacing:.07em; }.not-found-message i { height:20px; } }

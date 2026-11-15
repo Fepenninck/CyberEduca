@@ -73,7 +73,7 @@ export function DashboardInsights({ desempenho }: { desempenho: Desempenho | nul
           <span className="insight-category">Avaliações</span>
           <h3>{desempenho.avaliacoes.media === null ? 'Acompanhe suas avaliações' : <>Média de <em>{desempenho.avaliacoes.media}%</em> nas avaliações</>}</h3>
           <p>{desempenho.avaliacoes.realizadas ? `${desempenho.avaliacoes.realizadas} tentativas concluídas · Melhor resultado: ${desempenho.avaliacoes.melhor}%.` : 'As notas aparecerão quando você concluir uma avaliação.'}</p>
-          <Link className="insight-link" href="/avaliacoes">Acessar avaliações</Link>
+          <Link className="insight-link" href="/aulas">Ver provas nas trilhas</Link>
         </article>
       </div>
     </section>

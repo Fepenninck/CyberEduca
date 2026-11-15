@@ -38,7 +38,9 @@ export default function PerfilPage() {
     const completed = tracks.reduce((total, track) => total + Math.round(track.totalAulas * track.percentual / 100), 0)
     const total = tracks.reduce((sum, track) => sum + track.totalAulas, 0)
     const overall = tracks.length ? Math.round(tracks.reduce((sum, track) => sum + track.percentual, 0) / tracks.length) : 0
-    const basic = tracks.find((track) => track.nivel === 'BASICO')?.percentual ?? 0
+    const basicTracks = tracks.filter(track => track.nivel === 'BASICO')
+    const basicTotal = basicTracks.reduce((sum, track) => sum + track.totalAulas, 0)
+    const basic = basicTotal ? Math.round(basicTracks.reduce((sum, track) => sum + track.totalAulas * track.percentual, 0) / basicTotal) : 0
     return { completed, total, overall, basic, rate: total ? Math.round(completed / total * 100) : 0 }
   }, [tracks])
 
@@ -100,7 +102,8 @@ export default function PerfilPage() {
   const levelColors: Record<string, string> = { BASICO: '#24b4ff', INTERMEDIARIO: '#ffd34e', AVANCADO: '#ff4654' }
   const currentAvatar = AVATARES.find((avatar) => avatar.id === profile.avatar)
 
-  const basicStatus = stats.basic >= 80 ? 'Você domina os fundamentos.' : stats.basic >= 40 ? 'Você está evoluindo no nível básico.' : 'Comece pelos fundamentos.'
+  const basicApproved = achievements.data.find(item => item.nivel === 'BASICO')?.conquistada ?? false
+  const basicStatus = basicApproved ? 'Você concluiu o nível básico.' : stats.basic === 100 ? 'Aulas concluídas. Faça a prova nas Trilhas.' : stats.basic >= 40 ? 'Você está evoluindo no nível básico.' : 'Comece pelos fundamentos.'
 
   return <main className="app-shell dashboard-page profile-page">
     <DashboardNavigation active="perfil" />
@@ -126,7 +129,7 @@ export default function PerfilPage() {
           }) : <LoadingScreen label={"Carregando seu progresso..."} />}</div></article>
           <article className="profile-card"><h2>Ritmo de estudo</h2><div className="profile-study-metrics"><div><strong>{stats.completed}</strong><span>Aulas concluídas</span></div><div><strong>{stats.rate}%</strong><span>Taxa de conclusão</span></div><div><strong>{stats.total}</strong><span>Aulas disponíveis</span></div></div><p className="profile-note">A frequência semanal aparecerá quando o histórico de atividades estiver disponível.</p></article>
         </div>
-        <aside className="profile-side"><article className="profile-card profile-avatar-card"><span className="profile-card-label">Seu avatar</span><strong>{profile.foto ? 'Foto personalizada' : currentAvatar?.nome ?? 'Nenhum avatar escolhido'}</strong><p>{profile.foto ? 'Você está usando uma foto enviada por você.' : currentAvatar?.descricao ?? 'Escolha um avatar que combine com o seu jeito de proteger o mundo digital.'}</p><button className="dashboard-button-secondary" type="button" onClick={() => setPickerOpen(true)}>{currentAvatar || profile.foto ? 'Trocar avatar' : 'Escolher avatar'}</button></article><article className="profile-card"><span className="profile-card-label">Resumo</span><strong>{stats.basic >= 80 ? 'Nível básico concluído' : 'Nível básico em andamento'}</strong><p>{stats.completed} aulas concluídas e {stats.overall}% de progresso geral.</p></article><article className="profile-card"><h2>Atividade semanal</h2><p>O histórico semanal será exibido quando a API registrar as datas de estudo.</p></article></aside>
+        <aside className="profile-side"><article className="profile-card profile-avatar-card"><span className="profile-card-label">Seu avatar</span><strong>{profile.foto ? 'Foto personalizada' : currentAvatar?.nome ?? 'Nenhum avatar escolhido'}</strong><p>{profile.foto ? 'Você está usando uma foto enviada por você.' : currentAvatar?.descricao ?? 'Escolha um avatar que combine com o seu jeito de proteger o mundo digital.'}</p><button className="dashboard-button-secondary" type="button" onClick={() => setPickerOpen(true)}>{currentAvatar || profile.foto ? 'Trocar avatar' : 'Escolher avatar'}</button></article><article className="profile-card"><span className="profile-card-label">Resumo</span><strong>{basicApproved ? 'Nível básico concluído' : 'Nível básico em andamento'}</strong><p>{stats.completed} aulas concluídas e {stats.overall}% de progresso geral.</p></article><article className="profile-card"><h2>Atividade semanal</h2><p>O histórico semanal será exibido quando a API registrar as datas de estudo.</p></article></aside>
       </section>
       {pickerOpen && <AvatarPicker avatarAtual={profile.avatar} temFoto={Boolean(profile.foto)} onEscolher={chooseAvatar} onRemoverFoto={removePhoto} onEnviarFoto={() => { setPickerOpen(false); fileInput.current?.click() }} onFechar={() => setPickerOpen(false)} />}
       <input ref={fileInput} className="profile-file-input" type="file" accept="image/png,image/jpeg,image/webp" onChange={choosePhoto} />

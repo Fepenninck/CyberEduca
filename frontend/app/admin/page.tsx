@@ -100,7 +100,7 @@ export default function AdminDashboardPage() {
                   {carregando ? (
                     <span role="status">Carregando...</span>
                   ) : erro ? (
-                    '—'
+                    '-'
                   ) : (
                     (resumo?.[key] ?? 0).toLocaleString('pt-BR')
                   )}

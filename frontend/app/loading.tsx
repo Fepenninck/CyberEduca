@@ -1,5 +1,4 @@
 'use client'
-import { LoadingScreen } from '@/components/ui/loading-screen'
 import { DashboardNavigation } from '@/components/dashboard-navigation'
 import { usePathname } from 'next/navigation'
 import { isStudentPath } from '@/lib/student-routes'
@@ -11,5 +10,5 @@ export default function Loading() {
     if (!/^\/admin(\/|$)/.test(pathname)) return beginLoading()
   }, [pathname])
   if (/^\/admin(\/|$)/.test(pathname)) return <p role="status" className="p-6 text-sm text-slate-400">Carregando…</p>
-  return isStudentPath(pathname) ? <main className="app-shell dashboard-page"><DashboardNavigation /><LoadingScreen fullscreen /></main> : <LoadingScreen fullscreen />
+  return isStudentPath(pathname) ? <main className="app-shell dashboard-page"><DashboardNavigation /><div style={{ minHeight: 'calc(100dvh - 88px)' }} aria-busy="true" /></main> : <main aria-busy="true" style={{ minHeight: '100dvh' }} />
 }

@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "noEmit": true,
+    "incremental": false
+  },
+  "include": ["scripts/expandir-quizzes.ts", "scripts/verificar-quizzes-ampliados.ts", "scripts/preparar-provas-niveis.ts", "scripts/verificar-certificacoes.ts"]
+}

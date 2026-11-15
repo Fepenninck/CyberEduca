@@ -56,7 +56,7 @@ export function AchievementCelebration() {
       <span className="achievement-celebration-kicker">Nova conquista desbloqueada</span>
       <img src={badge.src} alt={`Insígnia do nível ${badge.title}`} width={450} height={300} />
       <h2 id="achievement-celebration-title">Nível {badge.title} concluído!</h2>
-      <p>Você concluiu todas as aulas deste nível. Sua insígnia já está nas conquistas do seu perfil.</p>
+      <p>Você concluiu as aulas e foi aprovado na prova deste nível. Sua insígnia já está nas conquistas do perfil.</p>
       <button type="button" onClick={dismiss} autoFocus>Continuar aprendendo</button>
     </div>
   </dialog>, document.body)

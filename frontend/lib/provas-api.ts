@@ -31,6 +31,10 @@ export type ProvaDetalhe = {
 }
 
 export type ResultadoTentativa = {
+  nivel?: 'BASICO' | 'INTERMEDIARIO' | 'AVANCADO'
+  aprovado?: boolean
+  notaMinima?: number
+  proximaTentativaEm?: string | null
   provaTitulo?: string
   tentativaId: string
   provaId: string

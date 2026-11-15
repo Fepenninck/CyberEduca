@@ -30,6 +30,12 @@ export class UsuariosController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @Get('me/conquistas/simulacoes')
+    minhaConquistaSimulacoes(@Request() req: any) {
+        return this.usuariosService.conquistaSimulacoes(req.user.id);
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Get('me/desempenho')
     meuDesempenho(@Request() req: any) {
         return this.usuariosService.desempenho(req.user.id);

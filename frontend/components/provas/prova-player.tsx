@@ -6,7 +6,7 @@ import { ProvaResult } from './prova-result'
 import { enviarTentativa, type ProvaDetalhe, type ResultadoTentativa } from '@/lib/provas-api'
 import './provas.css'
 
-export function ProvaPlayer({ prova }: { prova: ProvaDetalhe }) {
+export function ProvaPlayer({ prova, onEnviar }: { prova: ProvaDetalhe; onEnviar?: (respostas: { questaoId: string; alternativaId: string }[]) => Promise<ResultadoTentativa> }) {
   const [respostas, setRespostas] = useState<Record<string, string>>({})
   const [resultado, setResultado] = useState<ResultadoTentativa | null>(null)
   const [erro, setErro] = useState('')
@@ -30,14 +30,13 @@ export function ProvaPlayer({ prova }: { prova: ProvaDetalhe }) {
     setEnviando(true)
 
     try {
-      const retorno = await enviarTentativa(
-        prova.id,
-        Object.entries(respostas).map(([questaoId, alternativaId]) => ({
+      const answers = Object.entries(respostas).map(([questaoId, alternativaId]) => ({
           questaoId,
           alternativaId,
-        })),
-      )
+        }))
+      const retorno = await (onEnviar ? onEnviar(answers) : enviarTentativa(prova.id, answers))
       setResultado(retorno)
+      window.dispatchEvent(new Event('learning-progress-updated'))
     } catch (e) {
       setErro(e instanceof Error ? e.message : 'Não foi possível enviar suas respostas.')
     } finally {
@@ -46,7 +45,7 @@ export function ProvaPlayer({ prova }: { prova: ProvaDetalhe }) {
   }
 
   if (resultado) {
-    return <ProvaResult resultado={resultado} />
+    return <ProvaResult resultado={resultado} modal={Boolean(onEnviar)} />
   }
 
   return (
@@ -77,7 +76,7 @@ export function ProvaPlayer({ prova }: { prova: ProvaDetalhe }) {
           onClick={finalizar}
           disabled={enviando || !todasRespondidas}
         >
-          {enviando ? 'Enviando...' : 'Finalizar avaliação'}
+          {enviando ? 'Enviando...' : 'Finalizar prova'}
         </button>
       </div>
     </div>

@@ -11,7 +11,7 @@ type Profile = { nome: string; email: string; foto?: string | null; avatar?: str
 
 const defaultProfile: Profile = { nome: '', email: '' }
 
-export function UserMenu() {
+export function UserMenu({ mobile = false }: { mobile?: boolean }) {
   const [open, setOpen] = useState(false)
   const profile = useSyncExternalStore(subscribeCurrentUser, getCachedCurrentUser, getServerCurrentUser) ?? defaultProfile
   const menuRef = useRef<HTMLDivElement>(null)
@@ -38,6 +38,14 @@ export function UserMenu() {
     router.push('/login')
     router.refresh()
   }
+
+  if (mobile) return <>
+    <div className="dashboard-mobile-identity"><div className="user-menu-avatar"><ProfilePicture foto={profile.foto} avatar={profile.avatar} iconSize={24} alt="" /></div><div><strong>{profile.nome || 'Minha conta'}</strong><small>{profile.email}</small></div></div>
+    <Link href="/perfil"><UserRound size={18} aria-hidden="true" /> Meu perfil</Link>
+    <Link href="/configuracoes"><Cog size={18} aria-hidden="true" /> Configurações</Link>
+    <Link href="/privacidade/politica"><ShieldCheck size={18} aria-hidden="true" /> Termos e privacidade</Link>
+    <button className="dashboard-mobile-signout" type="button" onClick={signOut}><LogOut size={18} aria-hidden="true" /> Sair da conta</button>
+  </>
 
   return <div className="user-menu" ref={menuRef}>
     <button className="dashboard-user" type="button" aria-label="Abrir perfil" aria-expanded={open} onClick={() => setOpen((value) => !value)}>

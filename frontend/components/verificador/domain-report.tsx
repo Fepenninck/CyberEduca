@@ -90,14 +90,14 @@ export function DomainReport({ result }: { result: ConsultaDominio }) {
           <div className="domain-detection malicious">
             <dt>Detecções maliciosas</dt>
             <dd>
-              <span className="domain-detection-count">{insufficient ? <span role="img" aria-label="Não disponível">—</span> : result.deteccoesMaliciosas}</span>
+              <span className="domain-detection-count">{insufficient ? <span role="img" aria-label="Não disponível">-</span> : result.deteccoesMaliciosas}</span>
               <p>Mecanismos que classificaram o domínio como malicioso.</p>
             </dd>
           </div>
           <div className="domain-detection suspicious">
             <dt>Detecções suspeitas</dt>
             <dd>
-              <span className="domain-detection-count">{insufficient ? <span role="img" aria-label="Não disponível">—</span> : result.deteccoesSuspeitas}</span>
+              <span className="domain-detection-count">{insufficient ? <span role="img" aria-label="Não disponível">-</span> : result.deteccoesSuspeitas}</span>
               <p>Mecanismos que sinalizaram um possível risco no domínio.</p>
             </dd>
           </div>

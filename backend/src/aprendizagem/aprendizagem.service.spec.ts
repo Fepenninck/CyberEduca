@@ -74,6 +74,7 @@ describe('AprendizagemService - progresso', () => {
     prismaMock.aula.findUnique.mockResolvedValue({
       id: 'aula-1',
       trilhaId: 'trilha-1',
+      trilha: { nivel: 'BASICO', bloqueada: false, ordem: 1 },
     });
 
     prismaMock.progressoAula.upsert.mockResolvedValue({

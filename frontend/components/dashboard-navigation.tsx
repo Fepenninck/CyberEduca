@@ -2,9 +2,8 @@
 import Link from "next/link";
 import {
   Home,
-  BookOpen,
+  Route,
   MonitorPlay,
-  ClipboardCheck,
   ShieldCheck,
   ListChecks,
   Menu,
@@ -12,7 +11,7 @@ import {
 import { UserMenu } from "@/components/user-menu";
 const items = [
   { key: "inicio", href: "/dashboard", label: "Início", icon: Home },
-  { key: "aulas", href: "/aulas", label: "Trilhas", icon: BookOpen },
+  { key: "aulas", href: "/aulas", label: "Trilhas", icon: Route },
   {
     key: "simulacoes",
     href: "/simulacoes",
@@ -20,12 +19,6 @@ const items = [
     icon: MonitorPlay,
   },
   { key: "quizzes", href: "/quizzes", label: "Quizzes", icon: ListChecks },
-  {
-    key: "avaliacoes",
-    href: "/avaliacoes",
-    label: "Avaliações",
-    icon: ClipboardCheck,
-  },
   {
     key: "verificador",
     href: "/verificador",
@@ -52,7 +45,7 @@ export function DashboardNavigation({
       aria-current={active === item.key ? "page" : undefined}
       href={item.href}
     >
-      <item.icon size={16} />
+      {item.key === 'aulas' ? <i className="dashboard-trails-icon" aria-hidden="true" /> : <item.icon size={18} aria-hidden="true" />}
       {item.label}
     </Link>
   ));
@@ -76,12 +69,19 @@ export function DashboardNavigation({
           <summary aria-label="Abrir navegação">
             <Menu size={24} />
           </summary>
-          <nav>
+          <nav aria-label="Navegação mobile" onClick={event => {
+            if ((event.target as HTMLElement).closest('a')) {
+              const menu = event.currentTarget.closest('details');
+              if (menu) menu.open = false;
+            }
+          }} onKeyDown={event => {
+            if (event.key === 'Escape') {
+              const menu = event.currentTarget.closest('details');
+              if (menu) { menu.open = false; menu.querySelector('summary')?.focus(); }
+            }
+          }}>
             {links}
-            <Link href="/perfil">Meu perfil</Link>
-            <Link href="/configuracoes">
-              Configurações
-            </Link>
+            <UserMenu mobile />
           </nav>
         </details>
       </div>

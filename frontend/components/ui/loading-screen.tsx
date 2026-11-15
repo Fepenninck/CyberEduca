@@ -1,40 +1,51 @@
-'use client'
+﻿'use client'
 import { useEffect, useLayoutEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
+import { isStudentPath } from '@/lib/student-routes'
 import { GooeyLoader } from './gooey-loader'
+
 export function LoadingScreen({ label = 'Carregando…', fullscreen = false, delayMs = 200 }: { label?: string; fullscreen?: boolean; delayMs?: number }) {
+  const pathname = usePathname()
   const [visible, setVisible] = useState(delayMs === 0)
+  const student = isStudentPath(pathname)
+  const [navbarBottom, setNavbarBottom] = useState<number | null>(null)
   useEffect(() => {
+    if (delayMs === 0) { setVisible(true); return }
     const timer = setTimeout(() => setVisible(true), delayMs)
     return () => clearTimeout(timer)
   }, [delayMs])
-  const [navbarBottom, setNavbarBottom] = useState(0)
-  const [pageBackground, setPageBackground] = useState<string>()
+
   useLayoutEffect(() => {
     if (!fullscreen) return
+    let frame: number | null = null
     let header: Element | null = null
-    const resize = new ResizeObserver(() => update())
+    const resize = new ResizeObserver(() => schedule())
     const update = () => {
-      const next = document.querySelector('.dashboard-header')
-      if (next !== header) { resize.disconnect(); header = next; if (header) resize.observe(header) }
-      const bottom = header?.getBoundingClientRect().bottom ?? 0
-      setNavbarBottom(Math.min(window.innerHeight, Math.max(0, bottom)))
-      const pages = Array.from(document.querySelectorAll('main')).filter(element => !element.closest('.site-loading-screen'))
-      let page: Element | null = header?.closest('.app-shell') ?? pages[pages.length - 1] ?? document.body
-      let background: string | undefined
-      while (page) {
-        const color = window.getComputedStyle(page).backgroundColor
-        if (color && color !== 'transparent' && color !== 'rgba(0, 0, 0, 0)') { background = color; break }
-        page = page.parentElement
+      frame = null
+      const nextHeader = document.querySelector('.dashboard-header')
+      if (nextHeader !== header) {
+        resize.disconnect(); header = nextHeader
+        if (header) resize.observe(header)
       }
-      setPageBackground(background)
+      // O overlay ja existe no HTML inicial; a medicao apenas refina a posicao.
+      if (isStudentPath(pathname) && !header) return
+      const bottom = Math.min(window.innerHeight, Math.max(0, header?.getBoundingClientRect().bottom ?? 0))
+      setNavbarBottom(previous => previous === bottom ? previous : bottom)
     }
+    function schedule() { if (frame === null) frame = requestAnimationFrame(update) }
     update()
-    const mutations = new MutationObserver(update)
-    mutations.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] })
-    window.addEventListener('resize', update)
-    window.addEventListener('scroll', update, { passive: true })
-    return () => { resize.disconnect(); mutations.disconnect(); window.removeEventListener('resize', update); window.removeEventListener('scroll', update) }
-  }, [fullscreen])
+    // Apenas mudancas de estrutura: sem observar classes nem recalcular cores.
+    const mutations = new MutationObserver(schedule)
+    mutations.observe(document.body, { childList: true, subtree: true })
+    window.addEventListener('resize', schedule)
+    window.addEventListener('scroll', schedule, { passive: true })
+    return () => {
+      if (frame !== null) cancelAnimationFrame(frame)
+      resize.disconnect(); mutations.disconnect()
+      window.removeEventListener('resize', schedule); window.removeEventListener('scroll', schedule)
+    }
+  }, [fullscreen, pathname])
+
   if (!visible) return null
-  return <div className={`site-loading-screen${fullscreen ? ' is-fullscreen' : ''}`} style={fullscreen ? { top: navbarBottom, minHeight: `calc(100dvh - ${navbarBottom}px)`, backgroundColor: pageBackground } : undefined} aria-busy="true"><GooeyLoader label="Carregando" size={104} count={4} goo={18} /></div>
+  return <div className={`site-loading-screen${fullscreen ? ' is-fullscreen' : ''}${fullscreen && student ? ' is-student' : ''}${fullscreen && pathname === '/' ? ' is-home' : ''}`} style={fullscreen ? { top: navbarBottom ?? undefined, minHeight: navbarBottom === null ? undefined : `calc(100dvh - ${navbarBottom}px)` } : undefined} aria-busy="true"><GooeyLoader label={label} size={104} count={4} goo={18} /></div>
 }
