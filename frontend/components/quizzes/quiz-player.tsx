@@ -8,7 +8,6 @@ import {
 import { ActivityError } from "@/components/activities/activity-state";
 import { QuizQuestion } from "./quiz-question";
 import { QuizResult } from "./quiz-result";
-import { QuizAchievement } from "@/components/quiz-achievement";
 export function QuizPlayer({ quiz }: { quiz: QuizDetalhe }) {
   const [respostas, setRespostas] = useState<Record<string, string>>({});
   const [resultado, setResultado] = useState<ResultadoQuiz | null>(quiz.resultado ?? null);
@@ -54,7 +53,6 @@ export function QuizPlayer({ quiz }: { quiz: QuizDetalhe }) {
         quiz={quiz}
         resultado={resultado}
       />
-      <QuizAchievement key={resultado.tentativaId} earnedOnly />
       </>
     );
   if (!quiz.questoes.length)

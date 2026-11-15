@@ -5,7 +5,6 @@ import { Search, Globe } from "lucide-react";
 import { consultarDominio, type ConsultaDominio } from "@/lib/consulta-seguranca-api";
 import { ActivityError } from "@/components/activities/activity-state";
 import { DomainReport } from "./domain-report";
-import { LaboratoryAchievement } from "@/components/laboratory-achievement";
 export function VerificadorDominio() {
   const [dominio, setDominio] = useState("");
   const [resultado, setResultado] = useState<ConsultaDominio | null>(null);
@@ -99,7 +98,6 @@ export function VerificadorDominio() {
         )}
         {error && <ActivityError error={error} />}
         {resultado && <DomainReport result={resultado} />}
-        {resultado && <LaboratoryAchievement key={resultado.consultadoEm} earnedOnly />}
         {!resultado && !sending && !error && (
           <section className="domain-blank" aria-labelledby="domain-blank-title">
             <span className="domain-blank-icon"><Search size={26} aria-hidden="true" /></span>
