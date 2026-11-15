@@ -20,19 +20,26 @@ export default function ConfiguracoesPage() {
  const [error, setError] = useState('')
  const [password, setPassword] = useState('')
  const [confirmation, setConfirmation] = useState('')
+ const [currentPassword, setCurrentPassword] = useState('')
+ const [originalEmail, setOriginalEmail] = useState('')
+ const [temSenha, setTemSenha] = useState(true)
  const [pickerOpen, setPickerOpen] = useState(false)
  const [deleteOpen, setDeleteOpen] = useState(false)
  const [userId, setUserId] = useState('')
  const photoInput = useRef<HTMLInputElement>(null)
- useEffect(() => { getCurrentUser().then(user => { setUserId(user.id); setDraftProfile({nome:user.nome,email:user.email,foto:user.foto,avatar:user.avatar}); setLoading(false) }).catch(() => router.replace('/login')) },[router])
+ useEffect(() => { getCurrentUser().then(user => { setUserId(user.id); setDraftProfile({nome:user.nome,email:user.email,foto:user.foto,avatar:user.avatar}); setOriginalEmail(user.email); setTemSenha(user.temSenha ?? true); setLoading(false) }).catch(() => router.replace('/login')) },[router])
+ const precisaSenhaAtual = temSenha && (Boolean(password) || draftProfile.email.trim().toLowerCase() !== originalEmail)
  async function saveSettings() {
   setMessage(''); setError('')
   if(password !== confirmation) { setError('As senhas não coincidem.'); return }
+  if(precisaSenhaAtual && !currentPassword) { setError('Informe sua senha atual.'); return }
   setSaving(true)
   try {
-   await updateCurrentUser({...draftProfile,...(password ? {senha:password} : {})})
+   const updated = await updateCurrentUser({...draftProfile,...(password ? {senha:password} : {}),...(precisaSenhaAtual ? {senhaAtual:currentPassword} : {})})
    window.dispatchEvent(new Event('profile-updated'))
-   setPassword(''); setConfirmation(''); setMessage('Configurações salvas com sucesso.')
+   setOriginalEmail(updated.email)
+   if(password) setTemSenha(true)
+   setPassword(''); setConfirmation(''); setCurrentPassword(''); setMessage('Configurações salvas com sucesso.')
   } catch(error) { setError(error instanceof Error ? error.message : 'Não foi possível salvar.') }
   finally { setSaving(false) }
  }
@@ -126,7 +133,7 @@ export default function ConfiguracoesPage() {
             <section className="settings-edit-row" aria-labelledby="settings-password-title">
               <header className="settings-row-heading">
                 <h2 id="settings-password-title">Senha de acesso</h2>
-                <p>Preencha apenas se quiser alterar sua senha.</p>
+                <p>{temSenha ? 'Preencha apenas se quiser alterar sua senha.' : 'Defina uma senha para entrar também com e-mail.'}</p>
               </header>
               <div className="profile-form-grid">
                 <label>
@@ -137,6 +144,12 @@ export default function ConfiguracoesPage() {
                   Confirmar senha
                   <input type="password" value={confirmation} onChange={event => setConfirmation(event.target.value)} placeholder="Repita a nova senha" autoComplete="new-password" />
                 </label>
+                {precisaSenhaAtual && (
+                  <label>
+                    Senha atual
+                    <input type="password" value={currentPassword} onChange={event => setCurrentPassword(event.target.value)} placeholder="Confirme com a sua senha atual" autoComplete="current-password" />
+                  </label>
+                )}
               </div>
             </section>
 

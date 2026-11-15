@@ -7,6 +7,7 @@ import { PassportModule } from '@nestjs/passport';
 import { PrismaService } from '../prisma.service';
 import { JwtStrategy } from './jwt.strategy';
 import { GoogleStrategy } from './google.strategy';
+import { MailService } from '../mail/mail.service';
 
 const googleStrategyProvider: Provider = {
   provide: GoogleStrategy,
@@ -33,7 +34,7 @@ const googleStrategyProvider: Provider = {
     }),
   ],
   controllers: [AuthController],
-  providers: [LoginRateLimitGuard, AuthService, PrismaService, JwtStrategy, googleStrategyProvider],
+  providers: [LoginRateLimitGuard, AuthService, PrismaService, JwtStrategy, MailService, googleStrategyProvider],
   exports: [JwtModule, PassportModule],
 })
 export class AuthModule {}

@@ -1,9 +1,11 @@
 import { IsEmail, IsString, Matches, MinLength } from 'class-validator';
+import { NormalizarEmail } from '../../common/normalizar-email';
 
 export class RegisterDto {
   @IsString({ message: 'O nome deve ser um texto válido.' })
   name: string;
 
+  @NormalizarEmail()
   @IsEmail({}, { message: 'O e-mail fornecido é inválido.' })
   email: string;
 

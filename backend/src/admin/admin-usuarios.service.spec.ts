@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
-import { NotFoundException } from '@nestjs/common';
+import { ConflictException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { AdminUsuariosService } from './admin-usuarios.service';
 
@@ -62,5 +62,17 @@ describe('AdminUsuariosService', () => {
     expect(prismaMock.usuario.delete).toHaveBeenCalledWith(
       expect.objectContaining({ where: { id: 'u1' } }),
     );
+  });
+
+  it('normaliza o e-mail e recusa um e-mail que pertence a outro usuário', async () => {
+    prismaMock.usuario.findUnique.mockResolvedValue({ id: 'u2' });
+
+    await expect(service.atualizarUsuario('u1', { email: ' Ana@Test.dev ' })).rejects.toThrow(
+      ConflictException,
+    );
+    expect(prismaMock.usuario.findUnique).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { email: 'ana@test.dev' } }),
+    );
+    expect(prismaMock.usuario.update).not.toHaveBeenCalled();
   });
 });

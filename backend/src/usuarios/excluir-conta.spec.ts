@@ -7,6 +7,7 @@ import { DeleteAccountDto } from './dto/delete-account.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import type { PrismaService } from '../prisma.service';
 import type { Response } from 'express';
+import type { JwtService } from '@nestjs/jwt';
 
 const asyncMock = (value: unknown = undefined) => jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue(value);
 function setup() {
@@ -43,7 +44,7 @@ describe('Exclusão da própria conta', () => {
   });
   it('usa o usuário da sessão e encerra o cookie somente após sucesso', async () => {
     const excluirConta = asyncMock({ message: 'Excluída' });
-    const controller = new UsuariosController({ excluirConta } as unknown as UsuariosService);
+    const controller = new UsuariosController({ excluirConta } as unknown as UsuariosService, {} as JwtService);
     const clearCookie = jest.fn();
     await controller.excluirMinhaConta({ user: { id: 'autenticado' } }, { confirmacao: 'excluir' }, { clearCookie } as unknown as Response);
     expect(excluirConta).toHaveBeenCalledWith('autenticado', 'excluir');
@@ -51,7 +52,7 @@ describe('Exclusão da própria conta', () => {
   });
   it('preserva a sessão quando a transação falha', async () => {
     const excluirConta = asyncMock(); excluirConta.mockRejectedValue(new Error('Falha no banco'));
-    const controller = new UsuariosController({ excluirConta } as unknown as UsuariosService);
+    const controller = new UsuariosController({ excluirConta } as unknown as UsuariosService, {} as JwtService);
     const clearCookie = jest.fn();
     await expect(controller.excluirMinhaConta({ user: { id: 'aluno' } }, { confirmacao: 'excluir' }, { clearCookie } as unknown as Response)).rejects.toThrow('Falha no banco');
     expect(clearCookie).not.toHaveBeenCalled();

@@ -19,7 +19,7 @@ export const apiFetch = async (path: string, options?: RequestInit) => {
   if (response.ok && options?.method?.toUpperCase() === 'POST' && /^\/aulas\/[^/]+\/concluir$/.test(path) && typeof window !== 'undefined') {
     window.dispatchEvent(new Event('learning-progress-updated'))
   }
-  if (response.ok && ((path === '/auth/logout' || path === '/auth/login') && options?.method?.toUpperCase() === 'POST' || path === '/usuarios/me' && options?.method?.toUpperCase() === 'DELETE')) clearCurrentUser()
+  if (response.ok && ((path === '/auth/logout' || path === '/auth/login' || path === '/auth/login/confirmar') && options?.method?.toUpperCase() === 'POST' || path === '/usuarios/me' && options?.method?.toUpperCase() === 'DELETE')) clearCurrentUser()
   return response
   } finally { end() }
 }
@@ -31,6 +31,7 @@ export type UserProfile = {
   foto?: string | null
   avatar?: string | null
   papel: string
+  temSenha?: boolean
 }
 
 let currentUser: UserProfile | null = null
@@ -64,7 +65,7 @@ export async function getCurrentUser(): Promise<UserProfile> {
   try { return await request } finally { if (currentUserRequest === request) currentUserRequest = null }
 }
 
-export async function updateCurrentUser(data: Partial<Pick<UserProfile, 'nome' | 'email' | 'foto' | 'avatar'>> & { senha?: string }): Promise<UserProfile> {
+export async function updateCurrentUser(data: Partial<Pick<UserProfile, 'nome' | 'email' | 'foto' | 'avatar'>> & { senha?: string; senhaAtual?: string }): Promise<UserProfile> {
   const generation = profileGeneration
   const response = await apiFetch('/usuarios/me', {
     method: 'PATCH',

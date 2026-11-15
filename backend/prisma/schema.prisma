@@ -20,6 +20,9 @@ model Usuario {
   atualizadoEm             DateTime            @default(now()) @updatedAt
   tokenRecuperacaoHash     String?             @unique
   tokenRecuperacaoExpiraEm DateTime?
+  senhaAlteradaEm          DateTime?
+  tokenLoginHash           String?             @unique
+  tokenLoginExpiraEm       DateTime?
   progressos               ProgressoAula[]
   auditorias               LogAuditoria[]
   tentativasQuiz           TentativaQuiz[]

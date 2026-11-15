@@ -20,7 +20,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     profile: any,
     done: VerifyCallback,
   ) {
-    const email = profile.emails?.[0]?.value;
+    const email = profile.emails?.[0]?.value?.trim().toLowerCase();
     const nome = profile.displayName;
     const googleId = profile.id;
 

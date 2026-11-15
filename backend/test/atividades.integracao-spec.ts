@@ -18,6 +18,7 @@ import { UsuariosController } from '../src/usuarios/usuarios.controller';
 import { UsuariosService } from '../src/usuarios/usuarios.service';
 import { PrismaService } from '../src/prisma.service';
 import { AuditoriaService } from '../src/auditoria.service';
+import { MailService } from '../src/mail/mail.service';
 
 describe('Integração HTTP de quizzes, simulador de phishing e perfil', () => {
   let app: INestApplication;
@@ -30,6 +31,16 @@ describe('Integração HTTP de quizzes, simulador de phishing e perfil', () => {
   let alternativaCorretaId: string;
   let alternativaErradaId: string;
   let cenarioId: string;
+  let ultimoLink = '';
+
+  const mailFalso = {
+    enviarConfirmacaoLogin: async (_destinatario: unknown, link: string) => {
+      ultimoLink = link;
+    },
+    enviarRecuperacaoSenha: async (_destinatario: unknown, link: string) => {
+      ultimoLink = link;
+    },
+  };
 
   beforeAll(async () => {
     process.env.NODE_ENV = 'test';
@@ -38,7 +49,7 @@ describe('Integração HTTP de quizzes, simulador de phishing e perfil', () => {
     const modulo = await Test.createTestingModule({
       imports: [PassportModule.register({}), JwtModule.register({ secret: process.env.JWT_SECRET })],
       controllers: [AuthController, QuizzesController, AdminQuizzesController, PhishingController, UsuariosController],
-      providers: [AuthService, JwtStrategy, JwtAuthGuard, QuizzesService, PhishingService, UsuariosService, PrismaService, AuditoriaService],
+      providers: [AuthService, JwtStrategy, JwtAuthGuard, QuizzesService, PhishingService, UsuariosService, PrismaService, AuditoriaService, { provide: MailService, useValue: mailFalso }],
     }).compile();
 
     app = modulo.createNestApplication();
@@ -103,8 +114,10 @@ describe('Integração HTTP de quizzes, simulador de phishing e perfil', () => {
   beforeEach(async () => {
     const email = `${randomUUID()}@cybereduca.test`;
     await request(url).post('/auth/register').send({ name: 'Aluno de integração', email, password: 'Senha123!' }).expect(201);
-    const login = await request(url).post('/auth/login').send({ email, password: 'Senha123!' }).expect(200);
-    cookie = login.headers['set-cookie'][0].split(';')[0];
+    await request(url).post('/auth/login').send({ email, password: 'Senha123!' }).expect(200);
+    const token = new URL(ultimoLink).searchParams.get('token');
+    const confirmacao = await request(url).post('/auth/login/confirmar').send({ token }).expect(200);
+    cookie = confirmacao.headers['set-cookie'][0].split(';')[0];
   });
 
   it('listarQuizzes_alunoLogado_deveMostrarQuizPublicadoSemGabarito', async () => {

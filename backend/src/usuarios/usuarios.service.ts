@@ -1,4 +1,10 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+    BadRequestException,
+    ConflictException,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
 import * as bcrypt from 'bcrypt';
 import { loadCertificationProgress } from '../certificacoes/certification-progress';
@@ -107,46 +113,91 @@ export class UsuariosService {
             
             async atualizar(
                 id: string,
-                dados: { nome?: string; email?: string; foto?: string | null; avatar?: string | null; senha?: string },
+                dados: {
+                    nome?: string;
+                    email?: string;
+                    foto?: string | null;
+                    avatar?: string | null;
+                    senha?: string;
+                    senhaAtual?: string;
+                },
             ) {
-                const data: {
+                const usuario = await this.prisma.usuario.findUnique({
+                    where: { id },
+                    select: { email: true, senhaHash: true },
+                });
 
+                if (!usuario) {
+                    throw new NotFoundException('Usuário não encontrado');
+                }
+
+                const novoEmail = dados.email;
+                const emailAlterado = novoEmail !== undefined && novoEmail !== usuario.email;
+                const mudancaSensivel = Boolean(dados.senha) || emailAlterado;
+
+                if (mudancaSensivel && usuario.senhaHash) {
+                    if (!dados.senhaAtual) {
+                        throw new BadRequestException('Informe sua senha atual para alterar e-mail ou senha.');
+                    }
+
+                    const senhaConfere = await bcrypt.compare(dados.senhaAtual, usuario.senhaHash);
+
+                    if (!senhaConfere) {
+                        throw new BadRequestException('Senha atual incorreta.');
+                    }
+                }
+
+                if (emailAlterado) {
+                    const emailEmUso = await this.prisma.usuario.findUnique({
+                        where: { email: novoEmail },
+                        select: { id: true },
+                    });
+
+                    if (emailEmUso && emailEmUso.id !== id) {
+                        throw new ConflictException('Este e-mail já está em uso.');
+                    }
+                }
+
+                const data: {
                     nome?: string;
                     email?: string;
                     foto?: string | null;
                     avatar?: string | null;
                     senhaHash?: string;
+                    senhaAlteradaEm?: Date;
                 } = {
-
-
-                nome: dados.nome,
-                email: dados.email,
-                foto: dados.foto,
-                avatar: dados.avatar,
-                   
+                    nome: dados.nome,
+                    email: dados.email,
+                    foto: dados.foto,
+                    avatar: dados.avatar,
                 };
 
                 if (dados.senha) {
                     data.senhaHash = await bcrypt.hash(dados.senha, 10);
+                    data.senhaAlteradaEm = new Date();
                 }
 
-                return this.prisma.usuario.update({
-
-
-                    where: { id },
-                    data,
-                    select: {
-                        id: true,
-                        nome: true,
-                        email: true,
-                        foto: true,
-                        avatar: true,
-                        papel: true,
-                        criadoEm: true,
-                        atualizadoEm: true,
-                    },
-                });
-                
+                try {
+                    return await this.prisma.usuario.update({
+                        where: { id },
+                        data,
+                        select: {
+                            id: true,
+                            nome: true,
+                            email: true,
+                            foto: true,
+                            avatar: true,
+                            papel: true,
+                            criadoEm: true,
+                            atualizadoEm: true,
+                        },
+                    });
+                } catch (error) {
+                    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+                        throw new ConflictException('Este e-mail já está em uso.');
+                    }
+                    throw error;
+                }
             }
             
 

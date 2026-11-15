@@ -9,6 +9,7 @@ import type { App } from 'supertest/types';
 import { AuditoriaService } from '../src/auditoria.service';
 import { AuthController } from '../src/auth/auth.controller';
 import { AuthService } from '../src/auth/auth.service';
+import { MailService } from '../src/mail/mail.service';
 import { JwtAuthGuard } from '../src/auth/jwt-auth.guard';
 import { PrismaService } from '../src/prisma.service';
 
@@ -20,6 +21,7 @@ type UsuarioMock = {
 
 describe('POST /auth/login - integração', () => {
   let app: INestApplication<App>;
+  const enviarConfirmacao = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
 
   beforeAll(async () => {
     const senhaHash = await bcrypt.hash('Senha123!', 4);
@@ -33,6 +35,7 @@ describe('POST /auth/login - integração', () => {
             senhaHash,
           }),
         create: jest.fn(),
+        update: jest.fn<() => Promise<object>>().mockResolvedValue({}),
       },
     };
 
@@ -46,6 +49,7 @@ describe('POST /auth/login - integração', () => {
         AuthService,
         { provide: PrismaService, useValue: prisma },
         { provide: AuditoriaService, useValue: { registrar: jest.fn() } },
+        { provide: MailService, useValue: { enviarConfirmacaoLogin: enviarConfirmacao } },
       ],
     })
       .overrideGuard(JwtAuthGuard)
@@ -62,7 +66,7 @@ describe('POST /auth/login - integração', () => {
     }
   });
 
-  it('responde com sucesso ao autenticar pelo endpoint HTTP', async () => {
+  it('valida as credenciais e envia a confirmação por e-mail sem abrir sessão', async () => {
     const response = await request(app.getHttpServer())
       .post('/auth/login')
       .send({ email: 'aluno@exemplo.com', password: 'Senha123!' });
@@ -70,7 +74,8 @@ describe('POST /auth/login - integração', () => {
     // Verifica o status HTTP exato definido pelo controller (200).
     expect(response.status).toBe(200);
     // Verifica uma propriedade específica presente no corpo da resposta.
-    expect(response.body.message).toBe('Login realizado com sucesso!');
-    expect(response.headers['set-cookie']).toBeDefined();
+    expect(response.body.confirmacaoPendente).toBe(true);
+    expect(response.headers['set-cookie']).toBeUndefined();
+    expect(enviarConfirmacao).toHaveBeenCalledTimes(1);
   });
 });
