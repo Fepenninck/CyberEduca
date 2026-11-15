@@ -3,6 +3,7 @@
 const { spawnSync } = require('node:child_process');
 const { mkdirSync, writeFileSync } = require('node:fs');
 const { resolve } = require('node:path');
+const { migrationDatabaseUrl } = require('./prisma-connection.cjs');
 
 const MIGRATION = '20261115120000_normaliza_email_sessao_senha';
 const EMAIL = 'casetest1794754146@hackerai-test.dev';
@@ -97,7 +98,7 @@ async function main() {
   }
   prismaCommand(['generate']);
   const { PrismaClient } = require('@prisma/client');
-  const prisma = new PrismaClient();
+  const prisma = new PrismaClient({ datasources: { db: { url: migrationDatabaseUrl(process.env) } } });
   try {
     const result = await recover(prisma, {
       backup: async users => {
@@ -113,7 +114,7 @@ async function main() {
   } finally { await prisma.$disconnect(); }
 }
 
-module.exports = { recover, renderTarget, MIGRATION, IDS };
+module.exports = { main, recover, renderTarget, MIGRATION, IDS };
 if (require.main === module) main().catch(error => {
   console.error('[recuperação login]', error instanceof RecoveryError ? error.message :
     `Não foi possível validar o banco (${error.code || 'SEM_CODIGO'}). Recuperação interrompida.`);

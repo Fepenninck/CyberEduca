@@ -6,9 +6,9 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "postinstall": "node scripts/reparar-migracao-login.cjs",
+    "postinstall": "node scripts/preparar-deploy-render.cjs",
     "build": "prisma generate && nest build",
-    "deploy": "prisma migrate deploy",
+    "deploy": "node scripts/migrate-deploy.cjs",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
