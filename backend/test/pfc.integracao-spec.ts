@@ -27,6 +27,7 @@ import {
 import { AprendizagemService } from '../src/aprendizagem/aprendizagem.service';
 import { PrismaService } from '../src/prisma.service';
 import { AuditoriaService } from '../src/auditoria.service';
+import { MailService } from '../src/mail/mail.service';
 
 describe('Integração HTTP de trilhas e aulas', () => {
   let app: INestApplication;
@@ -37,6 +38,20 @@ describe('Integração HTTP de trilhas e aulas', () => {
 
   const usuariosCriados: string[] = [];
   const trilhasCriadas: string[] = [];
+  const linksEnviados: string[] = [];
+
+  const mailFalso = {
+    enviarConfirmacaoLogin: async (_destinatario: unknown, link: string) => {
+      linksEnviados.push(link);
+    },
+    enviarRecuperacaoSenha: async (_destinatario: unknown, link: string) => {
+      linksEnviados.push(link);
+    },
+  };
+
+  function tokenDoUltimoLink() {
+    return new URL(linksEnviados[linksEnviados.length - 1]).searchParams.get('token');
+  }
 
   beforeAll(async () => {
     process.env.NODE_ENV = 'test';
@@ -61,6 +76,7 @@ describe('Integração HTTP de trilhas e aulas', () => {
         AprendizagemService,
         PrismaService,
         AuditoriaService,
+        { provide: MailService, useValue: mailFalso },
       ],
     }).compile();
 
@@ -103,8 +119,16 @@ describe('Integração HTTP de trilhas e aulas', () => {
       })
       .expect(200);
 
+    expect(login.body.confirmacaoPendente).toBe(true);
+    expect(login.headers['set-cookie']).toBeUndefined();
+
+    const confirmacao = await request(url)
+      .post('/auth/login/confirmar')
+      .send({ token: tokenDoUltimoLink() })
+      .expect(200);
+
     // Guarda somente nome e valor do cookie de sessão.
-    const cookies = login.headers['set-cookie'];
+    const cookies = confirmacao.headers['set-cookie'];
     expect(cookies).toBeDefined();
 
     cookie = cookies[0].split(';')[0];
@@ -466,16 +490,25 @@ describe('Integração HTTP de trilhas e aulas', () => {
       where: { id: usuarioId },
     });
 
-    const resposta = await request(url)
+    const login = await request(url)
       .post('/auth/login')
       .send({
-        email: usuario.email,
+        email: usuario.email.toUpperCase(),
         password: 'Senha123!',
       })
       .expect(200);
 
+    expect(login.headers['set-cookie']).toBeUndefined();
+
+    const token = tokenDoUltimoLink();
+    const resposta = await request(url)
+      .post('/auth/login/confirmar')
+      .send({ token })
+      .expect(200);
+
     expect(resposta.body).toEqual({
       message: 'Login realizado com sucesso!',
+      papel: 'USUARIO',
     });
 
     expect(resposta.headers['set-cookie']).toEqual(
@@ -485,6 +518,67 @@ describe('Integração HTTP de trilhas e aulas', () => {
         ),
       ]),
     );
+
+    await request(url)
+      .post('/auth/login/confirmar')
+      .send({ token })
+      .expect(400);
+  });
+
+  it('linkDeLoginExpirado_naoDeveAutenticar', async () => {
+    const usuario = await prisma.usuario.findUniqueOrThrow({
+      where: { id: usuarioId },
+    });
+
+    await request(url)
+      .post('/auth/login')
+      .send({ email: usuario.email, password: 'Senha123!' })
+      .expect(200);
+
+    await prisma.usuario.update({
+      where: { id: usuarioId },
+      data: { tokenLoginExpiraEm: new Date(Date.now() - 1000) },
+    });
+
+    const resposta = await request(url)
+      .post('/auth/login/confirmar')
+      .send({ token: tokenDoUltimoLink() })
+      .expect(400);
+
+    expect(resposta.headers['set-cookie']).toBeUndefined();
+  });
+
+  it('recuperacaoDeSenha_deveTrocarASenhaEDerrubarSessoesAntigas', async () => {
+    const usuario = await prisma.usuario.findUniqueOrThrow({
+      where: { id: usuarioId },
+    });
+
+    await request(url)
+      .post('/auth/esqueci-senha')
+      .send({ email: usuario.email })
+      .expect(200);
+
+    const token = tokenDoUltimoLink();
+
+    // O iat do JWT é em segundos; espera para a troca ficar depois do token atual.
+    await new Promise((resolve) => setTimeout(resolve, 1100));
+
+    await request(url)
+      .post('/auth/redefinir-senha')
+      .send({ token, senha: 'NovaSenha1!' })
+      .expect(200);
+
+    await request(url).get('/trilhas').set('Cookie', cookie).expect(401);
+
+    await request(url)
+      .post('/auth/redefinir-senha')
+      .send({ token, senha: 'OutraSenha1!' })
+      .expect(400);
+
+    await request(url)
+      .post('/auth/login')
+      .send({ email: usuario.email, password: 'NovaSenha1!' })
+      .expect(200);
   });
 
   afterAll(async () => {

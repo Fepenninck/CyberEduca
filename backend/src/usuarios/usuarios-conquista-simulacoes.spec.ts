@@ -2,6 +2,7 @@ import { describe, expect, it, jest } from '@jest/globals';
 import { UsuariosService } from './usuarios.service';
 import { UsuariosController } from './usuarios.controller';
 import type { PrismaService } from '../prisma.service';
+import type { JwtService } from '@nestjs/jwt';
 
 function setup(simulacoes: boolean[], cenarios: boolean[]) {
     const first = new Date('2026-11-14T12:00:00Z');
@@ -34,7 +35,7 @@ describe('Insígnia de todas as simulações', () => {
     });
     it('encaminha o usuário autenticado do controller', () => {
         const service = { conquistaSimulacoes: jest.fn().mockReturnValue({ conquistada: false }) };
-        expect(new UsuariosController(service as unknown as UsuariosService).minhaConquistaSimulacoes({ user: { id: 'aluno' } })).toEqual({ conquistada: false });
+        expect(new UsuariosController(service as unknown as UsuariosService, {} as JwtService).minhaConquistaSimulacoes({ user: { id: 'aluno' } })).toEqual({ conquistada: false });
         expect(service.conquistaSimulacoes).toHaveBeenCalledWith('aluno');
     });
 });

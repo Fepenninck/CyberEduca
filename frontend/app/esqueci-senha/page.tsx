@@ -4,14 +4,16 @@ import { FormEvent, useState } from 'react'
 import Link from 'next/link'
 import { AlertCircle, CheckCircle2 } from 'lucide-react'
 import '../login/login.css'
+import { apiFetch } from '@/lib/api'
 
 export default function EsqueciSenhaPage() {
   const [email, setEmail] = useState('')
   const [error, setError] = useState('')
   const [sent, setSent] = useState(false)
+  const [loading, setLoading] = useState(false)
   const emailIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
-  const submit = (event: FormEvent<HTMLFormElement>) => {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     if (!email.trim()) {
@@ -25,7 +27,27 @@ export default function EsqueciSenhaPage() {
     }
 
     setError('')
-    setSent(true)
+    setLoading(true)
+
+    try {
+      const resposta = await apiFetch('/auth/esqueci-senha', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+
+      if (!resposta.ok) {
+        const dados = await resposta.json().catch(() => ({}))
+        setError(Array.isArray(dados.message) ? dados.message.join(' ') : dados.message || 'Não foi possível enviar o link agora.')
+        return
+      }
+
+      setSent(true)
+    } catch {
+      setError('Erro de conexão com o servidor.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -40,7 +62,7 @@ export default function EsqueciSenhaPage() {
             <div className="recovery-success" role="status">
               <span className="recovery-icon recovery-icon-success"><CheckCircle2 aria-hidden="true" /></span>
               <h1 id="recovery-title">Confira seu e-mail</h1>
-              <p>Se houver uma conta associada a <strong>{email}</strong>, você receberá as instruções para redefinir sua senha.</p>
+              <p>Se houver uma conta associada a <strong>{email}</strong>, você receberá um link para redefinir sua senha. Ele vale por 15 minutos e só pode ser usado uma vez.</p>
               <button type="button" className="recovery-secondary" onClick={() => setSent(false)}>Usar outro e-mail</button>
             </div>
           ) : (
@@ -67,7 +89,7 @@ export default function EsqueciSenhaPage() {
                   </div>
                   {error && <p className="login-error" id="recovery-email-error">{error}</p>}
                 </div>
-                <button className="login-submit recovery-submit" type="submit" aria-disabled={!emailIsValid}>Enviar instruções</button>
+                <button className="login-submit recovery-submit" type="submit" aria-disabled={!emailIsValid} disabled={loading}>{loading ? 'Enviando...' : 'Enviar link de recuperação'}</button>
               </form>
             </>
           )}

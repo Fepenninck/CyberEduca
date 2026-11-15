@@ -1,19 +1,24 @@
 import { Body, Controller, Delete, Get, Patch, Request, Res, UseGuards } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import type { Response } from 'express';
 import { DeleteAccountDto } from './dto/delete-account.dto';
 import { UsuariosService } from './usuarios.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { SESSION_COOKIE, sessionCookieOptions } from '../auth/session-cookie';
 
 @Controller('usuarios')
 export class UsuariosController {
-    constructor(private readonly usuariosService: UsuariosService) {}
+    constructor(
+        private readonly usuariosService: UsuariosService,
+        private readonly jwtService: JwtService,
+    ) {}
 
     @UseGuards(JwtAuthGuard)
     @Delete('me')
     async excluirMinhaConta(@Request() req: any, @Body() dados: DeleteAccountDto, @Res({ passthrough: true }) response: Response) {
         const result = await this.usuariosService.excluirConta(req.user.id, dados.confirmacao);
-        response.clearCookie('cybereduca_session', { path: '/', httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production' });
+        response.clearCookie(SESSION_COOKIE, sessionCookieOptions());
         return result;
     }
 
@@ -55,8 +60,20 @@ export class UsuariosController {
 
     @UseGuards(JwtAuthGuard)
     @Patch('me')
-    atualizarMeuPerfil(@Request() req: any, @Body() dados: UpdateProfileDto) {
-        return this.usuariosService.atualizar(req.user.id, dados);
+    async atualizarMeuPerfil(
+        @Request() req: any,
+        @Body() dados: UpdateProfileDto,
+        @Res({ passthrough: true }) response: Response,
+    ) {
+        const atualizado = await this.usuariosService.atualizar(req.user.id, dados);
+        const emailAlterado = dados.email !== undefined && dados.email !== req.user.email;
+
+        if (dados.senha || emailAlterado) {
+            const token = this.jwtService.sign({ sub: atualizado.id, email: atualizado.email });
+            response.cookie(SESSION_COOKIE, token, sessionCookieOptions());
+        }
+
+        return atualizado;
     }
 
 }

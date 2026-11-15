@@ -2,11 +2,10 @@
 
 import { FormEvent, useEffect, useState } from 'react'
 import Link from 'next/link'
-import { AlertCircle } from 'lucide-react'
+import { AlertCircle, MailCheck } from 'lucide-react'
 import './login.css'
-import { useRouter } from 'next/navigation'
-import { apiFetch, getCurrentUser } from '@/lib/api'
-import { beginLoading, beginRouteLoading } from '@/lib/loading-state'
+import { apiFetch } from '@/lib/api'
+import { beginLoading } from '@/lib/loading-state'
 import { waitForBackend } from '@/lib/backend-ready'
 
 type Errors = { email?: string; password?: string }
@@ -19,11 +18,22 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [errors, setErrors] = useState<Errors>({})
-  const router = useRouter()
   const [apiError, setApiError] = useState('')
   const [loading, setLoading] = useState(false)
   const [accountDeleted, setAccountDeleted] = useState(false)
-  useEffect(() => { setAccountDeleted(new URLSearchParams(window.location.search).get('conta') === 'excluida') }, [])
+  const [passwordReset, setPasswordReset] = useState(false)
+  const [pendingEmail, setPendingEmail] = useState('')
+  const [resendIn, setResendIn] = useState(0)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    setAccountDeleted(params.get('conta') === 'excluida')
+    setPasswordReset(params.get('senha') === 'redefinida')
+  }, [])
+  useEffect(() => {
+    if (resendIn <= 0) return
+    const timer = window.setTimeout(() => setResendIn((value) => value - 1), 1000)
+    return () => window.clearTimeout(timer)
+  }, [resendIn])
   const formIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && password.length >= 6
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
@@ -37,37 +47,47 @@ export default function LoginPage() {
   setErrors(nextErrors)
   if (Object.keys(nextErrors).length > 0) return
 
-  setApiError('')
-  setLoading(true)
-  const end = beginLoading('Entrando na sua conta…')
-
-  try {
-    const resposta = await apiFetch('/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    })
-
-    const dados = await resposta.json()
-
-    if (!resposta.ok) {
-      setApiError(dados.message || 'Não foi possível entrar.')
-      return
-    }
-
-    const usuario = await getCurrentUser()
-    const requestedPage = new URLSearchParams(window.location.search).get('next')
-    const studentPages = ['/aulas', '/simulacoes', '/quizzes', '/avaliacoes', '/verificador']
-    const destination = requestedPage && studentPages.includes(requestedPage) ? requestedPage : '/dashboard'
-    beginRouteLoading()
-    router.push(usuario.papel === 'ADMIN' ? '/admin' : destination)
-  } catch {
-    setApiError('Erro de conexão com o servidor.')
-  } finally {
-    setLoading(false)
-    end()
-  }
+  await requestLogin()
 }
+
+  const requestLogin = async () => {
+    if (loading) return
+    setApiError('')
+    setLoading(true)
+    const end = beginLoading('Enviando o link de acesso…')
+
+    try {
+      const resposta = await apiFetch('/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      })
+
+      const dados = await resposta.json().catch(() => ({}))
+
+      if (!resposta.ok) {
+        setApiError(Array.isArray(dados.message) ? dados.message.join(' ') : dados.message || 'Não foi possível entrar.')
+        return
+      }
+
+      setPasswordReset(false)
+      setAccountDeleted(false)
+      setPendingEmail(email.trim().toLowerCase())
+      setResendIn(30)
+    } catch {
+      setApiError('Erro de conexão com o servidor.')
+    } finally {
+      setLoading(false)
+      end()
+    }
+  }
+
+  const useAnotherAccount = () => {
+    setPendingEmail('')
+    setPassword('')
+    setApiError('')
+    setResendIn(0)
+  }
 
   const enterWithGoogle = async () => {
     if (loading) return
@@ -88,8 +108,17 @@ export default function LoginPage() {
     <div className="login-shell">
       <Link href="/" className="login-brand" aria-label="Voltar para o início do CyberEduca+"><img src="/cybereduca-logo.png" alt="CyberEduca+" /></Link>
       <section className="login-card" aria-labelledby="login-title">
+        {pendingEmail ? <div className="recovery-success login-pending" role="status">
+          <span className="recovery-icon recovery-icon-success"><MailCheck aria-hidden="true" /></span>
+          <h1 id="login-title">Confirme seu acesso</h1>
+          <p>Enviamos um link de confirmação para <strong>{pendingEmail}</strong>. Ele vale por 5 minutos e só pode ser usado uma vez.</p>
+          {apiError && <p className="login-error">{apiError}</p>}
+          <button className="login-submit" type="button" onClick={() => void requestLogin()} disabled={resendIn > 0 || loading} aria-disabled={resendIn > 0 || loading}>{loading ? 'Enviando...' : resendIn > 0 ? `Reenviar e-mail em ${resendIn}s` : 'Reenviar e-mail'}</button>
+          <button className="recovery-secondary" type="button" onClick={useAnotherAccount}>Usar outra conta</button>
+        </div> : <>
         <h1 id="login-title">Entre no CyberEduca+</h1>
         {accountDeleted && <p className="login-account-deleted" role="status">Sua conta e seu histórico foram excluídos.</p>}
+        {passwordReset && <p className="login-account-deleted" role="status">Senha redefinida. Entre com a nova senha.</p>}
         <form onSubmit={submit} noValidate>
           <div className="login-field"><label htmlFor="email">E-mail</label><div className={`login-input${errors.email ? ' is-invalid' : ''}`}><input id="email" name="email" type="email" autoComplete="email" value={email} onChange={(event) => { setEmail(event.target.value); setErrors((current) => ({ ...current, email: undefined })) }} aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? 'email-error' : undefined} />{errors.email && <AlertCircle aria-hidden="true" />}</div>{errors.email && <p className="login-error" id="email-error">{errors.email}</p>}</div>
           <div className="login-field"><label htmlFor="password">Senha</label><div className={`login-input${errors.password ? ' is-invalid' : ''}`}><input id="password" name="password" type={showPassword ? 'text' : 'password'} autoComplete="current-password" value={password} onChange={(event) => { setPassword(event.target.value); setErrors((current) => ({ ...current, password: undefined })) }} aria-invalid={Boolean(errors.password)} aria-describedby={errors.password ? 'password-error' : undefined} /><button type="button" className="password-toggle" onClick={() => setShowPassword((visible) => !visible)} aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}>{showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}</button></div>{errors.password && <p className="login-error" id="password-error">{errors.password}</p>}</div>
@@ -102,6 +131,7 @@ export default function LoginPage() {
                     <button type="button" disabled={loading} onClick={() => void enterWithGoogle()}><svg className="google-icon" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7A19.9 19.9 0 0 0 24 4 20 20 0 1 0 44 24c0-1.4-.1-2.7-.4-4Z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8A12 12 0 0 1 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7A19.9 19.9 0 0 0 24 4 20 20 0 0 0 6.3 14.7Z"/><path fill="#4CAF50" d="M24 44c5.2 0 10-2 13.5-5.2l-6.2-5.2A11.9 11.9 0 0 1 12.9 28l-6.5 5A20 20 0 0 0 24 44Z"/><path fill="#1976D2" d="M43.6 20H42V20H24v8h11.3a12 12 0 0 1-4 5.6l6.2 5.2C37.1 39.2 44 34 44 24c0-1.4-.1-2.7-.4-4Z"/></svg>Entrar com Google</button>
         </div>
         <p className="login-signup">Novo no CyberEduca+?<Link href="/cadastro"><span className="login-link-label">Criar minha conta</span></Link></p>
+        </>}
       </section>
     </div>
     <footer className="login-footer"><span>Copyright © 2026 <Link href="/">CyberEduca+</Link>.</span><span>Todos os direitos reservados. <Link href="/politicas#termos-de-uso">Termos de Uso</Link>, <Link href="/politicas#politica-de-privacidade">Política de Privacidade e LGPD</Link></span></footer>

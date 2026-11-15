@@ -1,4 +1,5 @@
 import { IsEmail, IsIn, IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
+import { NormalizarEmail } from '../../common/normalizar-email';
 
 export const AVATARES_DISPONIVEIS = [
   'escudo',
@@ -19,6 +20,7 @@ export class UpdateProfileDto {
   nome?: string;
 
   @IsOptional()
+  @NormalizarEmail()
   @IsEmail({}, { message: 'O e-mail fornecido é inválido.' })
   email?: string;
 
@@ -42,4 +44,9 @@ export class UpdateProfileDto {
   @Matches(/\d/, { message: 'A senha deve conter pelo menos um número.' })
   @Matches(/[^A-Za-z0-9\s]/, { message: 'A senha deve conter pelo menos um caractere especial.' })
   senha?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(128)
+  senhaAtual?: string;
 }

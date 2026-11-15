@@ -15,10 +15,14 @@ import type { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { ConfirmarTokenDto } from './dto/confirmar-token.dto';
+import { EsqueciSenhaDto } from './dto/esqueci-senha.dto';
+import { RedefinirSenhaDto } from './dto/redefinir-senha.dto';
 import { AcaoAuditoria } from '@prisma/client';
 import { AuditoriaService } from '../auditoria.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { GoogleAuthGuard } from './google-auth.guard';
+import { SESSION_COOKIE, sessionCookieOptions } from './session-cookie';
 
 @Controller('auth')
 export class AuthController {
@@ -39,19 +43,51 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   @UseGuards(LoginRateLimitGuard)
-  async login(
-    @Body() loginDto: LoginDto,
+  async login(@Body() loginDto: LoginDto, @Req() request: Request) {
+    return this.authService.login(loginDto, {
+      ip: request.ip,
+      userAgent: request.get('user-agent'),
+    });
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('login/confirmar')
+  async confirmarLogin(
+    @Body() dto: ConfirmarTokenDto,
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const result = await this.authService.login(loginDto, {
+    const result = await this.authService.confirmarLogin(dto.token, {
       ip: request.ip,
       userAgent: request.get('user-agent'),
     });
 
     this.setSessionCookie(response, result.access_token);
 
-    return { message: result.message };
+    return { message: result.message, papel: result.papel };
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('esqueci-senha')
+  async esqueciSenha(@Body() dto: EsqueciSenhaDto) {
+    return this.authService.solicitarRecuperacaoSenha(dto.email);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('redefinir-senha')
+  async redefinirSenha(
+    @Body() dto: RedefinirSenhaDto,
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const result = await this.authService.redefinirSenha(dto.token, dto.senha, {
+      ip: request.ip,
+      userAgent: request.get('user-agent'),
+    });
+
+    response.clearCookie(SESSION_COOKIE, sessionCookieOptions());
+
+    return result;
   }
 
   @HttpCode(HttpStatus.OK)
@@ -71,7 +107,7 @@ export class AuthController {
       sucesso: true,
     });
 
-    response.clearCookie('cybereduca_session', this.cookieOptions());
+    response.clearCookie(SESSION_COOKIE, sessionCookieOptions());
 
     return { message: 'Sessão encerrada com sucesso.' };
   }
@@ -105,17 +141,7 @@ export class AuthController {
     res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
   }
 
-  private cookieOptions() {
-    return {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax' as const,
-      maxAge: 24 * 60 * 60 * 1000,
-      path: '/',
-    };
-  }
-
   private setSessionCookie(response: Response, token: string) {
-    response.cookie('cybereduca_session', token, this.cookieOptions());
+    response.cookie(SESSION_COOKIE, token, sessionCookieOptions());
   }
 }

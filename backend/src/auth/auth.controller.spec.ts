@@ -8,7 +8,13 @@ const criarRequest = (extra: Record<string, unknown> = {}) => ({
 });
 
 describe('AuthController', () => {
-  const authService = { register: jest.fn<(...args: any[]) => Promise<any>>(), login: jest.fn<(...args: any[]) => Promise<any>>() };
+  const authService = {
+    register: jest.fn<(...args: any[]) => Promise<any>>(),
+    login: jest.fn<(...args: any[]) => Promise<any>>(),
+    confirmarLogin: jest.fn<(...args: any[]) => Promise<any>>(),
+    solicitarRecuperacaoSenha: jest.fn<(...args: any[]) => Promise<any>>(),
+    redefinirSenha: jest.fn<(...args: any[]) => Promise<any>>(),
+  };
   const jwtService = { sign: jest.fn().mockReturnValue('token-google') };
   const auditoria = { registrar: jest.fn<(...args: any[]) => Promise<void>>() };
   let controller: AuthController;
@@ -26,24 +32,47 @@ describe('AuthController', () => {
     expect(authService.register).toHaveBeenCalledWith(dto, { ip: '127.0.0.1', userAgent: 'jest-agent' });
   });
 
-  it('faz login gravando o token em cookie HttpOnly e sem devolvê-lo no corpo', async () => {
-    authService.login.mockResolvedValue({ message: 'Login realizado.', access_token: 'jwt-123' });
+  it('faz login enviando a confirmação por e-mail, sem abrir sessão', async () => {
+    const pendente = { message: 'Enviamos um link de confirmação.', confirmacaoPendente: true };
+    authService.login.mockResolvedValue(pendente);
+    const dto = { email: 'ana@teste.com', password: 'x' } as any;
+
+    await expect(controller.login(dto, criarRequest() as any)).resolves.toEqual(pendente);
+    expect(authService.login).toHaveBeenCalledWith(dto, { ip: '127.0.0.1', userAgent: 'jest-agent' });
+  });
+
+  it('confirma o login gravando o token em cookie HttpOnly e sem devolvê-lo no corpo', async () => {
+    authService.confirmarLogin.mockResolvedValue({ message: 'Login realizado.', access_token: 'jwt-123', papel: 'USUARIO' });
     const response = { cookie: jest.fn() };
 
-    await expect(controller.login({ email: 'ana@teste.com', senha: 'x' } as any, criarRequest() as any, response as any))
-      .resolves.toEqual({ message: 'Login realizado.' });
+    await expect(controller.confirmarLogin({ token: 'abc' }, criarRequest() as any, response as any))
+      .resolves.toEqual({ message: 'Login realizado.', papel: 'USUARIO' });
     expect(response.cookie).toHaveBeenCalledWith('cybereduca_session', 'jwt-123', expect.objectContaining({ httpOnly: true, sameSite: 'lax', path: '/' }));
   });
 
   it('usa cookie seguro em produção', async () => {
     const ambiente = process.env.NODE_ENV;
     process.env.NODE_ENV = 'production';
-    authService.login.mockResolvedValue({ message: 'ok', access_token: 'jwt' });
+    authService.confirmarLogin.mockResolvedValue({ message: 'ok', access_token: 'jwt', papel: 'USUARIO' });
     const response = { cookie: jest.fn() };
 
-    await controller.login({} as any, criarRequest() as any, response as any);
+    await controller.confirmarLogin({ token: 'abc' }, criarRequest() as any, response as any);
     expect(response.cookie).toHaveBeenCalledWith('cybereduca_session', 'jwt', expect.objectContaining({ secure: true }));
     process.env.NODE_ENV = ambiente;
+  });
+
+  it('pede a recuperação de senha e redefine a senha limpando o cookie', async () => {
+    authService.solicitarRecuperacaoSenha.mockResolvedValue({ message: 'Se houver uma conta...' });
+    authService.redefinirSenha.mockResolvedValue({ message: 'Senha redefinida.' });
+    const response = { clearCookie: jest.fn() };
+
+    await expect(controller.esqueciSenha({ email: 'ana@teste.com' })).resolves.toEqual({ message: 'Se houver uma conta...' });
+    expect(authService.solicitarRecuperacaoSenha).toHaveBeenCalledWith('ana@teste.com');
+
+    await expect(controller.redefinirSenha({ token: 't', senha: 'NovaSenha1!' }, criarRequest() as any, response as any))
+      .resolves.toEqual({ message: 'Senha redefinida.' });
+    expect(authService.redefinirSenha).toHaveBeenCalledWith('t', 'NovaSenha1!', { ip: '127.0.0.1', userAgent: 'jest-agent' });
+    expect(response.clearCookie).toHaveBeenCalledWith('cybereduca_session', expect.objectContaining({ httpOnly: true }));
   });
 
   it('encerra a sessão, registra auditoria e limpa o cookie', async () => {
