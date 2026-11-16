@@ -23,6 +23,16 @@ function escaparHtml(valor: string) {
     .replace(/'/g, '&#39;');
 }
 
+type ConteudoEmail = { assunto: string; texto: string; html: string };
+
+function remetente() {
+  const configurado = process.env.MAIL_FROM || `CyberEduca+ <${process.env.SMTP_USER ?? ''}>`;
+  const partes = /^\s*(.*?)\s*<([^>]+)>\s*$/.exec(configurado);
+  const nome = partes?.[1] || 'CyberEduca+';
+  const email = partes?.[2] || configurado.trim();
+  return { nome, email, formatado: `${nome} <${email}>` };
+}
+
 @Injectable()
 export class MailService {
   private readonly logger = new Logger(MailService.name);
@@ -70,36 +80,85 @@ export class MailService {
   }
 
   private async enviar(mensagem: MensagemComBotao) {
-    const transporter = this.obterTransporter();
+    const conteudo = this.montarConteudo(mensagem);
 
-    if (!transporter) {
-      if (process.env.NODE_ENV === 'production') {
-        throw new ServiceUnavailableException('O envio de e-mails não está configurado.');
+    try {
+      if (process.env.BREVO_API_KEY) {
+        await this.enviarPelaBrevo(mensagem.destinatario, conteudo);
+        return;
       }
-      this.logger.warn(
-        `SMTP não configurado. Link para ${mensagem.destinatario.email}: ${mensagem.link}`,
-      );
-      return;
-    }
 
+      const transporter = this.obterTransporter();
+
+      if (!transporter) {
+        if (process.env.NODE_ENV === 'production') {
+          throw new ServiceUnavailableException('O envio de e-mails não está configurado.');
+        }
+        this.logger.warn(
+          `Envio de e-mail não configurado. Link para ${mensagem.destinatario.email}: ${mensagem.link}`,
+        );
+        return;
+      }
+
+      await transporter.sendMail({
+        from: remetente().formatado,
+        to: mensagem.destinatario.email,
+        subject: conteudo.assunto,
+        text: conteudo.texto,
+        html: conteudo.html,
+      });
+    } catch (error) {
+      if (error instanceof ServiceUnavailableException) throw error;
+      this.logger.error(
+        `Falha ao enviar e-mail para ${mensagem.destinatario.email}: ${error instanceof Error ? error.message : String(error)}`,
+      );
+      throw new ServiceUnavailableException(
+        'Não foi possível enviar o e-mail agora. Tente novamente em instantes.',
+      );
+    }
+  }
+
+  private async enviarPelaBrevo(destinatario: Destinatario, conteudo: ConteudoEmail) {
+    const { nome, email } = remetente();
+    const resposta = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        'content-type': 'application/json',
+        'api-key': process.env.BREVO_API_KEY as string,
+      },
+      body: JSON.stringify({
+        sender: { name: nome, email },
+        to: [{ email: destinatario.email, name: destinatario.nome }],
+        subject: conteudo.assunto,
+        htmlContent: conteudo.html,
+        textContent: conteudo.texto,
+      }),
+      signal: AbortSignal.timeout(10_000),
+    });
+
+    if (!resposta.ok) {
+      const detalhe = await resposta.text().catch(() => '');
+      throw new Error(`Brevo respondeu ${resposta.status}: ${detalhe}`);
+    }
+  }
+
+  private montarConteudo(mensagem: MensagemComBotao): ConteudoEmail {
     const nome = escaparHtml(mensagem.destinatario.nome);
     const link = escaparHtml(mensagem.link);
 
-    try {
-      await transporter.sendMail({
-        from: process.env.MAIL_FROM || `CyberEduca+ <${process.env.SMTP_USER}>`,
-        to: mensagem.destinatario.email,
-        subject: mensagem.assunto,
-        text: [
-          `Olá, ${mensagem.destinatario.nome}!`,
-          '',
-          mensagem.texto,
-          `${mensagem.botao}: ${mensagem.link}`,
-          '',
-          `O link vale por ${mensagem.validade} e só pode ser usado uma vez.`,
-          'Se não foi você, ignore este e-mail.',
-        ].join('\n'),
-        html: `<div style="background:#080d18;padding:32px 16px;font-family:Arial,Helvetica,sans-serif;color:#e8eef6">
+    return {
+      assunto: mensagem.assunto,
+      texto: [
+        `Olá, ${mensagem.destinatario.nome}!`,
+        '',
+        mensagem.texto,
+        `${mensagem.botao}: ${mensagem.link}`,
+        '',
+        `O link vale por ${mensagem.validade} e só pode ser usado uma vez.`,
+        'Se não foi você, ignore este e-mail.',
+      ].join('\n'),
+      html: `<div style="background:#080d18;padding:32px 16px;font-family:Arial,Helvetica,sans-serif;color:#e8eef6">
   <div style="max-width:480px;margin:0 auto;background:#162233;border-radius:8px;padding:32px">
     <h1 style="margin:0 0 16px;font-size:20px;color:#ffffff">${mensagem.titulo}</h1>
     <p style="margin:0 0 12px;font-size:14px;line-height:1.6">Olá, ${nome}!</p>
@@ -108,14 +167,6 @@ export class MailService {
     <p style="margin:24px 0 0;font-size:12px;line-height:1.6;color:#91a1b7">O link vale por ${mensagem.validade} e só pode ser usado uma vez. Se não foi você, ignore este e-mail.</p>
   </div>
 </div>`,
-      });
-    } catch (error) {
-      this.logger.error(
-        `Falha ao enviar e-mail para ${mensagem.destinatario.email}: ${error instanceof Error ? error.message : String(error)}`,
-      );
-      throw new ServiceUnavailableException(
-        'Não foi possível enviar o e-mail agora. Tente novamente em instantes.',
-      );
-    }
+    };
   }
 }
