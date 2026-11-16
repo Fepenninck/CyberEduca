@@ -1,5 +1,3 @@
-/* CyberEduca+ student design tokens and shared components. */
-/* Inclui painéis, listas, código, campos e elementos abertos em portais. */
 body:has(.app-shell) * {
   scrollbar-color: #526780 #101927;
   scrollbar-width: thin;
@@ -26,7 +24,7 @@ body:has(.app-shell) *::-webkit-scrollbar-button {
   width: 0;
   height: 0;
 }
-/* Chromium precisa usar os pseudo-elementos para respeitar as pontas retas. */
+/* Chromium usa pseudo-elementos para manter as pontas retas da barra. */
 @supports selector(::-webkit-scrollbar) {
   body:has(.app-shell) * {
     scrollbar-color: auto !important;
@@ -408,7 +406,6 @@ body:has(.app-shell) .site-scrollbar:hover i {
     transition-duration: .01ms;
   }
 }
-/* Allow real course names and user content to determine component height. */
 .app-shell.dashboard-page :is(.activity-grid, .profile-overview, .profile-level-content,
   .profile-study-metrics, .profile-form-grid, .simulation-layout, .verificador-layout,
   .prova-resultado-resumo, .track-learning-grid, .track-learning-aside,

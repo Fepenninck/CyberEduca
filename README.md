@@ -98,7 +98,7 @@ npm run db:seed        # carrega os dados iniciais
 npm run start:dev
 ```
 
-A API sobe em `http://localhost:3000`.
+A API sobe em `http://localhost:3002` por padrão. A variável `PORT` permite alterar a porta.
 
 ### 2. Front-end
 

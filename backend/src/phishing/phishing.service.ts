@@ -81,7 +81,6 @@ export class PhishingService {
     return cenario;
   }
 
-  // ADMINISTRAÇÃO
 
   listarCenariosAdmin() {
     return this.prisma.cenarioPhishing.findMany({
@@ -191,7 +190,6 @@ export class PhishingService {
     });
   }
 
-  // CONSULTA DO ALUNO
 
   listarCenarios(aulaId?: string, usuarioId?: string) {
     return this.prisma.cenarioPhishing.findMany({

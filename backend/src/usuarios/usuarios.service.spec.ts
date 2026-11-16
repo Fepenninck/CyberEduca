@@ -40,7 +40,6 @@ describe('UsuariosService', () => {
     service = module.get(UsuariosService);
   });
 
-  // TESTE 1: CAMINHO FELIZ
   it('deve retornar os dados públicos de um usuário existente', async () => {
     const usuario = {
       id: 'usuario-1',
@@ -63,7 +62,6 @@ describe('UsuariosService', () => {
     expect(consulta.select.senhaHash).toBeUndefined();
   });
 
-  // TESTE 2: VIOLAÇÃO DE REGRA
   it('deve lançar NotFoundException ao buscar um usuário inexistente', async () => {
     prismaMock.usuario.findUnique.mockResolvedValue(null);
 
@@ -73,7 +71,6 @@ describe('UsuariosService', () => {
     await expect(operacao).rejects.toThrow('Usuário não encontrado');
   });
 
-  // TESTE 3: CASO-LIMITE
   it('não deve alterar a senha ao atualizar um usuário sem enviar senha', async () => {
     prismaMock.usuario.findUnique.mockResolvedValue({
       email: 'thiago@cybereduca.test',
@@ -92,7 +89,6 @@ describe('UsuariosService', () => {
     expect(chamada.data).not.toHaveProperty('senhaHash');
   });
 
-  // TESTE 4: AVATAR TEMÁTICO
   it('deve salvar o avatar escolhido e devolvê-lo no perfil', async () => {
     prismaMock.usuario.findUnique.mockResolvedValue({
       email: 'thiago@cybereduca.test',

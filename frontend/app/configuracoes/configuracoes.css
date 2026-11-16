@@ -1,5 +1,4 @@
-﻿/* Account editor, scoped to the settings page. */
-.app-shell.account-settings-page .account-settings-wrap {
+﻿.app-shell.account-settings-page .account-settings-wrap {
   width: min(calc(100% - 48px), 820px);
   margin: 0 auto;
   padding: 38px 0 56px;

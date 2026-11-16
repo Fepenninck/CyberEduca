@@ -1,5 +1,4 @@
-﻿/* Dashboard composition follows the supplied FlexPe admin overview. */
-.edu-dashboard { --edu-muted: #626c79; --edu-tone: #536174; --edu-tone-bg: #f2f5f8; --edu-tone-line: #dce2ea; }
+﻿.edu-dashboard { --edu-muted: #626c79; --edu-tone: #536174; --edu-tone-bg: #f2f5f8; --edu-tone-line: #dce2ea; }
 .edu-dashboard [data-tone=success] { --edu-tone: #216340; --edu-tone-bg: #eaf6ee; --edu-tone-line: #a6d6b7; }
 .edu-dashboard [data-tone=warning] { --edu-tone: #805b09; --edu-tone-bg: #fff7df; --edu-tone-line: #ead08a; }
 .edu-dashboard [data-tone=danger] { --edu-tone: #a72b38; --edu-tone-bg: #fff0f1; --edu-tone-line: #edb1b8; }

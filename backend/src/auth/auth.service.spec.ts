@@ -1,4 +1,3 @@
-// backend/src/auth/auth.service.spec.ts
 import { jest } from '@jest/globals';
 import { BadRequestException, HttpException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';

@@ -59,7 +59,6 @@ export const avaliacoes: Avaliacao[] = [
   },
 ];
 
-// A nova prova basica usa situacoes das aulas reescritas para o publico leigo.
 const basicLessons = libraryCourses.filter(course => course.level === 'BASICO').flatMap(course => course.lessons.slice(0, 3)).slice(0, 10);
 avaliacoes[0].descricao = 'Escolha cuidados simples para contas, mensagens, aparelhos e arquivos. Tudo e respondido aqui no site.';
 avaliacoes[0].questoes = basicLessons.map((lesson, index) => {

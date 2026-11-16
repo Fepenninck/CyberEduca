@@ -30,7 +30,6 @@ export default function SimulacoesPage() {
     for (const item of [...simulations, ...scenarios]) groups.set(item.category, [...(groups.get(item.category) ?? []), item])
     const order: SimulationLevel[] = ['BASICO', 'INTERMEDIARIO', 'AVANCADO']
     for (const group of groups.values()) group.sort((a, b) => order.indexOf(a.level) - order.indexOf(b.level) || a.title.localeCompare(b.title, 'pt-BR'))
-    // Alternate topics so the first page offers different kinds of practice.
     const all: Card[] = []
     const pools = [...groups.values()].sort((a, b) => order.indexOf(a[0].level) - order.indexOf(b[0].level) || a[0].category.localeCompare(b[0].category, 'pt-BR'))
     for (let index = 0; pools.some(group => group[index]); index++) for (const group of pools) if (group[index]) all.push(group[index])

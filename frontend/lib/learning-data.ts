@@ -2,8 +2,6 @@ export type Lesson = { slug: string; title: string; duration: string; status: 'c
 export type Module = { title: string; lessons: Lesson[] }
 export type Track = { slug: string; title: string; description: string; difficulty: 'Iniciante' | 'Intermediário' | 'Avançado'; modules: number; lessons: number; duration: string; progress: number; color: string; category: string; modulesData: Module[] }
 
-// Dados visuais temporários. Os mesmos IDs existem no seed do backend para que
-// o link da interface abra uma aula real e persistida no PostgreSQL.
 export const tracks: Track[] = [{
   slug: 'nova-trilha', title: 'Nova trilha', description: 'Escreva aqui a descrição da sua trilha.',
   difficulty: 'Iniciante', modules: 1, lessons: 1, duration: 'A definir', progress: 0,

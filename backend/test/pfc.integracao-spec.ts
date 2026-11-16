@@ -91,7 +91,6 @@ describe('Integração HTTP de trilhas e aulas', () => {
       }),
     );
 
-    // O sistema operacional escolhe uma porta disponível.
     await app.listen(0, '127.0.0.1');
 
     url = await app.getUrl();
@@ -129,7 +128,6 @@ describe('Integração HTTP de trilhas e aulas', () => {
       .send({ token: tokenDoUltimoLink() })
       .expect(200);
 
-    // Guarda somente nome e valor do cookie de sessão.
     const cookies = confirmacao.headers['set-cookie'];
     expect(cookies).toBeDefined();
 
@@ -187,14 +185,12 @@ describe('Integração HTTP de trilhas e aulas', () => {
 
   it('criarTrilha_comDadosValidos_deveRetornar201EPersistir', async () => {
     await prisma.usuario.update({ where: { id: usuarioId }, data: { papel: 'ADMIN' } });
-    // Arrange: prepara os dados.
     const dados = {
       titulo: `Trilha ${randomUUID()}`,
       descricao: 'Introdução à segurança digital',
       ordem: 1,
     };
 
-    // Act: faz uma chamada HTTP real.
     const resposta = await request(url)
       .post('/trilhas')
       .set('Cookie', cookie)
@@ -203,13 +199,11 @@ describe('Integração HTTP de trilhas e aulas', () => {
 
     trilhasCriadas.push(resposta.body.id);
 
-    // Assert: verifica o corpo da resposta.
     expect(resposta.body).toMatchObject({
       id: expect.any(String),
       ...dados,
     });
 
-    // Confirma que os dados foram gravados no banco.
     const trilhaNoBanco = await prisma.trilha.findUnique({
       where: {
         id: resposta.body.id,
@@ -311,7 +305,6 @@ describe('Integração HTTP de trilhas e aulas', () => {
       trilhaId: trilha.id,
     });
 
-    // Confirma o relacionamento também pela API.
     const detalhe = await request(url)
       .get(`/trilhas/${trilha.id}`)
       .set('Cookie', cookie)

@@ -73,7 +73,6 @@
   .app-shell.learning-paths-page .learning-trail .learning-path-image { height: 140px; flex-basis: 140px; }
 }
 .app-shell.learning-paths-page .learning-trail { --level-color: #24b4ff; }
-/* Uma única estrada; todos os cards ficam inteiros no mesmo plano. */
 .app-shell.learning-paths-page .learning-trail-route {
   align-items: stretch;
   padding: 20px 36px 90px 0;
@@ -148,11 +147,7 @@
 .app-shell.learning-paths-page .learning-path-image:has(img) { background: none; }
 .app-shell.learning-paths-page .paths-photo-credit { margin-top: 24px; color: var(--student-subtle); font-size: 11px; }
 .app-shell.learning-paths-page .paths-photo-credit a { color: inherit; text-decoration: underline; }
-
-/* O percurso segue do alinhamento do conteudo ate a borda da janela. */
 .app-shell.learning-paths-page .learning-trail-viewport { max-width: none; flex-shrink: 0; }
-
-/* Cards menores e alternados; altura livre evita cortar o conteudo. */
 .app-shell.learning-paths-page { transition: background-color 800ms ease; }
 .app-shell.learning-paths-page[data-active-level="BASICO"] { background-color: #172738; }
 .app-shell.learning-paths-page[data-active-level="INTERMEDIARIO"] { background-color: #292936; }
@@ -183,8 +178,6 @@
   .trail-active-level { flex-direction: column; align-items: flex-start; gap: 4px; }
 }
 @media (prefers-reduced-motion: reduce) { .app-shell.learning-paths-page { transition: none; } }
-
-/* A base permanece azul; apenas o halo muda com o nivel. */
 .app-shell.learning-paths-page,
 .app-shell.learning-paths-page[data-active-level] { background-color: #172334; }
 .app-shell.learning-paths-page .learning-paths { position: relative; z-index: 1; }
@@ -197,9 +190,6 @@
 .learning-paths-page[data-active-level="INTERMEDIARIO"] .trail-ambient span:nth-child(2),
 .learning-paths-page[data-active-level="AVANCADO"] .trail-ambient span:nth-child(3) { opacity: 1; }
 .app-shell.learning-paths-page .learning-trail-viewport { user-select: none; }
-
-
-/* Cabecalho centralizado, percurso amplo em vez de uma faixa no meio da tela. */
 .app-shell.learning-paths-page .learning-paths.content-wrap {
   width: 100%; max-width: none; padding: 36px clamp(20px, 3vw, 56px) 40px;
 }
@@ -217,8 +207,6 @@
   .app-shell.learning-paths-page .learning-paths.content-wrap { padding-top: 24px; }
   .app-shell.learning-paths-page .paths-hero { gap: 16px; }
 }
-
-/* Controles no centro do percurso; identificacao do nivel permanece a esquerda. */
 .app-shell.learning-paths-page .learning-trail-controls {
   display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center;
 }
@@ -226,8 +214,6 @@
 .app-shell.learning-paths-page .learning-trail-controls button { width: 42px; height: 36px; touch-action: none; user-select: none; }
 .app-shell.learning-paths-page .learning-trail-controls button:active { background: #354962; }
 @media(max-width: 700px) { .learning-trail-controls .trail-active-level small { display: none; } }
-
-/* Pagina fixa: apenas o percurso pode deslizar na horizontal. */
 html:has(.learning-paths-page), body:has(.learning-paths-page) { height: 100%; overflow: hidden; }
 body:has(.learning-paths-page) .site-scrollbar { display: none; }
 .app-shell.learning-paths-page { display: flex; flex-direction: column; height: 100dvh; min-height: 0; overflow: hidden; }
@@ -240,8 +226,6 @@ body:has(.learning-paths-page) .site-scrollbar { display: none; }
 .app-shell.learning-paths-page .learning-trail-controls { flex-shrink: 0; }
 .app-shell.learning-paths-page .learning-trail-viewport { flex: 1; min-height: 0; }
 @media(max-height: 650px) { .app-shell.learning-paths-page .paths-journey { padding-block: 6px; } .app-shell.learning-paths-page .paths-hero { gap: 12px; } }
-
-/* Resumo compacto do percurso, sem circulos e linhas decorativas. */
 .app-shell.learning-paths-page .paths-heading {
   display: grid; grid-template-columns: minmax(0, 1fr) minmax(360px, .85fr);
   align-items: center; gap: 64px; max-width: 1440px; margin-inline: auto; padding: 24px 24px 48px;
@@ -269,8 +253,6 @@ body:has(.learning-paths-page) .site-scrollbar { display: none; }
   .app-shell.learning-paths-page .paths-heading .paths-journey { gap: 14px; }
   .paths-level-count { font-size: 11px; }
 }
-
-/* Resumo e navegacao com alinhamento compartilhado. */
 .app-shell.learning-paths-page .paths-heading {
   grid-template-columns: minmax(0, 1fr) minmax(360px, .9fr); gap: 40px;
   margin: 0 auto 20px; padding: 20px 0 28px;
@@ -317,8 +299,6 @@ body:has(.learning-paths-page) .site-scrollbar { display: none; }
   .app-shell.learning-paths-page .learning-trail-controls { grid-template-columns: 1fr auto; gap: 12px; }
   .app-shell.learning-paths-page .learning-trail-controls > div { grid-column: 2; }
 }
-
-/* Resumo com as superficies planas e a tipografia do dashboard. */
 .app-shell.learning-paths-page .paths-heading .paths-journey li { gap: 8px; padding: 18px 16px; }
 .app-shell.learning-paths-page .paths-heading .paths-level-label { flex-direction: column; align-items: flex-start; gap: 10px; }
 .app-shell.learning-paths-page .paths-heading .paths-level-label strong { color: var(--student-muted); font-size: 12px; font-weight: 500; }

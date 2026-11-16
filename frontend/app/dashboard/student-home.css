@@ -1,4 +1,3 @@
-/* The dashboard puts the next lesson and the student's actual progress first. */
 .app-shell.student-home .dashboard-welcome {
   margin-bottom: 32px;
   gap: 16px;

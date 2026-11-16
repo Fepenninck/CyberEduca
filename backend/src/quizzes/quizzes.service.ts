@@ -95,7 +95,6 @@ export class QuizzesService {
     return quiz;
   }
 
-  // ADMINISTRAÇÃO
 
   criarQuestaoCompleta(quizId: string, dto: CriarQuestaoCompletaDto) {
     return this.executarTransacao(async tx => {
@@ -325,7 +324,6 @@ export class QuizzesService {
     });
   }
 
-  // CONSULTA DO ALUNO
 
   async listarQuizzes(aulaId?: string, usuarioId?: string) {
     const quizzes = await this.prisma.quiz.findMany({

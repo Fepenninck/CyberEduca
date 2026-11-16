@@ -50,7 +50,6 @@ describe('AprendizagemService - trilhas', () => {
     service = module.get(AprendizagemService);
   });
 
-  // TESTE 1: CAMINHO FELIZ
   it('deve retornar os detalhes de uma trilha existente e liberada', async () => {
     prismaMock.trilha.findUnique.mockResolvedValue({
       id: trilhaId,
@@ -86,7 +85,6 @@ describe('AprendizagemService - trilhas', () => {
     });
   });
 
-  // TESTE 2: VIOLAÇÃO DE REGRA
   it('deve lançar NotFoundException ao detalhar uma trilha inexistente', async () => {
     prismaMock.trilha.findUnique.mockResolvedValue(null);
 
@@ -98,7 +96,6 @@ describe('AprendizagemService - trilhas', () => {
     expect(prismaMock.progressoAula.findMany).not.toHaveBeenCalled();
   });
 
-  // TESTE 3: CASO-LIMITE
   it('deve retornar 0% e nenhuma aula quando a trilha existe mas não tem aulas', async () => {
     prismaMock.trilha.findUnique.mockResolvedValue({
       id: trilhaId,

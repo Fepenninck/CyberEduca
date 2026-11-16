@@ -41,7 +41,6 @@ export function serializarMaterialAula(
   titulo: string,
   nivel?: LessonMaterial["level"],
 ): string {
-  // Preserve additional editorial metadata, introductory activities and nested resources.
   return JSON.stringify({
     ...material,
     format: "cybereduca-lesson-v1",

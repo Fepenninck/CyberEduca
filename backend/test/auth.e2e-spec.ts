@@ -71,9 +71,7 @@ describe('POST /auth/login - integração', () => {
       .post('/auth/login')
       .send({ email: 'aluno@exemplo.com', password: 'Senha123!' });
 
-    // Verifica o status HTTP exato definido pelo controller (200).
     expect(response.status).toBe(200);
-    // Verifica uma propriedade específica presente no corpo da resposta.
     expect(response.body.confirmacaoPendente).toBe(true);
     expect(response.headers['set-cookie']).toBeUndefined();
     expect(enviarConfirmacao).toHaveBeenCalledTimes(1);

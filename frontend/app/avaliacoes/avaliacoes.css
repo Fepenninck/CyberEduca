@@ -1,5 +1,4 @@
-﻿/* Catalogo de avaliacoes: mesma composicao da area de quizzes, com dados de provas. */
-.assessment-catalog-page .avaliacoes-page .dashboard-wrap { width: min(1260px, calc(100% - 48px)); padding: 38px 0 60px; }
+﻿.assessment-catalog-page .avaliacoes-page .dashboard-wrap { width: min(1260px, calc(100% - 48px)); padding: 38px 0 60px; }
 .assessment-catalog-page .avaliacoes-page .activity-heading { margin-bottom: 28px; }
 .assessment-catalog-page .avaliacoes-page .activity-heading h1 { font-size: clamp(28px, 3vw, 38px); }
 .assessment-catalog-page .avaliacoes-page .activity-heading p { max-width: 720px; font-size: 14px; }

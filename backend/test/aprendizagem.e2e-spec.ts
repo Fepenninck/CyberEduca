@@ -71,7 +71,6 @@ describe('Detalhamento de trilhas - integração', () => {
 
     prisma = app.get(PrismaService);
 
-    // Garante que a trilha realmente não existe no banco de teste
     await prisma.trilha.deleteMany({
       where: {
         id: trilhaInexistenteId,

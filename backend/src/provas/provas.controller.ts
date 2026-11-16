@@ -22,7 +22,6 @@ import { CriarQuestaoProvaDto } from './dto/criar-questao-prova.dto';
 import { CriarAlternativaProvaDto } from './dto/criar-alternativa-prova.dto';
 import { EnviarTentativaProvaDto } from './dto/enviar-tentativa-prova.dto';
 
-// Endpoints administrativos consumidos pelo painel do Caio.
 @Controller('admin/provas')
 @UseGuards(JwtAuthGuard, AdminGuard)
 export class AdminProvasController {
@@ -89,7 +88,6 @@ export class AdminProvasController {
   }
 }
 
-// Endpoints do aluno.
 @Controller('provas')
 @UseGuards(JwtAuthGuard)
 export class ProvasController {

@@ -39,7 +39,6 @@ export class ProvasService {
     private readonly avaliacoes: AvaliacoesService,
   ) {}
 
-  // ---------- Administracao ----------
 
   async criarProva(dados: CriarProvaDto, atorId: string) {
     const trilha = await this.prisma.trilha.findUnique({
@@ -276,7 +275,6 @@ export class ProvasService {
     return prova;
   }
 
-  // ---------- Consulta do aluno ----------
 
   async listarProvas(trilhaId?: string) {
     const provas = await this.prisma.prova.findMany({
@@ -352,7 +350,6 @@ export class ProvasService {
     };
   }
 
-  // ---------- Envio da tentativa (Funcionalidade 2) ----------
 
   async enviarTentativa(
     provaId: string,

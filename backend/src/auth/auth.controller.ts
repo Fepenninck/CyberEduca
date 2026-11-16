@@ -112,14 +112,11 @@ export class AuthController {
     return { message: 'Sessão encerrada com sucesso.' };
   }
 
-  // Inicia o fluxo: redireciona o usuario para a tela do Google
   @Get('google')
   @UseGuards(GoogleAuthGuard)
   async google() {
-    // o guard cuida do redirecionamento
   }
 
-  // O Google retorna aqui depois que o usuario autoriza
   @Get('google/callback')
   @UseGuards(GoogleAuthGuard)
   async googleCallback(@Req() req: any, @Res() res: Response) {

@@ -1,7 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
-// Separate photo collection for simulations. No source is shared with learning paths.
 const photos = [
  ['acesso-desconhecido', 'photo-1667453466805-75bbf36e8707', 'a-person-holding-a-phone-Uw_8vSroCSc', 'Onur Binay'],
  ['permissoes-equipe', 'photo-1762340275855-ae8f4c2c144e', 'account-preferences-screen-with-verification-prompt-hvbjTynPt7A', 'Zulfugar Karimov'],
