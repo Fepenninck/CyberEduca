@@ -7,6 +7,7 @@ import './home-hero.css'
 import { Menu } from 'lucide-react'
 import { PlatformMegaMenu } from '@/components/platform-mega-menu'
 import { SiteFooter } from '@/components/site-footer'
+import { WelcomeBanner } from '@/components/welcome-banner'
 
 const navigation = [
   { label: 'Início', href: '/' },
@@ -28,6 +29,7 @@ export default function Page() {
   }
 
   return <main className={`home-page${platformOpen ? ' is-platform-open' : ''}`}>
+    <WelcomeBanner />
     <header className="reference-header" onMouseLeave={() => setPlatformOpen(false)}>
       <div className="reference-header-inner">
         <a href="#top" className="reference-brand" aria-label="CyberEduca+ início"><img className="reference-logo" src="/cybereduca-logo.png" alt="CyberEduca+" /></a>
