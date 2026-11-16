@@ -2,6 +2,7 @@ import { beginLoading } from './loading-state'
 
 let readyAt = 0
 let pending: Promise<void> | null = null
+export function markBackendReady() { readyAt = Date.now() }
 // Probe without navigating: hosting startup HTML never replaces the application.
 export function waitForBackend(): Promise<void> {
   if (Date.now() - readyAt < 30000) return Promise.resolve()

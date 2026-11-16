@@ -13,7 +13,7 @@ function load(name) {
   const moduleObject = { exports: {} }
   const importer = dependency => {
     if (dependency === './loading-state') return { beginLoading: () => { started++; return () => { ended++ } } }
-    if (dependency === './backend-ready') return { waitForBackend: async () => { probes++ } }
+    if (dependency === './backend-ready') return { waitForBackend: async () => { probes++ }, markBackendReady: () => {} }
     return load(dependency.replace('./', ''))
   }
   new Function('require', 'module', 'exports', compiled)(importer, moduleObject, moduleObject.exports)

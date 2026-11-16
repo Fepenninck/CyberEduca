@@ -1,9 +1,23 @@
 import { beginLoading } from './loading-state'
-import { waitForBackend } from './backend-ready'
+import { markBackendReady, waitForBackend } from './backend-ready'
 import { fetchWithTimeout } from './fetch-with-timeout'
+import { createInflightRequests } from './inflight-requests'
 export const API_URL = '/api'
+const inflightReads = createInflightRequests()
 
-export const apiFetch = async (path: string, options?: RequestInit) => {
+export const apiFetch = (path: string, options?: RequestInit): Promise<Response> => {
+  const method = (options?.method ?? 'GET').toUpperCase()
+  // Share only plain browser reads; custom request options retain their semantics.
+  if (typeof window !== 'undefined' && method === 'GET' && Object.keys(options ?? {}).every(key => ['method', 'cache', 'signal'].includes(key))) {
+    const { signal, ...sharedOptions } = options ?? {}
+    return inflightReads.read(`${path}:${options?.cache ?? 'default'}`, () => performApiFetch(path, sharedOptions), signal)
+  }
+  if (method === 'GET' || method === 'HEAD') return performApiFetch(path, options)
+  inflightReads.clear()
+  return performApiFetch(path, options).finally(() => inflightReads.clear())
+}
+
+const performApiFetch = async (path: string, options?: RequestInit) => {
   const method = (options?.method ?? 'GET').toUpperCase()
   // Consultas e atualizações ao voltar à janela não devem bloquear toda a interface.
   const end = method === 'GET' || method === 'HEAD' ? () => {} : beginLoading(path === '/auth/login' ? 'Entrando na sua conta…' : 'Carregando…')
@@ -19,6 +33,8 @@ export const apiFetch = async (path: string, options?: RequestInit) => {
     }
     if (response.headers.get('content-type')?.includes('text/html')) return Response.json({ message: 'O servidor está iniciando. Tente novamente em instantes.' }, { status: 503 })
   }
+  if (response.status < 500 && response.headers.get('content-type')?.includes('application/json')) markBackendReady()
+  if (response.ok && method !== 'GET' && method !== 'HEAD') inflightReads.clear()
   if (response.ok && options?.method?.toUpperCase() === 'POST' && /^\/aulas\/[^/]+\/concluir$/.test(path) && typeof window !== 'undefined') {
     window.dispatchEvent(new Event('learning-progress-updated'))
   }
@@ -49,7 +65,7 @@ function publishCurrentUser(user: UserProfile | null) {
   currentUser = user
   for (const listener of profileListeners) listener()
 }
-export function clearCurrentUser() { profileGeneration++; currentUserRequest = null; publishCurrentUser(null) }
+export function clearCurrentUser() { inflightReads.clear(); profileGeneration++; currentUserRequest = null; publishCurrentUser(null) }
 
 export async function getCurrentUser(): Promise<UserProfile> {
   if (typeof window !== 'undefined' && currentUserRequest) return currentUserRequest
