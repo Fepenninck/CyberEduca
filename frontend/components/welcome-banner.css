@@ -1,4 +1,4 @@
-.welcome-banner { width:min(760px,calc(100vw - 32px)); max-width:calc((100svh - 40px)*1.302); max-height:calc(100svh - 40px); margin:auto; padding:0; border:0; background:transparent; color:#fff; overflow:visible; }
+.welcome-banner { width:min(760px,calc(100vw - 32px)); max-width:calc((100svh - 40px)*1.29964); max-height:calc(100svh - 40px); margin:auto; padding:0; border:0; background:transparent; color:#fff; overflow:visible; }
 .welcome-banner::backdrop { background:rgba(0,0,0,.7); }
 .welcome-banner-content { position:relative; }
 .welcome-banner img { display:block; width:100%; height:auto; }
