@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { createPortal } from 'react-dom'
 import { apiFetch, getCachedCurrentUser, getCurrentUser } from '@/lib/api'
 import { LEVEL_BADGES } from './level-achievements'
+import { canRememberCelebrations } from '@/lib/cookie-preferences'
 import './achievement-celebration.css'
 
 const BADGES = [
@@ -42,7 +43,7 @@ export function AchievementCelebration() {
           if (!item.conquistada || !item.conquistadaEm || !BADGES.some(badge => badge.level === item.nivel)) return []
           const key = `cybereduca-achievement:${user.id}:${item.nivel}:${item.conquistadaEm}`
           if (shown.current.has(key)) return []
-          try { if (localStorage.getItem(key)) return [] } catch { /* Memória mantém o controle nesta sessão. */ }
+          try { if (canRememberCelebrations() && localStorage.getItem(key)) return [] } catch { /* Memória mantém o controle nesta sessão. */ }
           shown.current.add(key)
           return [{ ...item, key }]
         })
@@ -60,7 +61,7 @@ export function AchievementCelebration() {
   useEffect(() => {
     if (active && dialog.current) {
       if (!dialog.current.open) dialog.current.showModal()
-      try { localStorage.setItem(active.key, 'shown') } catch { /* Memória mantém o controle nesta sessão. */ }
+      try { if (canRememberCelebrations()) localStorage.setItem(active.key, 'shown') } catch { /* Memória mantém o controle nesta sessão. */ }
     }
   }, [active])
   if (!badge) return null
