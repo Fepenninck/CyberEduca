@@ -308,3 +308,17 @@ body:has(.learning-paths-page) .site-scrollbar { display: none; }
   .app-shell.learning-paths-page .paths-heading .paths-journey li { padding: 12px 10px; }
   .app-shell.learning-paths-page .paths-heading .paths-level-label small { font-size: 22px; }
 }
+@media (max-width: 700px) {
+  html:has(.learning-paths-page), body:has(.learning-paths-page) { height:auto; overflow-y:auto; }
+  .app-shell.learning-paths-page { height:auto; min-height:100dvh; overflow:clip; }
+  .app-shell.learning-paths-page .learning-paths.content-wrap,
+  .app-shell.learning-paths-page .learning-trail { flex:none; }
+  .app-shell.learning-paths-page .learning-trail-viewport { flex:none; height:auto; }
+  .app-shell.learning-paths-page .learning-trail-route { gap:20px; }
+  .app-shell.learning-paths-page .learning-trail-stop { width:min(300px,80vw); flex-basis:min(300px,80vw); }
+  .app-shell.learning-paths-page .learning-trail-sign { flex-basis:32px; height:180px; }
+  .app-shell.learning-paths-page .learning-trail-sign img { width:48px; height:180px; }
+  .app-shell.learning-paths-page .learning-trail-sign > span { width:48px; font-size:10px; }
+  .app-shell.learning-paths-page .learning-trail .learning-path-image { height:150px; flex-basis:150px; }
+  .app-shell.learning-paths-page .learning-trail .learning-path-body > p { font-size:14px; }
+}

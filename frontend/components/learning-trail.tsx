@@ -74,7 +74,9 @@ export function LearningTrail({ children, label }: { children: ReactNode; label:
       element.style.width = `${document.documentElement.clientWidth}px`
       const route = element.querySelector<HTMLElement>('.learning-trail-route')
       if (route) {
-        const scale = Math.min(1, Math.max(0.1, (element.clientHeight - 12) / Math.max(1, route.offsetHeight)))
+        const scale = window.matchMedia('(max-width: 700px)').matches
+          ? 1
+          : Math.min(1, Math.max(0.1, (element.clientHeight - 12) / Math.max(1, route.offsetHeight)))
         routeScale.current = scale
         route.style.setProperty('zoom', String(scale))
         route.style.paddingLeft = `${inset.current / scale}px`
