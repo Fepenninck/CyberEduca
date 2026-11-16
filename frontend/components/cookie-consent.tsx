@@ -8,8 +8,11 @@ export function CookieConsent() {
   const [visible, setVisible] = useState(false)
   const [error, setError] = useState('')
   const pathname = usePathname()
+  const isAdminRoute = pathname === '/admin' || pathname.startsWith('/admin/')
 
   useEffect(() => {
+    if (isAdminRoute) return
+
     const sync = () => {
       const preferences = readCookiePreferences(document.cookie)
       setVisible(!preferences)
@@ -18,7 +21,7 @@ export function CookieConsent() {
     sync()
     window.addEventListener('focus', sync)
     return () => window.removeEventListener('focus', sync)
-  }, [pathname])
+  }, [pathname, isAdminRoute])
 
   const saveChoice = (allowPersonalization: boolean) => {
     document.cookie = `${CONSENT_COOKIE}=${allowPersonalization ? 'v2-personalization' : 'v2-essential'}; Max-Age=${CONSENT_MAX_AGE}; Path=/; SameSite=Lax${window.location.protocol === 'https:' ? '; Secure' : ''}`
@@ -30,6 +33,8 @@ export function CookieConsent() {
     setError('')
     setVisible(false)
   }
+
+  if (isAdminRoute) return null
 
   if (!visible) return <button type="button" className="cookie-preferences-trigger" onClick={() => setVisible(true)}>Preferências de cookies</button>
 
