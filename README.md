@@ -236,15 +236,6 @@ Os itens marcados abaixo representam implementações presentes na versão atual
 
 Essas correções foram identificadas no histórico técnico. Sua associação a apontamentos específicos do professor deve ser registrada no acompanhamento da equipe.
 
-### Pendências e dúvidas para orientação
-
-- [ ] Registrar os apontamentos da última orientação e relacioná-los às correções acima, incluindo eventuais itens ainda em aberto.
-- [ ] Registrar a validação do orientador neste acompanhamento, com data, itens avaliados e referência à mensagem ou ata no Teams.
-- [ ] Confirmar com o orientador a revisão final da monografia, do resumo expandido e dos diagramas, conforme o modelo acadêmico solicitado.
-- [ ] Confirmar o formato do manual do sistema e das evidências que acompanharão a entrega completa de 23/11.
-
-**Registro da orientação:** aguardando preenchimento pela equipe após a conferência. Informar data, parecer do orientador, pendências acordadas e referência do registro no Teams, sem publicar conversas ou dados pessoais.
-
 ## Instruções e evidências de execução
 
 ### Preparação da demonstração
