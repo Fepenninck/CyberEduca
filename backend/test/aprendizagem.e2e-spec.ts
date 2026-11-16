@@ -21,6 +21,7 @@ import {
   AprendizagemService,
 } from '../src/aprendizagem/aprendizagem.service';
 import { AuditoriaService } from '../src/auditoria.service';
+import { AuditoriaContexto } from '../src/auditoria-contexto';
 import { JwtAuthGuard } from '../src/auth/jwt-auth.guard';
 import { PrismaService } from '../src/prisma.service';
 
@@ -59,6 +60,7 @@ describe('Detalhamento de trilhas - integração', () => {
           AprendizagemService,
           PrismaService,
           AuditoriaService,
+          AuditoriaContexto,
         ],
       })
         .overrideGuard(JwtAuthGuard)

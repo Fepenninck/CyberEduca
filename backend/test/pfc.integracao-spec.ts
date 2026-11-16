@@ -136,9 +136,21 @@ describe('Integração HTTP de trilhas e aulas', () => {
     expect(cookie).toMatch(/^cybereduca_session=.+/);
   });
   
+  async function prepararAdministrador() {
+    await prisma.$transaction(async tx => {
+      await tx.usuario.updateMany({
+        where: { email: 'cybereduca.oficial@gmail.com', id: { not: usuarioId } },
+        data: { papel: 'USUARIO', email: `${randomUUID()}@cybereduca.test` },
+      });
+      await tx.usuario.update({
+        where: { id: usuarioId },
+        data: { papel: 'ADMIN', email: 'cybereduca.oficial@gmail.com' },
+      });
+    });
+  }
+
   async function criarTrilha(ordem = 1) {
-  // Somente os cenários administrativos recebem o papel necessário no banco de teste.
-  await prisma.usuario.update({ where: { id: usuarioId }, data: { papel: 'ADMIN' } });
+  await prepararAdministrador();
   const dados = {
     titulo: `Trilha ${randomUUID()}`,
     descricao: 'Introdução à segurança digital',
@@ -184,7 +196,7 @@ describe('Integração HTTP de trilhas e aulas', () => {
   }
 
   it('criarTrilha_comDadosValidos_deveRetornar201EPersistir', async () => {
-    await prisma.usuario.update({ where: { id: usuarioId }, data: { papel: 'ADMIN' } });
+    await prepararAdministrador();
     const dados = {
       titulo: `Trilha ${randomUUID()}`,
       descricao: 'Introdução à segurança digital',
