@@ -40,7 +40,6 @@ export function UserMenu({ mobile = false }: { mobile?: boolean }) {
   }
 
   if (mobile) return <>
-    <div className="dashboard-mobile-identity"><div className="user-menu-avatar"><ProfilePicture foto={profile.foto} avatar={profile.avatar} iconSize={24} alt="" /></div><div><strong>{profile.nome || 'Minha conta'}</strong><small>{profile.email}</small></div></div>
     <Link href="/perfil"><UserRound size={18} aria-hidden="true" /> Meu perfil</Link>
     <Link href="/configuracoes"><Cog size={18} aria-hidden="true" /> Configurações</Link>
     <Link href="/privacidade/politica"><ShieldCheck size={18} aria-hidden="true" /> Termos e privacidade</Link>
