@@ -4,7 +4,7 @@
 
 ![Banner do CyberEduca+](./assets/banner.png)
 
-![Status](https://img.shields.io/badge/status-em%20evolução-blue)
+![Status](https://img.shields.io/badge/status-finalizado-brightgreen)
 ![Uso acadêmico](https://img.shields.io/badge/uso-acadêmico-lightgrey)
 ![Next.js](https://img.shields.io/badge/Next.js%2016-000000?logo=nextdotjs&logoColor=white)
 ![React](https://img.shields.io/badge/React%2019-61dafb?logo=react&logoColor=black)
@@ -15,13 +15,27 @@
 
 **Site:** [cybereduca.vercel.app](https://cybereduca.vercel.app)
 
+## Índice
+
+- [Sobre o projeto](#sobre-o-projeto)
+- [Integrantes](#integrantes)
+- [Funcionalidades](#funcionalidades)
+- [Arquitetura e tecnologias](#arquitetura-e-tecnologias)
+- [Executar localmente](#executar-localmente)
+- [Verificação](#verificação)
+- [Segurança e privacidade](#segurança-e-privacidade)
+- [Organização do repositório](#organização-do-repositório)
+- [Documentação complementar](#documentação-complementar)
+- [Metodologia](#metodologia)
+- [Uso acadêmico e recursos de terceiros](#uso-acadêmico-e-recursos-de-terceiros)
+
 ## Sobre o projeto
 
 <img src="./assets/ilustracao.png" alt="Ilustração do CyberEduca+" align="right" width="320">
 
 O CyberEduca+ reúne trilhas, aulas, quizzes, provas por nível, simulações e um laboratório de consulta de domínios. O aluno estuda, pratica, acompanha seu progresso e conquista insígnias. O administrador gerencia os conteúdos e acompanha os resultados da plataforma.
 
-O projeto integra os cursos de Bacharelado em Engenharia de Software e Bacharelado em Sistemas de Informação da UMC. A interface web é responsiva, com navegação adaptada para computadores e celulares.
+O projeto foi finalizado como PFC dos cursos de Bacharelado em Engenharia de Software e Bacharelado em Sistemas de Informação da UMC. A interface web é responsiva, com navegação adaptada para computadores e celulares.
 
 **Objetivo:** oferecer capacitação acessível em segurança da informação, aproximando os conteúdos de situações do cotidiano e permitindo acompanhar a evolução do aprendizado.
 
@@ -37,7 +51,7 @@ O projeto integra os cursos de Bacharelado em Engenharia de Software e Bacharela
 
 **Orientador:** Alessandro Aparecido da Silva Horas.
 
-## Funcionalidades atuais
+## Funcionalidades
 
 ### Aluno
 
@@ -96,6 +110,8 @@ Execute os comandos de cada serviço em terminais separados. Os exemplos abaixo 
 
 ### Backend
 
+Antes da primeira execução, crie `backend/.env` a partir de [backend/.env.example](./backend/.env.example) e configure `DATABASE_URL`, `JWT_SECRET`, `FRONTEND_URL` e o envio de e-mails. Use Brevo ou SMTP; o login depende da entrega do link de confirmação. Google OAuth e VirusTotal exigem suas próprias credenciais para habilitar essas integrações.
+
 ```powershell
 cd backend
 npm install
@@ -104,13 +120,13 @@ npx prisma migrate deploy
 npm run start:dev
 ```
 
-Antes da primeira execução, crie `backend/.env` a partir de [backend/.env.example](./backend/.env.example) e configure `DATABASE_URL`, `JWT_SECRET`, `FRONTEND_URL` e o envio de e-mails. Use Brevo ou SMTP; o login depende da entrega do link de confirmação. Google OAuth e VirusTotal exigem suas próprias credenciais para habilitar essas integrações.
-
 A API utiliza `http://localhost:3002` por padrão. A variável `PORT` permite alterar a porta.
 
 `npx prisma migrate deploy` aplica as migrações pendentes, incluindo as atualizações versionadas do catálogo. Não altere migrações já aplicadas. Os comandos `db:seed` são ferramentas de importação e manutenção; o seed geral também atualiza conteúdos e estrutura das trilhas, portanto não deve ser executado indiscriminadamente em produção.
 
 ### Frontend
+
+Antes da primeira execução, crie `frontend/.env.local` a partir de `frontend/.env.local.example`, com `BACKEND_URL=http://localhost:3002`, ou o endereço correspondente à sua API.
 
 ```powershell
 cd frontend
@@ -118,7 +134,7 @@ npm install
 npm run dev
 ```
 
-O site fica disponível em `http://localhost:3001`. Antes da primeira execução, crie `frontend/.env.local` a partir de `frontend/.env.local.example`, com `BACKEND_URL=http://localhost:3002`, ou o endereço correspondente à sua API.
+O site fica disponível em `http://localhost:3001`.
 
 Mais detalhes do backend estão em [backend/README.md](./backend/README.md).
 
@@ -168,18 +184,20 @@ Fontes e conteúdos externos podem realizar conexões com seus fornecedores. A b
 | `frontend/` | Interface, páginas públicas, área do aluno e painel administrativo |
 | `backend/` | API, regras de negócio, testes, Prisma e ferramentas de manutenção |
 | `assets/` | Imagens de apresentação do projeto |
-| `docs/` | Documentos acadêmicos e referências técnicas; documentos antigos devem ser conferidos com a implementação atual |
+| `docs/` | Documentos acadêmicos, modelagem e referências técnicas |
 | `.github/` | Fluxo de integração contínua e modelo de pull request |
+
+## Documentação complementar
+
+| Documento | Conteúdo |
+|---|---|
+| [Backend](./backend/README.md) | Configuração, execução e verificação da API |
+| [Provas por nível](./docs/certificacoes-niveis.md) | Critérios de aprovação, tentativas e desbloqueio dos níveis |
+| [Módulo de aulas](./docs/modulo-aulas.md) | Conteúdos e funcionamento das aulas |
 
 ## Metodologia
 
-Desenvolvimento em Scrum, com gestão de tarefas via Monday e comunicação da equipe por Discord e WhatsApp. A modelagem utiliza UML, DER e protótipos de interface no Figma.
-
-## Estado atual
-
-Os módulos de aprendizagem, autenticação, provas por nível, simulações, laboratório, conquistas e administração estão implementados. O projeto permanece em evolução, com ajustes de desempenho, conteúdo e experiência em dispositivos móveis.
-
-Para consultar as regras das provas, veja [docs/certificacoes-niveis.md](./docs/certificacoes-niveis.md). Para o módulo de aulas, veja [docs/modulo-aulas.md](./docs/modulo-aulas.md).
+O desenvolvimento utilizou Scrum, com gestão de tarefas via Monday e comunicação da equipe por Discord e WhatsApp. A modelagem foi realizada com UML, DER e protótipos de interface no Figma.
 
 ## Uso acadêmico e recursos de terceiros
 
