@@ -1,175 +1,193 @@
 # CyberEduca+
 
-> Plataforma web de aprendizagem em cibersegurança, com trilhas, quizzes e simulador de phishing — desenvolvida como Projeto Final de Curso (PFC) na UMC.
+> Plataforma web de aprendizagem em cibersegurança, desenvolvida como Projeto Final de Curso (PFC) na Universidade de Mogi das Cruzes — UMC.
 
 ![Banner do CyberEduca+](./assets/banner.png)
 
-![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
-![Licença](https://img.shields.io/badge/licença-acadêmica-lightgrey)
+![Status](https://img.shields.io/badge/status-em%20evolução-blue)
+![Uso acadêmico](https://img.shields.io/badge/uso-acadêmico-lightgrey)
 ![Next.js](https://img.shields.io/badge/Next.js%2016-000000?logo=nextdotjs&logoColor=white)
 ![React](https://img.shields.io/badge/React%2019-61dafb?logo=react&logoColor=black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178c6?logo=typescript&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS%204-06b6d4?logo=tailwindcss&logoColor=white)
-![NestJS](https://img.shields.io/badge/NestJS-e0234e?logo=nestjs&logoColor=white)
-![Prisma](https://img.shields.io/badge/Prisma-2d3748?logo=prisma&logoColor=white)
+![NestJS](https://img.shields.io/badge/NestJS%2012-e0234e?logo=nestjs&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma%206-2d3748?logo=prisma&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?logo=postgresql&logoColor=white)
+
+**Site:** [cybereduca.vercel.app](https://cybereduca.vercel.app)
 
 ## Sobre o projeto
 
 <img src="./assets/ilustracao.png" alt="Ilustração do CyberEduca+" align="right" width="320">
 
-Desenvolvido como **Projeto Final de Curso (PFC)** da **Universidade de Mogi das Cruzes - UMC**, para os cursos de Bacharelado em Engenharia de Software e Bacharelado em Sistemas de Informação.
+O CyberEduca+ reúne trilhas, aulas, quizzes, provas por nível, simulações e um laboratório de consulta de domínios. O aluno estuda, pratica, acompanha seu progresso e conquista insígnias. O administrador gerencia os conteúdos e acompanha os resultados da plataforma.
 
-À medida que os ciberataques (phishing, golpes, força bruta) se tornam mais frequentes, cresce a necessidade de capacitação prática em segurança digital. O **CyberEduca+** propõe um site educacional com trilhas de aprendizagem, aulas, quizzes de avaliação e um simulador de phishing, incluindo autenticação de usuário, perfil básico e um painel administrativo para gestão de conteúdos e acompanhamento de desempenho.
+O projeto integra os cursos de Bacharelado em Engenharia de Software e Bacharelado em Sistemas de Informação da UMC. A interface web é responsiva, com navegação adaptada para computadores e celulares.
 
-**Fora do escopo do MVP:** aplicativo mobile e push. Google OAuth pode ser habilitado por ambiente.
+**Objetivo:** oferecer capacitação acessível em segurança da informação, aproximando os conteúdos de situações do cotidiano e permitindo acompanhar a evolução do aprendizado.
 
 <br clear="right"/>
 
-## Objetivo
-
-Oferecer uma ferramenta prática e acessível de capacitação em cibersegurança, na qual o usuário aprende por meio de trilhas de conteúdo, valida o conhecimento com quizzes e treina a identificação de ameaças reais através de um simulador de cenários de phishing, com acompanhamento contínuo do seu progresso.
-
 ## Integrantes
 
-| Integrante | Nome completo | RGM |
-|---|---|---|
-| Aluno 1 | Luís Felipe Penninck Dos Santos | 11231101140 |
-| Aluno 2 | Caio Miranda do Nascimento | 11231101833 |
-| Aluno 3 | Thiago dos Santos Soares | 11221101451 |
-
-**Orientador(a):** Alessandro Aparecido da Silva Horas
-
-## Atores do Sistema
-
-- **Administrador:** gerencia trilhas, aulas, quizzes, cenários de phishing e usuários da plataforma pelo painel administrativo.
-- **Usuário:** realiza trilhas e aulas, responde quizzes, pratica no simulador de phishing e acompanha sua evolução e histórico de desempenho.
-
-## Funcionalidades
-
-- Trilhas de aprendizagem, aulas e conteúdos
-- Acompanhamento de progresso por trilha
-- Quizzes de múltipla escolha com correção e feedback
-- Histórico de desempenho e resultados
-- Simulador de cenários de phishing com classificação e análise de sinais de risco
-- Cadastro, login/logout e perfil do usuário (com gerenciamento de preferências)
-- Seção de notícias sobre cibersegurança, com artigos ilustrando ameaças reais
-- Navegação entre as áreas do sistema
-- Painel administrativo (dashboard, gerenciamento de trilhas, quizzes, phishing e usuários)
-
-## Arquitetura
-
-![Arquitetura do CyberEduca+](./assets/arquitetura.png)
-
-O front-end (**Next.js**) consome a API REST do back-end (**NestJS**) via HTTPS, com autenticação por **JWT**. O back-end aplica regras de negócio, autenticação/autorização (JWT), controle de permissões (**RBAC**), validação de dados (DTOs, Pipes, Guards) e auditoria (logs), além de gerenciar os módulos de cursos, trilhas, quizzes, progresso e o simulador de phishing. A comunicação com o banco de dados é feita através do **Prisma ORM**, conectado ao **PostgreSQL** hospedado no **Neon** (PostgreSQL Serverless). O front-end é publicado na **Vercel**, e o back-end em um servidor cloud (VPS/Cloud), com repositório e CI/CD no **GitHub**.
-
-**Fluxo de comunicação:** Usuário (navegador) → Frontend (Next.js) → Requisição REST (Backend NestJS) → Consulta via Prisma → Banco de Dados (PostgreSQL + Neon) → Infraestrutura (Deploy e CI/CD).
-
-## Stack Tecnológica
-
-| Camada | Tecnologias |
+| Nome completo | RGM |
 |---|---|
-| **Front-end** | Next.js 16, React 19, TypeScript, Tailwind CSS 4, shadcn/ui, Base UI, Lucide (ícones), React Markdown |
-| **Back-end** | Node.js, NestJS, TypeScript, JWT (autenticação), RBAC (permissões), validação de DTOs, Logs (auditoria) |
-| **Banco de Dados** | PostgreSQL, Prisma ORM, Neon (PostgreSQL Serverless) |
-| **Deploy** | Vercel (front-end), Servidor Cloud (back-end — ex.: Render, Railway ou similar), Neon (banco de dados), GitHub (repositório e CI/CD) |
-| **Qualidade** | Oxlint, Jest, testes unitários e de integração |
+| Luís Felipe Penninck Dos Santos | 11231101140 |
+| Caio Miranda do Nascimento | 11231101833 |
+| Thiago dos Santos Soares | 11221101451 |
 
-## Como rodar o projeto localmente
+**Orientador:** Alessandro Aparecido da Silva Horas.
 
-### Pré-requisitos
+## Funcionalidades atuais
 
-- Node.js (LTS) e npm
-- PostgreSQL (local ou uma URL de conexão remota, ex.: Neon)
+### Aluno
 
-### 1. Back-end
+- Cadastro e login com senha, seguido de confirmação por link de uso único enviado por e-mail.
+- Entrada com Google, quando a integração está configurada no ambiente.
+- Recuperação de senha por e-mail.
+- Dashboard com progresso e acesso à próxima aula.
+- Trilhas organizadas nos níveis básico, intermediário e avançado, com percurso horizontal e acompanhamento das aulas concluídas.
+- Aulas com textos, materiais de apoio, mídias e atividades conforme o conteúdo cadastrado.
+- Provas ao final de cada nível: conclusão das aulas e aprovação com pelo menos 60% de acertos para conquistar a insígnia e liberar o nível seguinte.
+- Nova tentativa de prova após 24 horas em caso de reprovação.
+- Quizzes com correção e feedback.
+- Simulações de phishing e outros cenários de segurança, com decisões, correção no servidor e resultados salvos. O catálogo exibe até oito simulações por página.
+- Laboratório para consulta de domínios com integração ao VirusTotal.
+- Perfil com conquistas e indicadores de desempenho; configurações de nome, e-mail, foto, avatar e senha, além de exclusão da conta.
 
-```bash
+### Administração
+
+- Dashboard com indicadores de usuários, trilhas, aulas, atividades e desempenho educacional.
+- Gestão de usuários, trilhas, aulas, quizzes, provas e simulações.
+- Publicação e arquivamento de conteúdos conforme o módulo.
+- Consulta de resultados e histórico de operações administrativas.
+- Acesso restrito à conta administradora oficial, com validação de permissões no backend.
+
+### Área pública
+
+- Página inicial com apresentação da plataforma e notícias de cibersegurança.
+- Páginas Sobre, Ajuda, Termos de Uso e Política de Privacidade.
+- Banner de boas-vindas na primeira visita à página inicial; o navegador lembra seu fechamento.
+- Escolha de cookies opcionais, com possibilidade de aceitar, rejeitar e alterar a decisão posteriormente. A preferência controla o armazenamento local das celebrações de conquistas já exibidas.
+
+## Arquitetura e tecnologias
+
+O navegador acessa o frontend em Next.js. As requisições para `/api` são encaminhadas ao backend em NestJS, que aplica autenticação, permissões, validação, correção das atividades e auditoria. O Prisma realiza o acesso ao PostgreSQL.
+
+A sessão utiliza um JWT em cookie HttpOnly. Os gabaritos e as regras de desbloqueio são tratados no servidor. Consultas idênticas simultâneas no navegador compartilham uma requisição, sem manter as respostas concluídas em um cache permanente.
+
+| Camada | Tecnologias e serviços |
+|---|---|
+| Frontend | Next.js 16, React 19, TypeScript, Tailwind CSS 4, CSS, Base UI, shadcn, Lucide, React Markdown e Recharts |
+| Backend | Node.js 24, NestJS 12, TypeScript, Passport, JWT, bcrypt e validação de DTOs |
+| Dados | PostgreSQL e Prisma ORM 6; banco de produção no Neon |
+| Integrações | Google OAuth, Brevo ou SMTP para e-mails e VirusTotal para consulta de domínios |
+| Publicação | Vercel para o frontend e Render para o backend |
+| Qualidade | Jest, testes de integração HTTP, verificações do frontend e Oxlint; GitHub Actions em pull requests para a main |
+
+## Executar localmente
+
+### Requisitos
+
+- Node.js 24, conforme [.nvmrc](./.nvmrc), e npm.
+- PostgreSQL e um banco criado para a aplicação.
+- Configuração de envio de e-mail para concluir o login com senha e a recuperação de acesso.
+
+Execute os comandos de cada serviço em terminais separados. Os exemplos abaixo usam PowerShell.
+
+### Backend
+
+```powershell
 cd backend
 npm install
-cp .env.example .env   # preencher com a senha do banco (DATABASE_URL)
+Copy-Item .env.example .env
 ```
 
-Crie um banco PostgreSQL local chamado `cybereduca` e rode as migrations:
+Configure `DATABASE_URL`, `JWT_SECRET`, `FRONTEND_URL` e o envio de e-mails no arquivo `.env`, seguindo [backend/.env.example](./backend/.env.example). Use Brevo ou SMTP; o login depende da entrega do link de confirmação. Google OAuth e VirusTotal exigem suas próprias credenciais para habilitar essas integrações.
 
-```bash
-npx prisma migrate dev
-npm run db:seed        # carrega os dados iniciais
+```powershell
+npm run deploy
+npm run build
 npm run start:dev
 ```
 
-A API sobe em `http://localhost:3002` por padrão. A variável `PORT` permite alterar a porta.
+A API utiliza `http://localhost:3002` por padrão. A variável `PORT` permite alterar a porta.
 
-### 2. Front-end
+`npm run deploy` aplica as migrações pendentes, incluindo as atualizações versionadas do catálogo. Não altere migrações já aplicadas. Os comandos `db:seed` são ferramentas de importação e manutenção; o seed geral também atualiza conteúdos e estrutura das trilhas, portanto não deve ser executado indiscriminadamente em produção.
 
-```bash
+### Frontend
+
+```powershell
 cd frontend
 npm install
-cp .env.local.example .env.local
+Copy-Item .env.local.example .env.local
 npm run dev
 ```
 
-O frontend sobe em `http://localhost:3001` (o CORS da API já está liberado para essa porta).
+O site fica disponível em `http://localhost:3001`. O arquivo `.env.local` deve conter `BACKEND_URL=http://localhost:3002`, ou o endereço correspondente à sua API.
+
+Mais detalhes do backend estão em [backend/README.md](./backend/README.md).
+
+## Verificação
+
+Na pasta `backend`:
+
+```powershell
+npm test -- --runInBand
+npm run lint
+npm run build
+```
+
+Para os testes de integração, configure `.env.test.local` conforme [backend/.env.test.example](./backend/.env.test.example) e execute `npm run test:integracao`. O executor exige PostgreSQL local e cria um banco temporário, separado do banco da aplicação.
+
+Na pasta `frontend`:
+
+```powershell
+npx tsc --noEmit --incremental false
+npm run build
+node scripts/test-inflight-requests.cjs
+node scripts/test-request-loading.cjs
+node scripts/test-mobile-public-menu.cjs
+node scripts/test-admin-dashboard.cjs
+node scripts/test-admin-lesson-editor.cjs
+```
+
+As verificações do frontend cobrem requisições, carregamento, navegação mobile, cálculos do dashboard e edição de aulas. Outros scripts de verificação estão em `frontend/scripts` e `backend/scripts`.
+
+## Segurança e privacidade
+
+- Senhas armazenadas como hash bcrypt; credenciais de integração permanecem em variáveis de ambiente.
+- Cookie de sessão HttpOnly, com SameSite=Lax e Secure em produção, válido por até 24 horas.
+- Links de confirmação de login válidos por cinco minutos e de recuperação de senha por quinze minutos, ambos de uso único.
+- Autorização administrativa e validação de entradas no backend.
+- Gabaritos e correção das atividades no servidor, com controles contra envios duplicados nos fluxos protegidos por transação.
+- Limitação de login por janela de quinze minutos: cinco tentativas por e-mail e trinta por IP. Os contadores são mantidos por processo; múltiplas instâncias exigem armazenamento compartilhado.
+- Registros de auditoria e controles para atualização e exclusão da conta.
+- Preferência de cookies guardada por 180 dias no navegador; fechamento das boas-vindas lembrado por um ano. Rejeitar opcionais preserva o acesso e o progresso da conta.
+
+Fontes e conteúdos externos podem realizar conexões com seus fornecedores. A barra de cookies não representa um bloqueio geral dessas conexões. As informações de tratamento de dados e os canais de contato estão na Política de Privacidade do site.
+
+## Organização do repositório
+
+| Pasta | Conteúdo |
+|---|---|
+| `frontend/` | Interface, páginas públicas, área do aluno e painel administrativo |
+| `backend/` | API, regras de negócio, testes, Prisma e ferramentas de manutenção |
+| `assets/` | Imagens de apresentação do projeto |
+| `docs/` | Documentos acadêmicos e referências técnicas; documentos antigos devem ser conferidos com a implementação atual |
+| `.github/` | Fluxo de integração contínua e modelo de pull request |
 
 ## Metodologia
 
-Desenvolvimento em **Scrum**, com gestão de tarefas via Monday e comunicação da equipe via Discord/WhatsApp. Modelagem com UML (casos de uso e classes), DER e prototipação de interfaces (Figma).
+Desenvolvimento em Scrum, com gestão de tarefas via Monday e comunicação da equipe por Discord e WhatsApp. A modelagem utiliza UML, DER e protótipos de interface no Figma.
 
-## Segurança e LGPD
+## Estado atual
 
-Modelo de segurança planejado para o MVP (parte ainda em implementação — ver [Status do Projeto](#-status-do-projeto)):
+Os módulos de aprendizagem, autenticação, provas por nível, simulações, laboratório, conquistas e administração estão implementados. O projeto permanece em evolução, com ajustes de desempenho, conteúdo e experiência em dispositivos móveis.
 
-- Autenticação via JWT (Bearer Token)
-- Hash de senhas
-- Controle de acesso por perfil (RBAC — usuário/administrador)
-- Validação de entrada
-- Auditoria e logs
-- Tratamento de dados pessoais conforme a LGPD (Lei nº 13.709/2018)
+Para consultar as regras das provas, veja [docs/certificacoes-niveis.md](./docs/certificacoes-niveis.md). Para o módulo de aulas, veja [docs/modulo-aulas.md](./docs/modulo-aulas.md).
 
-## Status do Projeto
+## Uso acadêmico e recursos de terceiros
 
-Projeto em desenvolvimento ativo, seguindo o cronograma do PFC (2026).
+Projeto desenvolvido para a Universidade de Mogi das Cruzes — UMC, em Mogi das Cruzes — SP, 2026. Bibliotecas, APIs, imagens e demais recursos de terceiros permanecem sujeitos às respectivas licenças e condições de uso.
 
-- [x] Definição de escopo e arquitetura
-- [x] Modelagem inicial de dados
-- [x] Módulo de trilhas e aulas 
-- [x] JWT e RBAC implementados
-- [x] Quizzes implementados
-- [x] Simulador de phishing
-- [x] Painel administrativo
-- [ ] Dashboards de desempenho (a página de progresso do frontend já consome a API, mas segue em evolução)
-- [x] Testes automatizados
-
-## Licença e uso de dados
-
-O uso de bibliotecas, APIs e demais recursos de terceiros é identificado e documentado no projeto. O tratamento de dados pessoais, quando existente, observa os princípios e requisitos legais e institucionais aplicáveis.
-
-## Instituição
-
-Projeto desenvolvido para a **Universidade de Mogi das Cruzes - UMC** · Mogi das Cruzes - SP, 2026.
-
-## Controles e manutenção
-
-- POST/PATCH de trilhas e aulas exigem JWT e perfil ADMIN. Alunos autenticados podem concluir aulas.
-- POST `/auth/login` permite 5 tentativas por e-mail e 30 por IP por janela de 15 minutos. Todas as tentativas contam, inclusive logins válidos. O excesso retorna HTTP 429 e `Retry-After` em segundos. A auditoria das credenciais inválidas permanece no serviço de autenticação.
-- Os contadores ficam em memória por processo e reiniciam com a API. Múltiplas instâncias precisam de armazenamento compartilhado. O IP vem do Express; configure proxies confiáveis de acordo com a infraestrutura antes de aceitar cabeçalhos encaminhados.
-- O painel apresenta indicadores de usuários, trilhas e aulas, distribuição dos conteúdos e desempenho por prova.
-- `StatusProva` usa RASCUNHO, PUBLICADO e ARQUIVADO. A migration `20261113120000_unificar_status_prova` converte os valores antigos preservando as provas. Aplique com `npm run deploy` no backend e gere o cliente com `npx prisma generate` antes de iniciar a nova versão.
-
-### Verificação
-
-No backend: `npm test -- --runInBand` e `npm run build`. No frontend: `npx tsc --noEmit` e `npm run build`.
-
-### Pendências opcionais
-
-Históricos completos de quizzes e phishing, feedback individual nas provas e gestão dos cenários de phishing continuam como melhorias opcionais. Existem resultados salvos de quizzes e phishing, feedback de quizzes e uma tela administrativa de simulações; essas funcionalidades não cobrem todas as interfaces opcionais.
-
-### Simulações práticas
-
-A listagem de simulações reúne os cenários de phishing existentes e treinos de contas, dispositivos, privacidade, redes, resposta a incidentes e código seguro. Mostra até quatro cartões por página, com imagens, dificuldade e navegação por setas.
-
-No backend, aplique a migration `20261114150000_simulacoes_completas`, gere o cliente Prisma e execute `npm run db:seed:simulacoes`. A importação adiciona 12 treinos com 36 decisões e preserva conteúdos e resultados existentes. Ela também faz parte de `npm run db:seed:activities`.
-
-Os treinos têm nível, duração, contexto fictício e explicação por decisão, editáveis no painel administrativo. A API corrige as respostas no servidor, rejeita respostas incompletas, duplicadas ou de outra simulação e salva o feedback detalhado para consulta posterior. Resultados antigos continuam disponíveis com seu placar original.
-
-Com a API local ativa, `npm run db:verify:simulacoes` verifica os 12 treinos usando contas fictícias temporárias, removidas ao final. O script não utiliza contas reais. Para outro endereço de API, configure `SIMULATION_TEST_API` no ambiente do comando.
+Atualizado em 16 de novembro de 2026.
