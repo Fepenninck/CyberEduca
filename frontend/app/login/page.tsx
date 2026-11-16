@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from 'react'
 import Link from 'next/link'
-import { AlertCircle, MailCheck } from 'lucide-react'
+import { AlertCircle } from 'lucide-react'
 import './login.css'
 import { apiFetch } from '@/lib/api'
 import { beginLoading } from '@/lib/loading-state'
@@ -109,7 +109,6 @@ export default function LoginPage() {
       <Link href="/" className="login-brand" aria-label="Voltar para o início do CyberEduca+"><img src="/cybereduca-logo.png" alt="CyberEduca+" /></Link>
       <section className="login-card" aria-labelledby="login-title">
         {pendingEmail ? <div className="recovery-success login-pending" role="status">
-          <span className="recovery-icon recovery-icon-success"><MailCheck aria-hidden="true" /></span>
           <h1 id="login-title">Confirme seu acesso</h1>
           <p>Enviamos um link de confirmação para <strong>{pendingEmail}</strong>. Ele vale por 5 minutos e só pode ser usado uma vez.</p>
           {apiError && <p className="login-error">{apiError}</p>}

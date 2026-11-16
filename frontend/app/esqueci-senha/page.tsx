@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from 'react'
 import Link from 'next/link'
-import { AlertCircle, CheckCircle2 } from 'lucide-react'
+import { AlertCircle } from 'lucide-react'
 import '../login/login.css'
 import { apiFetch } from '@/lib/api'
 
@@ -60,7 +60,6 @@ export default function EsqueciSenhaPage() {
         <section className="login-card recovery-card" aria-labelledby="recovery-title">
           {sent ? (
             <div className="recovery-success" role="status">
-              <span className="recovery-icon recovery-icon-success"><CheckCircle2 aria-hidden="true" /></span>
               <h1 id="recovery-title">Confira seu e-mail</h1>
               <p>Se houver uma conta associada a <strong>{email}</strong>, você receberá um link para redefinir sua senha. Ele vale por 15 minutos e só pode ser usado uma vez.</p>
               <button type="button" className="recovery-secondary" onClick={() => setSent(false)}>Usar outro e-mail</button>
