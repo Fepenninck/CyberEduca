@@ -10,16 +10,12 @@ Na pasta backend:
 
 ```bash
 npm install
-cp .env.example .env
-```
-
-Configure DATABASE_URL e JWT_SECRET no arquivo .env. O banco indicado deve existir antes da aplicação das migrações. As variáveis de Google, envio de e-mail e VirusTotal habilitam as respectivas integrações; consulte .env.example.
-
-```bash
-npm run deploy
-npm run build
+npx prisma generate
+npx prisma migrate deploy
 npm run start:dev
 ```
+
+Antes da primeira execução, crie .env a partir de .env.example e configure DATABASE_URL e JWT_SECRET. O banco indicado deve existir antes da aplicação das migrações. As variáveis de Google, envio de e-mail e VirusTotal habilitam as respectivas integrações; consulte .env.example.
 
 A API usa a porta 3002 por padrão, configurável por PORT. O frontend local acessa a API pelo proxy /api, com BACKEND_URL apontando para o backend.
 

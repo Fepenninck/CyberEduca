@@ -99,31 +99,26 @@ Execute os comandos de cada serviço em terminais separados. Os exemplos abaixo 
 ```powershell
 cd backend
 npm install
-Copy-Item .env.example .env
-```
-
-Configure `DATABASE_URL`, `JWT_SECRET`, `FRONTEND_URL` e o envio de e-mails no arquivo `.env`, seguindo [backend/.env.example](./backend/.env.example). Use Brevo ou SMTP; o login depende da entrega do link de confirmação. Google OAuth e VirusTotal exigem suas próprias credenciais para habilitar essas integrações.
-
-```powershell
-npm run deploy
-npm run build
+npx prisma generate
+npx prisma migrate deploy
 npm run start:dev
 ```
 
+Antes da primeira execução, crie `backend/.env` a partir de [backend/.env.example](./backend/.env.example) e configure `DATABASE_URL`, `JWT_SECRET`, `FRONTEND_URL` e o envio de e-mails. Use Brevo ou SMTP; o login depende da entrega do link de confirmação. Google OAuth e VirusTotal exigem suas próprias credenciais para habilitar essas integrações.
+
 A API utiliza `http://localhost:3002` por padrão. A variável `PORT` permite alterar a porta.
 
-`npm run deploy` aplica as migrações pendentes, incluindo as atualizações versionadas do catálogo. Não altere migrações já aplicadas. Os comandos `db:seed` são ferramentas de importação e manutenção; o seed geral também atualiza conteúdos e estrutura das trilhas, portanto não deve ser executado indiscriminadamente em produção.
+`npx prisma migrate deploy` aplica as migrações pendentes, incluindo as atualizações versionadas do catálogo. Não altere migrações já aplicadas. Os comandos `db:seed` são ferramentas de importação e manutenção; o seed geral também atualiza conteúdos e estrutura das trilhas, portanto não deve ser executado indiscriminadamente em produção.
 
 ### Frontend
 
 ```powershell
 cd frontend
 npm install
-Copy-Item .env.local.example .env.local
 npm run dev
 ```
 
-O site fica disponível em `http://localhost:3001`. O arquivo `.env.local` deve conter `BACKEND_URL=http://localhost:3002`, ou o endereço correspondente à sua API.
+O site fica disponível em `http://localhost:3001`. Antes da primeira execução, crie `frontend/.env.local` a partir de `frontend/.env.local.example`, com `BACKEND_URL=http://localhost:3002`, ou o endereço correspondente à sua API.
 
 Mais detalhes do backend estão em [backend/README.md](./backend/README.md).
 
