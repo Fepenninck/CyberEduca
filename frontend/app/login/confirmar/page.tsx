@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { AlertCircle, ShieldCheck } from 'lucide-react'
 import '../login.css'
 import { apiFetch } from '@/lib/api'
 
@@ -50,14 +49,12 @@ export default function ConfirmarLoginPage() {
         <section className="login-card recovery-card" aria-labelledby="confirm-title">
           {error ? (
             <div className="recovery-success" role="alert">
-              <span className="recovery-icon"><AlertCircle aria-hidden="true" /></span>
               <h1 id="confirm-title">Não foi possível entrar</h1>
               <p>{error}</p>
               <button className="login-submit recovery-submit" type="button" onClick={() => router.replace('/login')}>Voltar para o login</button>
             </div>
           ) : (
             <div className="recovery-success" role="status">
-              <span className="recovery-icon recovery-icon-success"><ShieldCheck aria-hidden="true" /></span>
               <h1 id="confirm-title">Confirmando seu acesso...</h1>
               <p>Aguarde um instante. Você será levado ao CyberEduca+ automaticamente.</p>
             </div>

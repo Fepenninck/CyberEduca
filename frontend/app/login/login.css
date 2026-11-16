@@ -74,7 +74,7 @@
 
 .recovery-shell { transform:translateY(-16px); }
 .recovery-card { padding:34px 40px; text-align:left; }
-.login-card:has(.login-pending) { padding-block:32px; }
+
 .recovery-icon { display:grid; width:44px; height:44px; margin-bottom:22px; place-items:center; border:1px solid rgba(159,239,0,.24); border-radius:50%; background:rgba(159,239,0,.08); color:#9fef00; }
 .recovery-icon svg { width:21px; height:21px; }
 .recovery-card h1 { margin-bottom:12px; }
@@ -92,5 +92,5 @@
 .recovery-icon-success { margin-bottom:22px; }
 .recovery-secondary { width:100%; height:41px; border:1px solid #3a495d; border-radius:4px; background:transparent; color:#f4f4f4; font-size:14px; font-weight:600; transition:border-color .18s,background .18s; }
 .recovery-secondary:hover { border-color:#8799b5; background:#1e2939; }
-@media (max-width:560px) { .recovery-shell { transform:translateY(-8px); } .recovery-card { padding:30px 22px; } .recovery-card:has(.recovery-success) { padding-block:70px; } .recovery-card:has(.recovery-success) .recovery-back { left:22px; bottom:30px; } .login-card:has(.login-pending) { padding-block:28px; } }
+@media (max-width:560px) { .recovery-shell { transform:translateY(-8px); } .recovery-card { padding:30px 22px; } .recovery-card:has(.recovery-success) { padding-block:70px; } .recovery-card:has(.recovery-success) .recovery-back { left:22px; bottom:30px; } }
 .login-account-deleted { margin: 0 0 20px; border-radius: 5px; padding: 12px 14px; background: #183328; color: #b5e0bf; font-size: 13px; line-height: 1.6; }
