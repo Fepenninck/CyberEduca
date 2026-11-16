@@ -85,13 +85,49 @@ O projeto foi finalizado como PFC dos cursos de Bacharelado em Engenharia de Sof
 
 ## Arquitetura e tecnologias
 
-![Arquitetura da Plataforma CyberEduca+](./assets/arquitetura.png)
+### Visão geral
 
-O navegador acessa o frontend em Next.js. As requisições para `/api` são encaminhadas ao backend em NestJS, que aplica autenticação, permissões, validação, correção das atividades e auditoria. O Prisma realiza o acesso ao PostgreSQL.
+O CyberEduca+ utiliza uma arquitetura com frontend, API REST e banco de dados. As integrações externas são acessadas pelo backend, que centraliza as regras de negócio e o controle de acesso.
 
-O Prisma integra o backend como camada de acesso a dados, sem constituir um serviço separado. No laboratório, a consulta ao VirusTotal utiliza apenas o domínio, não uma URL completa. As simulações representam situações do cotidiano em cenários fictícios de treinamento, sem executar ataques reais.
+### Frontend — Vercel
 
-A sessão utiliza um JWT em cookie HttpOnly. Os gabaritos e as regras de desbloqueio são tratados no servidor. Consultas idênticas simultâneas no navegador compartilham uma requisição, sem manter as respostas concluídas em um cache permanente.
+- Interface em Next.js 16, React 19 e TypeScript, com estilos em Tailwind CSS 4 e CSS.
+- Reúne a área pública, o ambiente do aluno e o painel administrativo, com navegação responsiva.
+- Encaminha as requisições de `/api` para o backend por meio do proxy configurado no Next.js.
+- Compartilha consultas idênticas simultâneas no navegador, sem manter as respostas concluídas em um cache permanente.
+
+### Backend — Render
+
+- API REST em NestJS 12 e TypeScript, executada em Node.js 24.
+- Organiza autenticação, usuários, trilhas, aulas, quizzes, provas, simulações, laboratório, conquistas e administração.
+- Valida as entradas, verifica as permissões, aplica os critérios de desbloqueio e realiza a correção das atividades.
+- Utiliza Passport e JWT para autenticação, bcrypt para hash de senhas e registros de auditoria das operações.
+- Mantém os gabaritos no servidor e representa os exercícios de phishing em cenários fictícios de treinamento, sem executar ataques reais.
+
+### Persistência — Prisma e PostgreSQL
+
+- O Prisma ORM 6 integra o backend como camada de acesso a dados; não é um serviço independente.
+- O PostgreSQL armazena usuários, conteúdos, progresso, tentativas, respostas, resultados e registros de auditoria.
+- O banco de produção está hospedado no Neon. O ambiente local utiliza a conexão definida em `DATABASE_URL`.
+- As migrações versionadas mantêm a estrutura e as atualizações do banco.
+
+### Integrações externas
+
+| Serviço | Responsabilidade |
+|---|---|
+| Google OAuth | Autenticação com a conta Google |
+| Brevo ou SMTP | Envio dos links de confirmação de login e recuperação de senha |
+| VirusTotal | Consulta de relatórios de segurança de domínios; não recebe URLs completas nesse fluxo |
+
+### Fluxo de uma requisição
+
+1. O usuário acessa a interface no navegador e solicita uma ação.
+2. O frontend envia a requisição para `/api`, encaminhada ao backend.
+3. Nas operações protegidas, o backend valida o JWT recebido no cookie HttpOnly e as permissões da conta.
+4. O backend aplica as regras de negócio e consulta o PostgreSQL por meio do Prisma ou a integração necessária à operação.
+5. A API retorna a resposta ao frontend, que atualiza a interface.
+
+### Tecnologias e publicação
 
 | Camada | Tecnologias e serviços |
 |---|---|
