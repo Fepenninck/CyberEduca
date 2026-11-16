@@ -23,6 +23,8 @@
 - [Arquitetura e tecnologias](#arquitetura-e-tecnologias)
 - [Executar localmente](#executar-localmente)
 - [Verificação](#verificação)
+- [Relatório de acompanhamento](#relatório-de-acompanhamento)
+- [Instruções e evidências de execução](#instruções-e-evidências-de-execução)
 - [Segurança e privacidade](#segurança-e-privacidade)
 - [Organização do repositório](#organização-do-repositório)
 - [Documentação complementar](#documentação-complementar)
@@ -203,6 +205,98 @@ node scripts/test-admin-lesson-editor.cjs
 ```
 
 As verificações do frontend cobrem requisições, carregamento, navegação mobile, cálculos do dashboard e edição de aulas. Outros scripts de verificação estão em `frontend/scripts` e `backend/scripts`.
+
+## Relatório de acompanhamento
+
+Registro do acompanhamento de **16/11/2026**, com base na comparação entre a referência `origin/entrega0911` (commit `1b0a539`) e a versão da `main` consultada para este relatório (commit `f403f9c`). A branch de entrega anterior contém alterações até 10/11; essa comparação registra a evolução entre as versões, sem atribuir às mudanças uma validação retroativa do prazo de 09/11.
+
+### Evolução desde a entrega anterior
+
+Os itens marcados abaixo representam implementações presentes na versão atual. Os commits e arquivos vinculados permitem consultar as alterações e seus testes.
+
+- [x] Integrar as provas ao percurso de aprendizagem, com aprovação mínima de 60%, insígnias por nível e liberação do próximo nível. Referência: commit `5b3e5f3`; [regras das provas](./docs/certificacoes-niveis.md) e [testes de certificações](./backend/src/certificacoes/certificacoes.spec.ts).
+- [x] Aprimorar conteúdos das aulas, percurso de trilhas, conquistas e configurações da conta. Referência: commit `3479ac7`; [módulo de aulas](./docs/modulo-aulas.md) e [testes de aprendizagem](./backend/src/aprendizagem/aprendizagem.service.spec.ts).
+- [x] Aprimorar as simulações interativas, novas tentativas e carregamento da interface. Referência: commit `11380a5`; [testes de simulações](./backend/src/simulacoes/simulacoes.service.spec.ts).
+- [x] Ampliar o painel administrativo, a gestão de conteúdos, a auditoria e o acompanhamento do progresso dos alunos. Referência: commit `061ff4e`; [testes do dashboard administrativo](./backend/src/admin/admin-dashboard.service.spec.ts) e [testes de histórico](./backend/src/admin/admin-historico.spec.ts).
+- [x] Reforçar a proteção de rotas e do login e unificar o tratamento dos status das provas. Referência: commit `e0d74c2`; [testes de autenticação](./backend/src/auth/auth.service.spec.ts) e [testes do limite de tentativas](./backend/src/auth/login-rate-limit.guard.spec.ts).
+- [x] Aprimorar os fluxos de e-mail e recuperação de senha e configurar envio pela API da Brevo. Referências: commits `c6954c4` e `a519d07`; [testes de e-mail](./backend/src/mail/mail.service.spec.ts).
+- [x] Ajustar as preferências de cookies e compartilhar requisições simultâneas idênticas no navegador. Referências: commits `b19418c` e `05d6a06`; [verificação de requisições](./frontend/scripts/test-inflight-requests.cjs).
+- [x] Alinhar os testes de integração com os registros de auditoria e as permissões da conta administradora única. Referência: commit `ea3440e`; [testes de integração HTTP](./backend/test/pfc.integracao-spec.ts).
+- [x] Incluir a monografia atualizada, o resumo expandido e a ficha acadêmica no repositório. Referências: commits `a4352b8` e `e0885de`; documentos em [Documentação complementar](#documentação-complementar).
+
+### Correções realizadas
+
+| Item ajustado | Resultado implementado | Referência |
+|---|---|---|
+| Proteção de rotas, login e status das provas | Controles no backend e tratamento unificado dos status | `e0d74c2` |
+| Carregamento e consultas repetidas | Compartilhamento de consultas simultâneas e ajustes no carregamento | `285f30f`, `05d6a06` |
+| Preferências de cookies | Decisão de cookies aplicada por navegador | `b19418c` |
+| Compatibilidade dos testes com as regras atuais | Testes ajustados à auditoria e ao administrador único | `ea3440e` |
+| Navegação e apresentação em celulares | Ajustes de menus, percurso das trilhas e cards de simulações | `dcd0e0c`, `8fadf36`, `712b562` |
+
+Essas correções foram identificadas no histórico técnico. Sua associação a apontamentos específicos do professor deve ser registrada no acompanhamento da equipe.
+
+### Pendências e dúvidas para orientação
+
+- [ ] Registrar os apontamentos da última orientação e relacioná-los às correções acima, incluindo eventuais itens ainda em aberto.
+- [ ] Registrar a validação do orientador neste acompanhamento, com data, itens avaliados e referência à mensagem ou ata no Teams.
+- [ ] Confirmar com o orientador a revisão final da monografia, do resumo expandido e dos diagramas, conforme o modelo acadêmico solicitado.
+- [ ] Confirmar o formato do manual do sistema e das evidências que acompanharão a entrega completa de 23/11.
+
+**Registro da orientação:** aguardando preenchimento pela equipe após a conferência. Informar data, parecer do orientador, pendências acordadas e referência do registro no Teams, sem publicar conversas ou dados pessoais.
+
+## Instruções e evidências de execução
+
+### Preparação da demonstração
+
+1. Executar o backend e o frontend conforme [Executar localmente](#executar-localmente), ou acessar o [site publicado](https://cybereduca.vercel.app).
+2. Preparar uma conta de aluno exclusiva para demonstração, com dados fictícios e uma caixa de e-mail de teste controlada pela equipe. Para os fluxos administrativos, utilizar o acesso autorizado, sem divulgar suas credenciais.
+3. Configurar o serviço de envio de e-mail. Para demonstrar Google OAuth e VirusTotal, configurar também as respectivas integrações no ambiente.
+4. Identificar a versão apresentada com `git branch --show-current` e `git rev-parse HEAD`. Registrar esses dados junto à data, ao ambiente e às evidências da demonstração.
+
+### Roteiro de verificação das funcionalidades
+
+| Funcionalidade | Passos para execução | Resultado esperado e evidência a registrar |
+|---|---|---|
+| Cadastro e validação | Abrir `/cadastro`, tentar enviar campos inválidos e depois cadastrar a conta de demonstração com dados válidos | Mensagens de validação e confirmação do cadastro; capturar as mensagens sem expor os dados da conta |
+| Login e confirmação por e-mail | Abrir `/login`, informar as credenciais e confirmar o acesso pelo link recebido | Acesso à área do aluno após confirmação; registrar o fluxo ocultando endereço, link e token |
+| Recuperação de senha | Abrir `/esqueci-senha`, solicitar a recuperação e definir uma nova senha pelo link recebido | Acesso com a nova senha; registrar as confirmações sem mostrar senhas ou links de recuperação |
+| Trilhas, aulas e progresso | Abrir `/trilhas`, acessar uma trilha liberada, estudar uma aula e concluir sua atividade; atualizar a página | Conclusão persistida e atualização do progresso; registrar a situação antes e depois |
+| Provas por nível | Com as aulas do nível concluídas, iniciar a prova pela área de Trilhas e enviar as respostas | Correção no servidor; aprovação com pelo menos 60% concede a insígnia e libera o próximo nível; reprovação informa a espera de 24 horas; registrar o resultado do cenário demonstrado |
+| Quizzes | Abrir `/quizzes`, selecionar um quiz disponível, responder e finalizar | Pontuação e feedback apresentados; registrar o resultado e sua consulta posterior |
+| Simulações | Abrir `/simulacoes`, selecionar um cenário disponível, tomar as decisões e finalizar | Correção, explicações e resultado salvo; registrar as decisões e o resultado do cenário |
+| Laboratório e API externa | Abrir `/verificador` e consultar um domínio público de demonstração, como `example.com` | Relatório retornado pelo VirusTotal ou mensagem de indisponibilidade da integração; registrar o retorno efetivamente observado, sem expor a chave da API |
+| Perfil e desempenho | Abrir `/perfil` e `/configuracoes`, consultar os indicadores e alterar um avatar disponível | Indicadores correspondentes às atividades e avatar mantido após atualizar a página |
+| Administração | Com o acesso autorizado, abrir `/admin`, consultar indicadores e criar ou editar conteúdo exclusivo de demonstração | Alteração persistida e registro no histórico; demonstrar também que uma conta de aluno não acessa a administração |
+| Login com Google | Quando habilitado, selecionar a opção Google na página de login e concluir a autorização com a conta de teste | Retorno autenticado à plataforma; registrar a conclusão sem mostrar dados pessoais ou códigos de autorização |
+| Responsividade | Repetir a navegação principal em uma janela de celular e em uma janela de computador | Menus, formulários e conteúdos utilizáveis nas duas dimensões; registrar as telas verificadas |
+
+Os cenários que dependem de progresso prévio podem ser apresentados com contas de demonstração preparadas para cada etapa. Alterações administrativas devem usar conteúdo de teste em ambiente local ou de homologação.
+
+### Evidências disponíveis no repositório
+
+| Evidência | Conteúdo |
+|---|---|
+| [Vídeo dos testes de integração](./docs/VIDEO-TESTES-INTEGRACAO.md) | Link para a apresentação em vídeo, arquivos demonstrados e instrução de execução |
+| [Integração de autenticação e aprendizagem](./backend/test/pfc.integracao-spec.ts) | Cenários HTTP de acesso, trilhas, aulas, persistência do progresso e auditoria |
+| [Integração de quizzes, phishing e perfil](./backend/test/atividades.integracao-spec.ts) | Correção, persistência de tentativas, validações, autorização e indicadores de desempenho |
+| [Testes de certificações](./backend/src/certificacoes/certificacoes.spec.ts) | Regras das provas por nível |
+| [Testes do VirusTotal](./backend/src/consulta-seguranca/virustotal.service.spec.ts) | Comportamento da integração de consulta de domínios |
+| [GitHub Actions](https://github.com/Fepenninck/CyberEduca/actions) | Consulta das execuções automatizadas; selecionar a execução correspondente ao commit apresentado |
+
+Os arquivos de teste descrevem os cenários automatizados. A demonstração das integrações externas deve incluir o retorno do serviço no ambiente apresentado, pois os testes podem substituir esses serviços por versões simuladas.
+
+### Reprodução das verificações automatizadas
+
+Os comandos estão em [Verificação](#verificação). Para gerar também o relatório de cobertura, executar na pasta `backend`:
+
+```powershell
+npm test -- --runInBand --coverage
+```
+
+O relatório de cobertura é gerado em `backend/coverage/`. Para os testes HTTP com banco temporário, configurar `backend/.env.test.local` a partir de [backend/.env.test.example](./backend/.env.test.example) e executar `npm run test:integracao`, com PostgreSQL local disponível.
+
+Na entrega, associar as capturas, o vídeo e os relatórios à versão demonstrada. Cada registro deve identificar o cenário, o resultado observado, a data, o ambiente, a branch e o commit. Não incluir senhas, tokens, cookies de sessão, chaves de API, arquivos `.env`, strings de conexão ou dados pessoais reais.
 
 ## Segurança e privacidade
 
