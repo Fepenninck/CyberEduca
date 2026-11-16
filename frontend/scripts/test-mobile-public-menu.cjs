@@ -23,21 +23,19 @@ function load(file) {
   new Function('require', 'module', 'exports', compiled)(importer, module, module.exports)
   return module.exports
 }
-const { platformGroups } = load(path.join(root, 'components/platform-mega-menu.tsx'))
 const { MobilePublicMenu } = load(path.join(root, 'components/mobile-public-menu.tsx'))
 for (const home of [false, true]) {
   const html = renderToStaticMarkup(React.createElement(MobilePublicMenu, { home }))
-  assert.match(html, /<summary[^>]*>Plataforma/)
+  assert.doesNotMatch(html, /Plataforma/)
   assert.doesNotMatch(html, /<a[^>]*>Plataforma<\/a>/)
-  for (const group of platformGroups) for (const item of group.items) assert.ok(html.includes(`href="${item.href}">${item.title}</a>`))
   assert.ok(html.includes(home ? 'Começar agora' : 'Acessar'))
 }
 for (const file of ['components/cyber-header.tsx', 'app/page.tsx']) {
   const exports = load(path.join(root, file))
   const component = exports.CyberHeader ?? exports.default
   const html = renderToStaticMarkup(React.createElement(component))
-  assert.equal((html.match(/class="mobile-platform-menu"/g) ?? []).length, 1, file)
-  assert.match(html, /<summary[^>]*>Plataforma/)
+  assert.equal((html.match(/class="reference-mobile-menu"/g) ?? []).length, 1, file)
+  assert.match(html, /platform-menu-toggle/); assert.doesNotMatch(html, /mobile-platform-menu/)
   assert.doesNotMatch(html, /<a[^>]*>Plataforma<\/a>/)
 }
-console.log('OK: home and public pages use the same expandable mobile platform menu and desktop destinations.')
+console.log('OK: home and public pages use the same mobile navigation without Plataforma; desktop platform menus preserved.')
