@@ -1,11 +1,13 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseUUIDPipe,
   Patch,
   Post,
+  Put,
   Query,
   Req,
   UseGuards,
@@ -20,6 +22,7 @@ import { CriarQuestaoDto } from './dto/criar-questao.dto';
 import { CriarQuizDto } from './dto/criar-quiz.dto';
 import { ResponderQuizDto } from './dto/responder-quiz.dto';
 import { QuizzesService } from './quizzes.service';
+import { CriarQuestaoCompletaDto } from './dto/criar-questao-completa.dto';
 
 type RequestAutenticada = Request & {
   user: {
@@ -70,6 +73,18 @@ export class QuizzesController {
 @UseGuards(JwtAuthGuard, AdminGuard)
 export class AdminQuizzesController {
   constructor(private readonly service: QuizzesService) {}
+
+  @Delete(':quizId')
+  excluir(@Param('quizId', new ParseUUIDPipe()) quizId: string) { return this.service.excluirQuiz(quizId); }
+
+  @Post(':quizId/questoes-completas')
+  criarQuestaoCompleta(@Param('quizId', new ParseUUIDPipe()) quizId: string, @Body() dto: CriarQuestaoCompletaDto) { return this.service.criarQuestaoCompleta(quizId, dto); }
+
+  @Put(':quizId/questoes/:questaoId')
+  editarQuestao(@Param('quizId', new ParseUUIDPipe()) quizId: string, @Param('questaoId', new ParseUUIDPipe()) questaoId: string, @Body() dto: CriarQuestaoCompletaDto) { return this.service.editarQuestaoCompleta(quizId, questaoId, dto); }
+
+  @Delete(':quizId/questoes/:questaoId')
+  excluirQuestao(@Param('quizId', new ParseUUIDPipe()) quizId: string, @Param('questaoId', new ParseUUIDPipe()) questaoId: string) { return this.service.excluirQuestao(quizId, questaoId); }
 
   @Get()
   listar() {
@@ -123,6 +138,8 @@ export class AdminQuizzesController {
     if (dto.status === 'PUBLICADO') {
       return this.service.publicarQuiz(quizId);
     }
+
+    if (dto.status === 'RASCUNHO') return this.service.voltarRascunho(quizId);
 
     return this.service.arquivarQuiz(quizId);
   }

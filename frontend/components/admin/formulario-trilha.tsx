@@ -10,7 +10,7 @@ type FormularioTrilhaProps = {
   onCancel?: () => void
 }
 
-const campoClass = 'mt-2 w-full rounded-lg border border-[#35465c] bg-[#091321] px-3 py-2.5 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-[#b2ff00]'
+const campoClass = 'mt-2 w-full rounded-lg border border-[#d4dce6] bg-[#f5f7fa] px-3 py-2.5 text-sm text-[#242a33] outline-none transition placeholder:text-slate-500 focus:border-[#1768bd]'
 
 export function FormularioTrilha({
   onSubmit,
@@ -30,10 +30,12 @@ export function FormularioTrilha({
 
   async function enviar(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (salvando) return
     setSalvando(true)
     setErro(null)
 
     try {
+      if (!titulo.trim() || !descricao.trim()) throw new Error('Preencha o título e a descrição.');
       await onSubmit({
         titulo: titulo.trim(),
         descricao: descricao.trim(),
@@ -54,21 +56,22 @@ export function FormularioTrilha({
   }
 
   return (
-    <form onSubmit={enviar} className="rounded-2xl border border-[#34465d] bg-[#101b2a] p-5 sm:p-6">
+    <form onSubmit={enviar} className="rounded-2xl border border-[#dce1e8] bg-[#ffffff] p-5 sm:p-6">
+      <div className="admin-form-heading"><h3>Informações da trilha</h3><p>Organize o título, a descrição, o nível e a sequência do aprendizado.</p></div>
       <div className="grid gap-5 sm:grid-cols-2">
-        <label className="text-sm font-medium text-slate-200 sm:col-span-2">
+        <label className="text-sm font-medium text-slate-700 sm:col-span-2">
           Título
           <input className={campoClass} value={titulo} onChange={(event) => setTitulo(event.target.value)} required maxLength={120} />
         </label>
-        <label className="text-sm font-medium text-slate-200 sm:col-span-2">
+        <label className="text-sm font-medium text-slate-700 sm:col-span-2">
           Descrição
           <textarea className={`${campoClass} min-h-28 resize-y`} value={descricao} onChange={(event) => setDescricao(event.target.value)} required maxLength={2000} />
         </label>
-        <label className="text-sm font-medium text-slate-200">
+        <label className="text-sm font-medium text-slate-700">
           Ordem
           <input className={campoClass} type="number" min={1} step={1} value={ordem} onChange={(event) => setOrdem(event.target.value)} required />
         </label>
-        <label className="text-sm font-medium text-slate-200">
+        <label className="text-sm font-medium text-slate-700">
           Nível da trilha
           <select className={campoClass} value={nivel} onChange={(event) => setNivel(event.target.value as TrilhaInput['nivel'])} required>
             <option value="BASICO">Iniciante</option>
@@ -76,7 +79,7 @@ export function FormularioTrilha({
             <option value="AVANCADO">Avançado</option>
           </select>
         </label>
-        <label className="text-sm font-medium text-slate-200">
+        <label className="text-sm font-medium text-slate-700">
           Status de acesso
           <select className={campoClass} value={statusAcesso} onChange={(event) => setStatusAcesso(event.target.value as 'DISPONIVEL' | 'BLOQUEADA')} required>
             <option value="DISPONIVEL">Disponível para os alunos</option>
@@ -85,15 +88,15 @@ export function FormularioTrilha({
         </label>
       </div>
 
-      {erro && <p role="alert" className="mt-4 text-sm text-rose-300">{erro}</p>}
+      {erro && <p role="alert" className="mt-4 text-sm text-rose-700">{erro}</p>}
 
       <div className="mt-6 flex flex-wrap justify-end gap-3">
         {onCancel && (
-          <button type="button" onClick={onCancel} className="rounded-lg border border-[#40516a] px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:bg-white/5">
+          <button type="button" onClick={onCancel} disabled={salvando} className="rounded-lg border border-[#d4dce6] px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-white/5">
             Cancelar
           </button>
         )}
-        <button type="submit" disabled={salvando} className="rounded-lg bg-[#b2ff00] px-4 py-2.5 text-sm font-semibold text-[#132000] transition hover:bg-[#c7ff4b] disabled:cursor-wait disabled:opacity-60">
+        <button type="submit" disabled={salvando} className="rounded-lg bg-[#1768bd] px-4 py-2.5 text-sm font-semibold text-[#ffffff] transition hover:bg-[#12569d] disabled:cursor-wait disabled:opacity-60">
           {salvando ? 'Salvando…' : submitLabel}
         </button>
       </div>

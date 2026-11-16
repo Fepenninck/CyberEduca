@@ -1,6 +1,6 @@
 'use client'
 
-import { BookOpen, ClipboardList, FileCheck2, GraduationCap, LayoutDashboard, LogOut, ShieldAlert, Users } from 'lucide-react'
+import { History, ListChecks, ChevronRight, BookOpen, ClipboardList, FileCheck2, GraduationCap, LayoutDashboard, LogOut, ShieldAlert, Users } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -11,9 +11,11 @@ const links = [
   { href: '/admin/trilhas', label: 'Trilhas', icon: GraduationCap },
   { href: '/admin/aulas', label: 'Aulas', icon: BookOpen },
   { href: '/admin/simulacoes', label: 'Simulações', icon: ShieldAlert },
+  { href: '/admin/quizzes', label: 'Quizzes', icon: ListChecks },
   { href: '/admin/provas', label: 'Provas', icon: FileCheck2 },
   { href: '/admin/resultados', label: 'Resultados', icon: ClipboardList },
   { href: '/admin/usuarios', label: 'Usuários', icon: Users },
+  { href: '/admin/historico', label: 'Histórico', icon: History },
 ]
 
 export function AdminSidebar() {
@@ -35,18 +37,14 @@ export function AdminSidebar() {
   }
 
   return (
-    <aside className="border-b border-[#27364b] bg-[#0d1725] md:fixed md:inset-y-0 md:left-0 md:z-40 md:w-64 md:border-r md:border-b-0">
-      <div className="flex h-16 items-center gap-3 border-b border-[#27364b] px-5">
-        <span className="grid size-9 place-items-center rounded-lg bg-[#b2ff00]/10 text-sm font-bold text-[#b2ff00]">
-          C+
-        </span>
-        <div>
-          <p className="text-sm font-semibold text-white">CyberEduca+</p>
-          <p className="text-xs text-slate-400">Painel administrativo</p>
-        </div>
+    <aside className="admin-sidebar">
+      <div className="admin-brand">
+        <img className="admin-brand-logo" src="/cybereduca-logo.png" alt="CyberEduca+" />
+        <p className="admin-brand-caption">Painel administrativo</p>
       </div>
 
-      <nav aria-label="Navegação administrativa" className="grid grid-cols-2 gap-1 p-3 md:flex md:flex-col">
+      <nav aria-label="Navegação administrativa" className="admin-navigation">
+        <p className="admin-nav-label">GERENCIAR PLATAFORMA</p>
         {links.map(({ href, label, icon: Icon }) => {
           const ativo = pathname === href || (href !== '/admin' && pathname.startsWith(`${href}/`))
 
@@ -55,19 +53,16 @@ export function AdminSidebar() {
               key={href}
               href={href}
               aria-current={ativo ? 'page' : undefined}
-              className={`flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm transition-colors ${
-                ativo
-                  ? 'bg-[#b2ff00]/10 font-semibold text-[#b2ff00]'
-                  : 'text-slate-300 hover:bg-white/5 hover:text-white'
-              }`}
+              className="admin-nav-link"
             >
               <Icon aria-hidden="true" size={18} />
-              {label}
+              <span>{label}</span>
+              {ativo && <ChevronRight aria-hidden="true" size={14} />}
             </Link>
           )
         })}
       </nav>
-      <div className="p-3 md:absolute md:inset-x-0 md:bottom-0">
+      <div className="admin-sidebar-exit">
         <button
           type="button"
           onClick={sair}

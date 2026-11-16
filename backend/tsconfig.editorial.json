@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "noEmit": true,
+    "incremental": false
+  },
+  "include": ["scripts/revisar-aulas-editorial.ts", "scripts/gerar-migracao-editorial.ts", "scripts/test-migracao-editorial.ts", "scripts/gerar-migracao-atividades.ts", "scripts/test-migracao-atividades.ts"]
+}

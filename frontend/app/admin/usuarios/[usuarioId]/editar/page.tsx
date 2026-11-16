@@ -1,7 +1,5 @@
 'use client'
 
-import { SimpleLoading } from '@/components/ui/simple-loading'
-import { ArrowLeft, UserRoundPen } from 'lucide-react'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -44,20 +42,18 @@ export default function EditarUsuarioPage() {
 
   return (
     <section className="mx-auto max-w-2xl">
-      <Link href="/admin/usuarios" className="mb-6 inline-flex items-center gap-2 text-sm text-slate-400 transition hover:text-white">
-        <ArrowLeft aria-hidden="true" size={16} /> Voltar para usuários
+      <Link href="/admin/usuarios" className="mb-6 inline-flex items-center gap-2 text-sm text-[#626c79] transition hover:text-[#242a33]">
+         Voltar para usuários
       </Link>
       <div className="mb-6">
-        <span className="grid size-11 place-items-center rounded-xl bg-sky-400/10 text-sky-300">
-          <UserRoundPen aria-hidden="true" size={22} />
-        </span>
-        <h2 className="mt-4 text-3xl font-semibold tracking-tight text-white">Editar usuário</h2>
-        <p className="mt-2 text-sm text-slate-400">Atualize o nome e o e-mail da conta.</p>
+
+        <h2 className="mt-4 text-3xl font-semibold tracking-tight text-[#242a33]">Editar usuário</h2>
+        <p className="mt-2 text-sm text-[#626c79]">Atualize o nome e o e-mail da conta.</p>
       </div>
 
-      {erro && <p role="alert" className="mb-5 rounded-xl border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-sm text-rose-200">{erro}</p>}
+      {erro && <p role="alert" className="mb-5 rounded-xl border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-sm text-rose-700">{erro}</p>}
       {carregando ? (
-        <SimpleLoading />
+        <p role="status" className="text-sm text-[#626c79]">Carregando...</p>
       ) : usuario ? (
         <FormularioEdicaoUsuario
           key={usuario.id}

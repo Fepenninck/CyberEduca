@@ -1,106 +1,343 @@
-'use client'
+﻿"use client";
 
-import { useState, type FormEvent } from 'react'
-import type { AdminAula, AdminTrilha, AulaInput } from '@/lib/admin-api'
+import { useState, type FormEvent } from "react";
+import Link from "next/link";
+import ReactMarkdown from "react-markdown";
+import type { AdminAula, AdminTrilha, AulaInput } from "@/lib/admin-api";
+import {
+  carregarConteudoAula,
+  novoMaterialAula,
+  serializarMaterialAula,
+  validarMaterialAula,
+} from "@/lib/admin-lesson-editor";
+import {
+  ConteudoEditorialAula,
+  RecursosEditoriaisAula,
+  PreviaEditorialAula,
+  type AbaAula,
+} from "./lesson-material-editor";
 
-type FormularioAulaProps = {
-  trilhas: AdminTrilha[]
-  aulasExistentes: AdminAula[]
-  onSubmit: (dados: AulaInput) => Promise<void>
-  initialValues?: Partial<AulaInput>
-  submitLabel?: string
-  onCancel?: () => void
-}
-
-const campoClass = 'mt-2 w-full rounded-lg border border-[#35465c] bg-[#091321] px-3 py-2.5 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-[#b2ff00]'
-
+type Props = {
+  trilhas: AdminTrilha[];
+  aulasExistentes: AdminAula[];
+  onSubmit: (dados: AulaInput) => Promise<void>;
+  initialValues?: Partial<AdminAula>;
+  submitLabel?: string;
+  onCancel?: () => void;
+};
+const abas: { value: AbaAula; label: string }[] = [
+  { value: "conteudo", label: "Conteúdo" },
+  { value: "apoio", label: "Recursos de apoio" },
+  { value: "previa", label: "Pré-visualização" },
+];
 export function FormularioAula({
   trilhas,
   aulasExistentes,
   onSubmit,
   initialValues,
-  submitLabel = 'Salvar aula',
+  submitLabel = "Salvar aula",
   onCancel,
-}: FormularioAulaProps) {
-  const trilhaInicialId = initialValues?.trilhaId ?? trilhas[0]?.id ?? ''
-  const proximaOrdem = (id: string) => Math.max(
-    0,
-    ...aulasExistentes.filter((aula) => aula.trilhaId === id).map((aula) => aula.ordem),
-  ) + 1
-
-  const [titulo, setTitulo] = useState(initialValues?.titulo ?? '')
-  const [conteudo, setConteudo] = useState(initialValues?.conteudo ?? '')
-  const [ordem, setOrdem] = useState(String(initialValues?.ordem ?? proximaOrdem(trilhaInicialId)))
-  const [trilhaId, setTrilhaId] = useState(trilhaInicialId)
-  const [salvando, setSalvando] = useState(false)
-  const [erro, setErro] = useState<string | null>(null)
-
+}: Props) {
+  const proximaOrdem = (id: string) =>
+    Math.max(
+      0,
+      ...aulasExistentes
+        .filter((aula) => aula.trilhaId === id)
+        .map((aula) => aula.ordem),
+    ) + 1;
+  const [inicial] = useState(() =>
+    carregarConteudoAula(initialValues?.conteudo ?? ""),
+  );
+  const [estruturado, setEstruturado] = useState(
+    inicial.modo === "estruturado",
+  );
+  const [material, setMaterial] = useState(
+    inicial.modo === "estruturado" ? inicial.material : novoMaterialAula(),
+  );
+  const [texto, setTexto] = useState(
+    inicial.modo === "texto" ? inicial.texto : "",
+  );
+  const [trilhaId, setTrilhaId] = useState(
+    initialValues?.trilhaId ?? trilhas[0]?.id ?? "",
+  );
+  const [titulo, setTitulo] = useState(initialValues?.titulo ?? "");
+  const [ordem, setOrdem] = useState(
+    String(initialValues?.ordem ?? proximaOrdem(trilhaId)),
+  );
+  const [salvando, setSalvando] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
+  const [aba, setAba] = useState<AbaAula>("conteudo");
   async function enviar(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    setSalvando(true)
-    setErro(null)
-
+    event.preventDefault();
+    if (salvando) return;
+    setErro(null);
+    if (inicial.modo === "invalido") {
+      setErro(
+        "Não foi possível abrir o conteúdo desta aula. Cancele e recarregue a página. O material original foi preservado.",
+      );
+      return;
+    }
+    if (!titulo.trim() || titulo.trim().length > 160) {
+      setErro("Informe um título de até 160 caracteres.");
+      return;
+    }
+    const trilha = trilhas.find((item) => item.id === trilhaId);
+    if (!trilha) {
+      setErro("Selecione uma trilha para a aula.");
+      return;
+    }
+    const posicao = Number(ordem);
+    if (!Number.isInteger(posicao) || posicao < 1) {
+      setErro("Informe uma ordem inteira maior que zero.");
+      return;
+    }
+    if (
+      aulasExistentes.some(
+        (aula) =>
+          aula.id !== initialValues?.id &&
+          aula.trilhaId === trilhaId &&
+          aula.ordem === posicao,
+      )
+    ) {
+      setErro(
+        "Essa posição já está ocupada nesta trilha. Escolha outra ordem.",
+      );
+      return;
+    }
+    if (estruturado) {
+      const falha = validarMaterialAula(material);
+      if (falha) {
+        setErro(falha);
+        setAba(!material.concept.trim() ? "conteudo" : "apoio");
+        return;
+      }
+    } else if (!texto.trim()) {
+      setErro("Escreva o conteúdo da aula.");
+      setAba("conteudo");
+      return;
+    }
+    const conteudo = estruturado
+      ? serializarMaterialAula(
+          {
+            ...material,
+            ...(material.objectives
+              ? {
+                  objectives: material.objectives.filter((item) => item.trim()),
+                }
+              : {}),
+          },
+          titulo,
+          trilha.nivel,
+        )
+      : texto.trim();
+    if (conteudo.length > 500000) {
+      setErro(
+        "O conteúdo excede o tamanho permitido. Reduza o material antes de salvar.",
+      );
+      return;
+    }
+    setSalvando(true);
     try {
-      await onSubmit({ titulo: titulo.trim(), conteudo, ordem: Number.parseInt(ordem, 10), trilhaId })
-      setTitulo('')
-      setConteudo('')
-      setOrdem(String(Math.max(proximaOrdem(trilhaId), Number.parseInt(ordem, 10) + 1)))
-    } catch (erroEnvio) {
-      setErro(erroEnvio instanceof Error ? erroEnvio.message : 'Não foi possível salvar a aula.')
+      await onSubmit({
+        titulo: titulo.trim(),
+        conteudo,
+        trilhaId,
+        ordem: posicao,
+      });
+    } catch (falha) {
+      setErro(
+        falha instanceof Error
+          ? falha.message
+          : "Não foi possível salvar a aula.",
+      );
     } finally {
-      setSalvando(false)
+      setSalvando(false);
     }
   }
-
   return (
-    <form onSubmit={enviar} className="rounded-2xl border border-[#34465d] bg-[#101b2a] p-5 sm:p-6">
-      <div className="grid gap-5 sm:grid-cols-2">
-        <label className="text-sm font-medium text-slate-200 sm:col-span-2">
-          Título
-          <input className={campoClass} value={titulo} onChange={(event) => setTitulo(event.target.value)} required maxLength={160} />
-        </label>
-        <label className="text-sm font-medium text-slate-200 sm:col-span-2">
-          Conteúdo
-          <textarea className={`${campoClass} min-h-48 resize-y`} value={conteudo} onChange={(event) => setConteudo(event.target.value)} required />
-        </label>
-        <label className="text-sm font-medium text-slate-200">
-          Ordem
-          <input className={campoClass} type="number" min={1} step={1} value={ordem} onChange={(event) => setOrdem(event.target.value)} required />
-        </label>
-        <label className="text-sm font-medium text-slate-200">
-          Trilha
-          <select
-            className={campoClass}
-            value={trilhaId}
-            onChange={(event) => {
-              const novoTrilhaId = event.target.value
-              setTrilhaId(novoTrilhaId)
-              setOrdem(String(proximaOrdem(novoTrilhaId)))
-            }}
-            required
-            disabled={trilhas.length === 0}
-          >
-            <option value="" disabled>Selecione uma trilha</option>
-            {trilhas.map((trilha) => (
-              <option key={trilha.id} value={trilha.id}>{trilha.titulo}</option>
-            ))}
-          </select>
-          {trilhas.length === 0 && <span className="mt-2 block text-xs text-amber-300">Cadastre uma trilha antes de criar aulas.</span>}
-        </label>
-      </div>
-
-      {erro && <p role="alert" className="mt-4 text-sm text-rose-300">{erro}</p>}
-
-      <div className="mt-6 flex flex-wrap justify-end gap-3">
+    <form
+      onSubmit={enviar}
+      className="admin-editor admin-lesson-form"
+      aria-busy={salvando}
+      noValidate
+    >
+      <fieldset disabled={salvando}>
+        <div className="admin-form-heading">
+          <h3>Informações da aula</h3>
+          <p>Defina o nome e a posição da aula na trilha.</p>
+        </div>
+        <div className="admin-field-grid">
+          <label className="admin-field-wide">
+            Título da aula
+            <input
+              className="admin-control"
+              value={titulo}
+              onChange={(event) => setTitulo(event.target.value)}
+              maxLength={160}
+              required
+              placeholder="Ex.: Uma senha diferente para cada conta"
+            />
+          </label>
+          <label>
+            Trilha
+            <select
+              className="admin-control"
+              value={trilhaId}
+              onChange={(event) => {
+                setTrilhaId(event.target.value);
+                setOrdem(String(proximaOrdem(event.target.value)));
+              }}
+              required
+            >
+              <option value="" disabled>
+                Selecione uma trilha
+              </option>
+              {trilhas.map((trilha) => (
+                <option key={trilha.id} value={trilha.id}>
+                  {trilha.titulo}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Ordem dentro da trilha
+            <input
+              className="admin-control"
+              type="number"
+              value={ordem}
+              min={1}
+              step={1}
+              required
+              onChange={(event) => setOrdem(event.target.value)}
+            />
+            <small>Cada aula ocupa uma posição única.</small>
+          </label>
+        </div>
+        {!trilhas.length && (
+          <p className="admin-notice" data-tone="warning">
+            Cadastre uma trilha para vincular esta aula.{" "}
+            <Link href="/admin/trilhas#nova">Criar trilha</Link>
+          </p>
+        )}
+        <div className="admin-form-heading admin-form-divider">
+          <h3>Material da aula</h3>
+          <p>
+            Edite o texto e os recursos nos campos abaixo. Confira o resultado
+            antes de salvar.
+          </p>
+        </div>
+        {inicial.modo === "invalido" ? (
+          <p role="alert" className="admin-notice" data-tone="danger">
+            Não foi possível abrir este conteúdo para edição. Cancele e
+            recarregue a página. O material original não foi alterado.
+          </p>
+        ) : (
+          <>
+            <div
+              className="admin-editor-tabs"
+              role="group"
+              aria-label="Seções do material"
+            >
+              {abas.map((item) => (
+                <button
+                  type="button"
+                  key={item.value}
+                  aria-pressed={aba === item.value}
+                  onClick={() => setAba(item.value)}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+            <div className="admin-editor-body">
+              {aba === "conteudo" &&
+                (estruturado ? (
+                  <ConteudoEditorialAula
+                    material={material}
+                    onChange={setMaterial}
+                  />
+                ) : (
+                  <label className="admin-editor-field">
+                    Texto da aula
+                    <textarea
+                      className="admin-control admin-legacy-content"
+                      value={texto}
+                      onChange={(event) => setTexto(event.target.value)}
+                      rows={10}
+                      placeholder="Escreva o conteúdo da aula."
+                    />
+                  </label>
+                ))}
+              {aba === "apoio" &&
+                (estruturado ? (
+                  <RecursosEditoriaisAula
+                    material={material}
+                    onChange={setMaterial}
+                  />
+                ) : (
+                  <div className="admin-resource-convert">
+                    <h4>Complemente esta aula</h4>
+                    <p>
+                      Organize o texto em campos e acrescente objetivos, vídeo,
+                      diagrama e referências. O texto existente será mantido na
+                      explicação principal.
+                    </p>
+                    <button
+                      type="button"
+                      className="admin-action-secondary"
+                      onClick={() => {
+                        setMaterial({ ...novoMaterialAula(), concept: texto });
+                        setEstruturado(true);
+                      }}
+                    >
+                      Adicionar recursos à aula
+                    </button>
+                  </div>
+                ))}
+              {aba === "previa" &&
+                (estruturado ? (
+                  <PreviaEditorialAula material={material} titulo={titulo} />
+                ) : (
+                  <div className="admin-markdown-preview">
+                    <h3>{titulo}</h3>
+                    {texto.trim() ? (
+                      <ReactMarkdown>{texto}</ReactMarkdown>
+                    ) : (
+                      <p>
+                        O conteúdo aparecerá aqui quando você começar a
+                        escrever.
+                      </p>
+                    )}
+                  </div>
+                ))}
+            </div>
+          </>
+        )}
+      </fieldset>
+      {erro && (
+        <p role="alert" className="admin-notice" data-tone="danger">
+          {erro}
+        </p>
+      )}
+      <div className="admin-form-actions">
         {onCancel && (
-          <button type="button" onClick={onCancel} className="rounded-lg border border-[#40516a] px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:bg-white/5">
+          <button
+            type="button"
+            className="admin-action-secondary"
+            onClick={onCancel}
+            disabled={salvando}
+          >
             Cancelar
           </button>
         )}
-        <button type="submit" disabled={salvando || trilhas.length === 0} className="rounded-lg bg-[#b2ff00] px-4 py-2.5 text-sm font-semibold text-[#132000] transition hover:bg-[#c7ff4b] disabled:cursor-not-allowed disabled:opacity-60">
-          {salvando ? 'Salvando…' : submitLabel}
+        <button
+          type="submit"
+          className="admin-action-primary"
+          disabled={salvando || !trilhas.length || inicial.modo === "invalido"}
+        >
+          {salvando ? "Salvando..." : submitLabel}
         </button>
       </div>
     </form>
-  )
+  );
 }

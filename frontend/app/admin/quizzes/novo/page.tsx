@@ -1,7 +1,5 @@
 'use client'
 
-import { SimpleLoading } from '@/components/ui/simple-loading'
-import { ArrowLeft, ClipboardCheck } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -34,28 +32,25 @@ export default function NovoQuizPage() {
   }, [])
 
   async function salvarQuiz(dados: QuizAdminInput) {
-    await criarQuizAdmin(dados)
-    window.alert('Quiz criado com sucesso.')
-    router.push('/admin/quizzes')
+    const quiz = await criarQuizAdmin(dados)
+    router.push(`/admin/quizzes/${encodeURIComponent(quiz.id)}/editar`)
     router.refresh()
   }
 
   return (
     <section className="mx-auto max-w-3xl">
-      <Link href="/admin/quizzes" className="mb-6 inline-flex items-center gap-2 text-sm text-slate-400 transition hover:text-white">
-        <ArrowLeft aria-hidden="true" size={16} /> Voltar para quizzes
+      <Link href="/admin/quizzes" className="mb-6 inline-flex items-center gap-2 text-sm text-[#626c79] transition hover:text-[#242a33]">
+         Voltar para quizzes
       </Link>
       <div className="mb-6">
-        <span className="grid size-11 place-items-center rounded-xl bg-violet-400/10 text-violet-300">
-          <ClipboardCheck aria-hidden="true" size={22} />
-        </span>
-        <h2 className="mt-4 text-3xl font-semibold tracking-tight text-white">Novo quiz</h2>
-        <p className="mt-2 text-sm text-slate-400">Preencha os dados e selecione a aula relacionada.</p>
+
+        <h2 className="mt-4 text-3xl font-semibold tracking-tight text-[#242a33]">Novo quiz</h2>
+        <p className="mt-2 text-sm text-[#626c79]">Preencha os dados e selecione a aula relacionada.</p>
       </div>
 
-      {erro && <p role="alert" className="mb-5 rounded-xl border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-sm text-rose-200">{erro}</p>}
+      {erro && <p role="alert" className="mb-5 rounded-xl border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-sm text-rose-700">{erro}</p>}
       {carregando ? (
-        <SimpleLoading />
+        <p role="status" className="text-sm text-[#626c79]">Carregando...</p>
       ) : (
         <FormularioQuiz aulas={aulas} onSubmit={salvarQuiz} />
       )}

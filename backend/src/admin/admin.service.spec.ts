@@ -3,16 +3,19 @@ import { PrismaService } from '../prisma.service';
 import { AdminService } from './admin.service';
 import { AdminDashboardService } from './admin-dashboard.service';
 import { AdminUsuariosService } from './admin-usuarios.service';
+import { EXAM_IDS } from '../certificacoes/certification-progress';
 
 describe('AdminService', () => {
   const prismaMock = {
     resultadoProva: { findMany: jest.fn<(...args: any[]) => Promise<any>>() },
     resultadoSimulacao: { findMany: jest.fn<(...args: any[]) => Promise<any>>() },
+    tentativaProva: { findMany: jest.fn<(...args: any[]) => Promise<any>>() },
   };
   let service: AdminService;
 
   beforeEach(() => {
     jest.resetAllMocks();
+    prismaMock.tentativaProva.findMany.mockResolvedValue([]);
     service = new AdminService(
       {} as AdminDashboardService,
       {} as AdminUsuariosService,
@@ -21,16 +24,30 @@ describe('AdminService', () => {
   });
 
   it('lista resultados de provas com dados do aluno e da prova', async () => {
-    const resultados = [{ id: 'resultado-1', usuario: { nome: 'Ana' }, prova: { titulo: 'Prova 1' } }];
+    const resultados = [{ id: 'resultado-1', provaId: 'p1', usuarioId: 'u1', criadoEm: new Date(), acertos: 1, totalQuestoes: 2, usuario: { nome: 'Ana' }, prova: { titulo: 'Prova 1' } }];
     prismaMock.resultadoProva.findMany.mockResolvedValue(resultados);
 
-    await expect(service.listarResultadosProvas()).resolves.toEqual(resultados);
+    await expect(service.listarResultadosProvas()).resolves.toEqual(resultados.map(item => ({ ...item, aprovado: null, notaMinima: null })));
     expect(prismaMock.resultadoProva.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         orderBy: { criadoEm: 'desc' },
         include: expect.objectContaining({ usuario: expect.any(Object), prova: expect.any(Object) }),
       }),
     );
+  });
+  it('inclui tentativas de certificação sem duplicar o resumo legado e aplica a regra real de 6/10', async () => {
+    const usuario = { id: 'u1', nome: 'Ana', email: 'ana@example.invalid' };
+    const prova = { id: EXAM_IDS.BASICO, titulo: 'Certificação' };
+    prismaMock.resultadoProva.findMany.mockResolvedValue([{ id: 'legado', usuarioId: usuario.id, provaId: prova.id }]);
+    prismaMock.tentativaProva.findMany.mockResolvedValue([
+      { id: 'antes', usuarioId: usuario.id, provaId: prova.id, usuario, prova, totalAcertos: 5, totalQuestoes: 10, concluidoEm: new Date('2026-11-14T12:00:00Z') },
+      { id: 'depois', usuarioId: usuario.id, provaId: prova.id, usuario, prova, totalAcertos: 6, totalQuestoes: 10, concluidoEm: new Date('2026-11-15T12:00:00Z') },
+    ]);
+    const resultados = await service.listarResultadosProvas();
+    expect(resultados.map(item => item.id)).toEqual(['depois', 'antes']);
+    expect(resultados.map(item => item.aprovado)).toEqual([true, false]);
+    expect(resultados.every(item => item.notaMinima === 6)).toBe(true);
+    expect(prismaMock.tentativaProva.findMany).toHaveBeenCalledWith(expect.objectContaining({where: {concluidoEm: {not: null}}}));
   });
 
   it('lista resultados de simulações com dados do aluno e da simulação', async () => {

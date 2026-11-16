@@ -1,12 +1,15 @@
 import { beginLoading } from './loading-state'
 import { waitForBackend } from './backend-ready'
+import { fetchWithTimeout } from './fetch-with-timeout'
 export const API_URL = '/api'
 
 export const apiFetch = async (path: string, options?: RequestInit) => {
-  const end = beginLoading(path === '/auth/login' ? 'Entrando na sua conta…' : 'Carregando…')
+  const method = (options?.method ?? 'GET').toUpperCase()
+  // Consultas e atualizações ao voltar à janela não devem bloquear toda a interface.
+  const end = method === 'GET' || method === 'HEAD' ? () => {} : beginLoading(path === '/auth/login' ? 'Entrando na sua conta…' : 'Carregando…')
   try {
   if (path === '/auth/login' || path === '/auth/register') await waitForBackend()
-  const request = () => fetch(`${API_URL}${path}`, { ...options, credentials: 'include' })
+  const request = () => fetchWithTimeout(`${API_URL}${path}`, { ...options, credentials: 'include' })
   let response = await request()
   if (response.headers.get('content-type')?.includes('text/html')) {
     if ((options?.method ?? 'GET').toUpperCase() === 'GET' && !options?.signal?.aborted) {
@@ -95,17 +98,37 @@ export type TrackDetail = TrackSummary & {
   aulas: Array<{ id: string; titulo: string; ordem: number; concluida: boolean }>
 }
 
+type ResumoResultados = {
+  conclusao: number
+  feitas: number
+  melhorResultado: { id: string; titulo: string; acertos: number; totalQuestoes: number; percentual: number } | null
+  piorResultado: { id: string; titulo: string; acertos: number; totalQuestoes: number; percentual: number } | null
+}
+
 export type Desempenho = {
   aulas: { total: number; concluidas: number }
-  simulacoes: { realizadas: number; acertos: number; totalQuestoes: number; aproveitamento: number | null }
-  avaliacoes: { realizadas: number; media: number | null; melhor: number | null }
+  simulacoes: ResumoResultados & { realizadas: number; acertos: number; erros: number; totalQuestoes: number; aproveitamento: number | null }
+  avaliacoes: ResumoResultados & {
+    acertos: number
+    erros: number
+    realizadas: number
+    media: number | null
+    melhor: number | null
+    notas: Array<{ nivel: string; nota: number }>
+    melhorNivel: { nivel: string; media: number; tentativas: number } | null
+    nivelRevisar: { nivel: string; media: number; tentativas: number } | null
+  }
   ritmo: { diasSeguidos: number; aulasNaSemana: number; semana: Array<{ dia: string; aulas: number }> }
   phishing: { respondidos: number; acertos: number; porTipo: Array<{ tipo: 'EMAIL' | 'SMS' | 'SITE' | 'REDE_SOCIAL'; total: number; acertos: number }> }
   quizzes: {
+    conclusao: number
     feitos: number
+    tentativas: number
+    acertos: number
+    erros: number
     media: number | null
-    melhor: { quizId: string; titulo: string; percentual: number } | null
-    revisar: { quizId: string; titulo: string; percentual: number } | null
+    melhor: { quizId: string; titulo: string; acertos: number; totalQuestoes: number; percentual: number } | null
+    pior: { quizId: string; titulo: string; acertos: number; totalQuestoes: number; percentual: number } | null
   }
 }
 

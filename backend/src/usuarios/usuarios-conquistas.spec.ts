@@ -16,7 +16,7 @@ describe('Conquistas por nível', () => {
   it('reconhece o nível após as aulas e aprovação e usa a data da prova', async () => {
     const { service } = setup([aula('BASICO', true), aula('BASICO', true), aula('INTERMEDIARIO', false)], ['BASICO']);
     const result = await service.conquistas('aluno-1');
-    expect(result[0]).toEqual({ nivel: 'BASICO', totalAulas: 2, aulasConcluidas: 2, conquistada: true, conquistadaEm: '2026-11-15T12:00:00.000Z' });
+    expect(result[0]).toEqual({ nivel: 'BASICO', totalAulas: 2, aulasConcluidas: 2, conquistada: true, conquistadaEm: '2026-11-15T12:00:00.000Z', desbloqueado: true });
     expect(result[1].conquistada).toBe(false);
     expect(result[2].conquistada).toBe(false);
   });
@@ -31,7 +31,9 @@ describe('Conquistas por nível', () => {
   });
   it('não concede insígnias somente por concluir as aulas', async () => {
     const { service } = setup([aula('BASICO', true), aula('INTERMEDIARIO', true), aula('AVANCADO', true)]);
-    expect((await service.conquistas('aluno')).every(item => !item.conquistada)).toBe(true);
+    const result = await service.conquistas('aluno');
+    expect(result.every(item => !item.conquistada)).toBe(true);
+    expect(result.map(item => item.desbloqueado)).toEqual([true, false, false]);
   });
   it('consulta somente conclusões do aluno autenticado e preserva o catálogo retirado', async () => {
     const { service, findMany } = setup([]);

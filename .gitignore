@@ -5,4 +5,5 @@ build/
 .env.local
 *.log
 *.tsbuildinfo
+.local/backups/
 .DS_Store

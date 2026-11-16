@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { AdminDashboardService } from './admin-dashboard.service';
 import { AdminUsuariosService } from './admin-usuarios.service';
 import { PrismaService } from '../prisma.service';
+import { isCertificationExam, passed, PASS_MARK } from '../certificacoes/certification-progress';
 
 @Injectable()
 export class AdminService {
@@ -11,14 +12,31 @@ export class AdminService {
     private readonly prisma: PrismaService,
   ) {}
 
-  listarResultadosProvas() {
-    return this.prisma.resultadoProva.findMany({
+  async listarResultadosProvas() {
+    const [legados, tentativas] = await Promise.all([this.prisma.resultadoProva.findMany({
       orderBy: { criadoEm: 'desc' },
       include: {
         usuario: { select: { id: true, nome: true, email: true } },
         prova: { select: { id: true, titulo: true } },
       },
-    });
+    }), this.prisma.tentativaProva.findMany({
+      where: { concluidoEm: { not: null } },
+      select: { id: true, usuarioId: true, provaId: true, totalAcertos: true, totalQuestoes: true, concluidoEm: true,
+        usuario: { select: { id: true, nome: true, email: true } }, prova: { select: { id: true, titulo: true } } },
+    })]);
+    // ResultadoProva também recebe o resumo da tentativa: não contar a mesma prova duas vezes.
+    const comTentativas = new Set(tentativas.map(item => `${item.usuarioId}:${item.provaId}`));
+    const resultados = [
+      ...legados.filter(item => !comTentativas.has(`${item.usuarioId}:${item.provaId}`)),
+      ...tentativas.map(item => ({ id: item.id, usuarioId: item.usuarioId, provaId: item.provaId,
+        acertos: item.totalAcertos, totalQuestoes: item.totalQuestoes, criadoEm: item.concluidoEm!, usuario: item.usuario, prova: item.prova })),
+    ];
+    return resultados.map(item => {
+      const certificacao = isCertificationExam(item.provaId);
+      const valida = item.totalQuestoes > 0 && item.acertos >= 0 && item.acertos <= item.totalQuestoes;
+      return { ...item, aprovado: certificacao && valida ? passed({ totalAcertos: item.acertos, totalQuestoes: item.totalQuestoes }) : null,
+        notaMinima: certificacao ? PASS_MARK : null };
+    }).sort((a, b) => b.criadoEm.getTime() - a.criadoEm.getTime() || a.id.localeCompare(b.id));
   }
 
   listarResultadosSimulacoes() {

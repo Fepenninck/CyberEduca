@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { CSSProperties } from "react";
-import { BookOpen, Check, LockKeyhole } from "lucide-react";
+import { BookOpen, LockKeyhole } from "lucide-react";
 import { DashboardNavigation } from "@/components/dashboard-navigation";
 import { apiFetch, type TrackSummary } from "@/lib/api";
 import { LearningTrail } from "@/components/learning-trail";
 import { unlockedLearningCourses } from '@/lib/course-access';
 import { courseButtonLabel } from '@/lib/course-status';
+import { progressoDoNivel } from '@/lib/learning-progress';
 import courseImages from '@/lib/course-images.json';
 import { LevelExamStop } from '@/components/level-exam-stop';
 import { listarCertificacoes, type CertificationStatus } from '@/lib/certificacoes-api';
@@ -86,11 +87,11 @@ export default function AulasPage() {
           </div>
           <ol className="paths-journey" aria-label="Progresso por nível">
             {levels.map(level => {
-              const group = visibleTracks.filter(track => track.nivel === level.key);
-              const progress = group.length ? Math.round(group.reduce((sum, track) => sum + track.percentual, 0) / group.length) : 0;
-              return <li key={level.key} className={progress === 100 ? 'is-done' : progress > 0 ? 'is-active' : undefined} style={{ '--level-color': level.color } as CSSProperties}>
+              const certification = certifications.find(item => item.nivel === level.key);
+              const progress = certification ? progressoDoNivel(certification) : 0;
+              return <li key={level.key} className={certification?.aprovado ? 'is-done' : progress > 0 ? 'is-active' : undefined} style={{ '--level-color': level.color } as CSSProperties}>
                 <div className="paths-level-label"><strong>{level.key === 'BASICO' ? 'Básico' : level.title.replace('Nível ', '')}</strong><small>{progress}%</small></div>
-                <span className="paths-level-count">{group.filter(track => track.percentual === 100).length}/{group.length} trilhas concluídas</span>
+                <span className="paths-level-count">{!certification ? 'Carregando progresso...' : !certification.desbloqueado ? 'Bloqueado — passe na prova anterior' : certification.aprovado ? 'Aulas e prova concluídas' : certification.aulasCompletas ? 'Aulas estudadas — falta aprovação na prova' : 'Etapa 1 de 2: estudar as aulas'}</span>
               </li>;
             })}
           </ol>
@@ -102,7 +103,7 @@ export default function AulasPage() {
                   <article
                     key={track.id}
                     data-level={level.key}
-                    className={`learning-path-card ${!unlocked.includes(track.id) ? "is-locked" : ""} ${track.percentual === 100 ? "is-done" : ""}`}
+                    className={`learning-path-card ${!unlocked.includes(track.id) ? "is-locked" : ""} ${track.percentual === 100 && unlocked.includes(track.id) ? "is-done" : ""}`}
                     style={{ "--track-image": level.image, "--level-color": level.color } as CSSProperties}
                   >
                     <div className="learning-path-image">
@@ -122,9 +123,9 @@ export default function AulasPage() {
                         <span>
                           <BookOpen size={15} /> {track.totalAulas} aulas
                         </span>
-                        <strong>{track.percentual === 100 ? <><Check size={13} strokeWidth={3} /> Concluída</> : `${track.percentual}%`}</strong>
+                        <strong>{!unlocked.includes(track.id) ? 'Aguardando prova anterior' : track.percentual === 100 ? 'Aulas estudadas' : `${track.percentual}% das aulas`}</strong>
                       </div>
-                      <div className="learning-path-progress" aria-hidden="true"><span style={{ width: `${track.percentual}%` }} /></div>
+                      <div className="learning-path-progress" aria-hidden="true"><span style={{ width: `${unlocked.includes(track.id) ? track.percentual : 0}%` }} /></div>
                       {!unlocked.includes(track.id) ? (
                         <span className="learning-path-lock">
                           <LockKeyhole size={14} /> Bloqueado

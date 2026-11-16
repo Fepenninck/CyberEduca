@@ -11,6 +11,7 @@ import { AtualizarQuizDto } from './dto/atualizar-quiz.dto';
 import { CriarQuestaoDto } from './dto/criar-questao.dto';
 import { CriarAlternativaDto } from './dto/criar-alternativa.dto';
 import { ResponderQuizDto } from './dto/responder-quiz.dto';
+import { CriarQuestaoCompletaDto } from './dto/criar-questao-completa.dto';
 
 @Injectable()
 export class QuizzesService {
@@ -95,6 +96,57 @@ export class QuizzesService {
   }
 
   // ADMINISTRAÇÃO
+
+  criarQuestaoCompleta(quizId: string, dto: CriarQuestaoCompletaDto) {
+    return this.executarTransacao(async tx => {
+      await this.exigirRascunho(tx, quizId);
+      if (await tx.questaoQuiz.count({ where: { quizId } }) >= 100) throw new BadRequestException('Cada quiz pode ter no máximo 100 questões.');
+      if (dto.alternativas.length < 2 || dto.alternativas.filter(item => item.correta).length !== 1) throw new BadRequestException('Cadastre pelo menos duas alternativas e exatamente uma correta.');
+      return tx.questaoQuiz.create({ data: { quizId, enunciado: dto.enunciado, explicacao: dto.explicacao, ordem: dto.ordem, alternativas: { create: dto.alternativas } }, include: { alternativas: true } });
+    });
+  }
+
+  voltarRascunho(quizId: string) {
+    return this.executarTransacao(async tx => {
+      const quiz = await tx.quiz.findUnique({ where: { id: quizId } });
+      if (!quiz) throw new NotFoundException('Quiz não encontrado.');
+      if (await tx.tentativaQuiz.count({ where: { quizId } })) throw new ConflictException('Este quiz já possui tentativas. Arquive-o para preservar o histórico dos alunos.');
+      return tx.quiz.update({ where: { id: quizId }, data: { status: 'RASCUNHO' } });
+    });
+  }
+
+  editarQuestaoCompleta(quizId: string, questaoId: string, dto: CriarQuestaoCompletaDto) {
+    return this.executarTransacao(async tx => {
+      await this.exigirRascunho(tx, quizId);
+      if (await tx.tentativaQuiz.count({ where: { quizId } })) throw new ConflictException('Não é possível alterar questões com tentativas registradas.');
+      const questao = await tx.questaoQuiz.findFirst({ where: { id: questaoId, quizId } });
+      if (!questao) throw new NotFoundException('Questão não encontrada neste quiz.');
+      if (dto.alternativas.length < 2 || dto.alternativas.filter(item => item.correta).length !== 1) throw new BadRequestException('Cadastre pelo menos duas alternativas e exatamente uma correta.');
+      await tx.alternativaQuiz.deleteMany({ where: { questaoId } });
+      return tx.questaoQuiz.update({ where: { id: questaoId }, data: { enunciado: dto.enunciado, explicacao: dto.explicacao, ordem: dto.ordem, alternativas: { create: dto.alternativas } }, include: { alternativas: true } });
+    });
+  }
+
+  excluirQuestao(quizId: string, questaoId: string) {
+    return this.executarTransacao(async tx => {
+      await this.exigirRascunho(tx, quizId);
+      if (await tx.tentativaQuiz.count({ where: { quizId } })) throw new ConflictException('Não é possível excluir questões com tentativas registradas.');
+      if (!await tx.questaoQuiz.findFirst({ where: { id: questaoId, quizId } })) throw new NotFoundException('Questão não encontrada neste quiz.');
+      await tx.alternativaQuiz.deleteMany({ where: { questaoId } });
+      return tx.questaoQuiz.delete({ where: { id: questaoId } });
+    });
+  }
+
+  excluirQuiz(quizId: string) {
+    return this.executarTransacao(async tx => {
+      const quiz = await tx.quiz.findUnique({ where: { id: quizId } });
+      if (!quiz) throw new NotFoundException('Quiz não encontrado.');
+      if (await tx.tentativaQuiz.count({ where: { quizId } })) throw new ConflictException('Este quiz possui resultados de alunos. Arquive-o em vez de excluir.');
+      await tx.alternativaQuiz.deleteMany({ where: { questao: { quizId } } });
+      await tx.questaoQuiz.deleteMany({ where: { quizId } });
+      return tx.quiz.delete({ where: { id: quizId } });
+    });
+  }
 
   listarQuizzesAdmin() {
     return this.prisma.quiz.findMany({
@@ -275,8 +327,8 @@ export class QuizzesService {
 
   // CONSULTA DO ALUNO
 
-  listarQuizzes(aulaId?: string, usuarioId?: string) {
-    return this.prisma.quiz.findMany({
+  async listarQuizzes(aulaId?: string, usuarioId?: string) {
+    const quizzes = await this.prisma.quiz.findMany({
       where: {
         status: 'PUBLICADO',
         ...(aulaId ? { aulaId } : {}),
@@ -296,6 +348,7 @@ export class QuizzesService {
         },
       },
     });
+    return quizzes.map(quiz => ({ ...quiz, tentativas: quiz.tentativas.filter(tentativa => tentativa.totalQuestoes === quiz._count.questoes) }));
   }
 
   async buscarQuiz(quizId: string, usuarioId?: string) {
@@ -336,7 +389,10 @@ export class QuizzesService {
       throw new NotFoundException('Quiz não encontrado.');
     }
 
-    return { ...quiz, resultado: await this.resultadoDoAluno(quizId, usuarioId) };
+    const salvo = await this.resultadoDoAluno(quizId, usuarioId);
+    const atuais = new Set(quiz.questoes.map(questao => questao.id));
+    const corresponde = salvo && salvo.totalQuestoes === atuais.size && salvo.feedback.length === atuais.size && salvo.feedback.every(item => atuais.has(item.questaoId));
+    return { ...quiz, resultado: corresponde ? salvo : null, resultadoAnterior: salvo && !corresponde ? salvo : null };
   }
 
   // CORREÇÃO E REGISTRO DA TENTATIVA
@@ -347,8 +403,8 @@ export class QuizzesService {
     dto: ResponderQuizDto,
   ) {
     return this.executarTransacao(async (tx) => {
-      const concluida = await tx.tentativaQuiz.findFirst({ where: { usuarioId, quizId } });
-      if (concluida) throw new ConflictException('Atividade já concluída. Consulte seu resultado.');
+      const concluida = await tx.tentativaQuiz.findFirst({ where: { usuarioId, quizId }, orderBy: { concluidoEm: 'desc' },
+        select: { id: true, totalQuestoes: true, respostas: { select: { questaoId: true } } } });
       const quiz = await tx.quiz.findFirst({
         where: {
           id: quizId,
@@ -370,6 +426,14 @@ export class QuizzesService {
         throw new BadRequestException(
           'Este quiz não possui questões disponíveis.',
         );
+      }
+
+      if (concluida) {
+        const atuais = new Set(quiz.questoes.map(questao => questao.id));
+        // Permitir a versão ampliada sem apagar ou alterar o resultado antigo.
+        const ampliado = concluida.totalQuestoes > 0 && concluida.totalQuestoes < atuais.size &&
+          concluida.respostas.length === concluida.totalQuestoes && concluida.respostas.every(item => atuais.has(item.questaoId));
+        if (!ampliado) throw new ConflictException('Atividade já concluída. Consulte seu resultado.');
       }
 
       const respostasPorQuestao = new Map(

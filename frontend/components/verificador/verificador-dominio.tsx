@@ -32,6 +32,7 @@ export function VerificadorDominio() {
     setSending(true);
     try {
       setResultado(await consultarDominio(value));
+      window.dispatchEvent(new Event('laboratory-progress-updated'));
     } catch (cause) {
       setError(
         cause instanceof Error

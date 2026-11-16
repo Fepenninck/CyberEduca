@@ -9,15 +9,9 @@ export function LoadingProvider() {
   const [initialLoading, setInitialLoading] = useState(true)
   const loading = useSyncExternalStore(subscribeLoading, getLoadingSnapshot, getServerLoadingSnapshot)
   useEffect(() => {
-    const started = performance.now()
-    let timer: ReturnType<typeof setTimeout> | undefined
-    const ready = () => {
-      if (timer) clearTimeout(timer)
-      timer = setTimeout(() => setInitialLoading(false), Math.max(0, 650 - (performance.now() - started)))
-    }
-    if (document.readyState === 'complete') ready()
-    else window.addEventListener('load', ready, { once: true })
-    return () => { window.removeEventListener('load', ready); if (timer) clearTimeout(timer) }
+    // Libera após a hidratação, sem esperar imagens, vídeos ou serviços externos.
+    const frame = requestAnimationFrame(() => setInitialLoading(false))
+    return () => cancelAnimationFrame(frame)
   }, [])
   useEffect(() => { finishRouteLoading() }, [pathname])
   useEffect(() => {

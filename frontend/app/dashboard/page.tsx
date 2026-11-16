@@ -7,15 +7,16 @@ import { useRouter } from 'next/navigation'
 import {
   Check,
 } from 'lucide-react'
-import { apiFetch, getCurrentUser, getDesempenho, type Desempenho, TrackDetail, TrackSummary } from '@/lib/api'
+import { apiFetch, getCurrentUser, TrackDetail, TrackSummary } from '@/lib/api'
 import { DashboardNavigation } from '@/components/dashboard-navigation'
 import { ProfilePicture } from '@/components/cyber-avatar'
-import { DashboardInsights } from '@/components/dashboard-insights'
+import { useAchievements } from '@/components/level-achievements'
+import { progressoDoNivel, progressoDoPercurso } from '@/lib/learning-progress'
 
 const trackThemes = [
-  { color: '#24b4ff', image: '/trilha-basico-bg.png' },
-  { color: '#ffd34e', image: '/trilha-intermediario-bg.png' },
-  { color: '#ff4654', image: '/trilha-avancado-bg.png' },
+  { color: '#24b4ff', image: '/trilha-basico-bg.png', illustration: '/trilha-personagem-basico.png' },
+  { color: '#ffd34e', image: '/trilha-intermediario-bg.png', illustration: '/trilha-personagem-intermediario.png' },
+  { color: '#ff4654', image: '/trilha-avancado-bg.png', illustration: '/trilha-personagem-avancado.png' },
 ]
 
 const levelThemes: Record<TrackSummary['nivel'], string> = { BASICO: '#24b4ff', INTERMEDIARIO: '#ffd34e', AVANCADO: '#ff4654' }
@@ -24,16 +25,15 @@ const levelLabels: Record<TrackSummary['nivel'], string> = { BASICO: 'Básico', 
 
 
 export default function DashboardPage() {
+  const achievements = useAchievements()
   const router = useRouter()
   const [tracks, setTracks] = useState<TrackSummary[]>([])
   const [lessons, setLessons] = useState<TrackDetail['aulas']>([])
   const [userName, setUserName] = useState('')
-  const [desempenho, setDesempenho] = useState<Desempenho | null>(null)
   const [picture, setPicture] = useState<{ foto?: string | null; avatar?: string | null }>({})
 
   useEffect(() => {
     getCurrentUser().then((user) => { setUserName(user.nome); setPicture({ foto: user.foto, avatar: user.avatar }) }).catch(() => router.replace('/login'))
-    getDesempenho().then(setDesempenho).catch(() => setDesempenho(null))
     const loadTracks = () => apiFetch(`/trilhas`, { cache: 'no-store' })
       .then((response) => response.ok ? response.json() : Promise.reject(new Error('Não foi possível carregar as trilhas.')))
       .then(setTracks)
@@ -49,30 +49,32 @@ export default function DashboardPage() {
     ?? availableTracks.find(track => !track.bloqueada && track.percentual < 100)
     ?? availableTracks.filter(track => !track.bloqueada && track.percentual === 100).at(-1)
     ?? availableTracks.filter(track => !track.bloqueada).at(-1)
+  const selectedTrackId = selectedTrack?.id
 
   useEffect(() => {
-    if (!selectedTrack) {
+    if (!selectedTrackId) {
       setLessons([])
       return
     }
 
     const controller = new AbortController()
     setLessons([])
-    apiFetch(`/trilhas/${selectedTrack.id}`, { cache: 'no-store', signal: controller.signal })
+    apiFetch(`/trilhas/${selectedTrackId}`, { cache: 'no-store', signal: controller.signal })
       .then((response) => response.ok ? response.json() : Promise.reject(new Error('Não foi possível carregar as aulas.')))
       .then((track: TrackDetail) => { if (!controller.signal.aborted) setLessons(track.aulas) })
       .catch(() => { if (!controller.signal.aborted) setLessons([]) })
     return () => controller.abort()
-  }, [selectedTrack])
+  }, [selectedTrackId])
 
   const currentLesson = lessons.find((lesson) => !lesson.concluida) ?? lessons.at(-1)
   const trackHref = selectedTrack ? `/aulas/modulo/${selectedTrack.id}` : '/aulas'
-  const nextTrack = selectedTrack ? tracks.find((track) => track.id !== selectedTrack.id && track.percentual < 100 && !track.bloqueada) : undefined
-
+  const continueHref = selectedTrack && currentLesson
+    ? `/aulas/modulo/${selectedTrack.id}/aula/${currentLesson.id}`
+    : trackHref
   const data = useMemo(() => {
     const currentTrack = selectedTrack
     const completedLessons = tracks.reduce((total, track) => total + Math.round(track.totalAulas * track.percentual / 100), 0)
-    const overallProgress = tracks.length ? Math.round(tracks.reduce((total, track) => total + track.percentual, 0) / tracks.length) : 0
+    const overallProgress = progressoDoPercurso(achievements.data)
     const themeIndex = currentTrack ? ['BASICO', 'INTERMEDIARIO', 'AVANCADO'].indexOf(currentTrack.nivel) : 0
 
     return {
@@ -80,29 +82,30 @@ export default function DashboardPage() {
       currentTrack: currentTrack?.titulo ?? 'Escolha uma trilha para começar',
       currentLevel: currentTrack ? levelLabels[currentTrack.nivel] : 'Básico',
       currentTrackImage: trackThemes[themeIndex].image,
+      currentTrackIllustration: trackThemes[themeIndex].illustration,
       currentColor: currentTrack ? levelThemes[currentTrack.nivel] : trackThemes[0].color,
       currentModule: currentLesson ? `Aula ${currentLesson.ordem}` : 'Sem aula disponível',
       currentLessonDuration: '',
       lastLesson: currentLesson?.titulo ?? 'Nenhuma aula disponível',
-      currentProgress: currentTrack?.percentual ?? 0,
+      currentProgress: currentTrack ? progressoDoNivel(achievements.data.find(item => item.nivel === currentTrack.nivel) ?? { totalAulas: 0, aulasConcluidas: 0, conquistada: false, desbloqueado: false }) : 0,
       startedTracks: tracks.filter((track) => track.percentual > 0).length,
       completedLessons,
       overallProgress,
       tracks: (['BASICO', 'INTERMEDIARIO', 'AVANCADO'] as const).map((nivel, index) => {
-        const levelTracks = tracks.filter((track) => track.nivel === nivel)
-        const progress = levelTracks.length ? Math.round(levelTracks.reduce((total, track) => total + track.percentual, 0) / levelTracks.length) : 0
+        const certification = achievements.data.find(item => item.nivel === nivel)
+        const progress = certification ? progressoDoNivel(certification) : 0
         return {
           name: levelLabels[nivel],
           progress,
           color: trackThemes[index].color,
-          status: progress ? `${progress}% concluído` : 'Não iniciado',
+          status: !certification ? 'Carregando...' : !certification.desbloqueado ? 'Bloqueado pela prova anterior' : certification.conquistada ? 'Nível concluído' : certification.aulasConcluidas === certification.totalAulas ? 'Prova pendente' : 'Aulas em andamento',
         }
       }),
     }
-  }, [currentLesson, selectedTrack, tracks, userName])
+  }, [currentLesson, selectedTrack, tracks, userName, achievements.data])
 
   const moduleCompleted = data.currentProgress === 100
-  const moduleStatus = moduleCompleted ? 'Concluído' : data.currentProgress > 0 ? 'Em andamento' : 'Não iniciado'
+  const moduleStatus = moduleCompleted ? 'Nível concluído' : selectedTrack?.percentual === 100 ? 'Prova pendente' : data.currentProgress > 0 ? 'Em andamento' : 'Não iniciado'
 
   return (
     <main className="app-shell dashboard-page student-home">
@@ -129,15 +132,15 @@ export default function DashboardPage() {
               <h2 id="dash-hero-title">{data.currentTrack}</h2>
               <p className="dash-hero-lesson">{data.currentModule}: {data.lastLesson}</p>
               <div className="dash-hero-actions">
-                <Link className="dashboard-button-primary" href={moduleCompleted ? nextTrack ? `/aulas/modulo/${nextTrack.id}` : '/aulas' : trackHref}>{moduleCompleted ? nextTrack ? 'Começar a próxima trilha' : 'Ver trilhas' : 'Continuar aprendendo'}</Link>
-                <Link className="dash-hero-link" href={trackHref}>Ver todas as aulas</Link>
+                <Link className="dashboard-button-primary" href={continueHref}>Continuar</Link>
+                <Link className="dash-hero-link" href="/aulas">Ver Trilhas</Link>
               </div>
             </div>
             <div className="student-hero-art">
-              <img src="/desenvolva-seu-conhecimento.png" alt="" />
+              <img src={data.currentTrackIllustration} alt="" />
             </div>
             <div className="student-track-progress">
-              <div><span>Progresso na trilha</span><strong>{data.currentProgress}%</strong></div>
+              <div><span>Progresso no nível · aulas e prova</span><strong>{data.currentProgress}%</strong></div>
               <div className="student-progress-bar" role="progressbar" aria-label="Progresso na trilha" aria-valuemin={0} aria-valuemax={100} aria-valuenow={data.currentProgress}><span style={{ width: `${data.currentProgress}%` }} /></div>
             </div>
           </section>
@@ -183,7 +186,6 @@ export default function DashboardPage() {
           </article>
         </section>
 
-        <DashboardInsights desempenho={desempenho} />
       </div>
     </main>
   )

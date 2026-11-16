@@ -1,11 +1,12 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { AcaoAuditoria, NivelTrilha } from '@prisma/client';
+import { AcaoAuditoria, NivelTrilha, Prisma } from '@prisma/client';
 import { AuditoriaService } from '../auditoria.service';
 import { LEVELS, loadCertificationProgress } from '../certificacoes/certification-progress';
 
@@ -100,6 +101,8 @@ export class AprendizagemService {
         data: { ...dados, ordem },
       });
     } catch (error: unknown) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') throw new ConflictException('Já existe uma aula com essa ordem na trilha selecionada.');
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2003') throw new BadRequestException('A trilha selecionada não está disponível.');
       console.error('Erro Prisma:', error);
       throw new BadRequestException(
         error instanceof Error ? error.message : 'Não foi possível criar a aula.',
@@ -116,10 +119,16 @@ export class AprendizagemService {
       trilhaId?: string;
     },
   ) {
-    return this.prisma.aula.update({
-      where: { id },
-      data: dados,
-    });
+    try {
+      return await this.prisma.aula.update({ where: { id }, data: dados });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') throw new ConflictException('Já existe uma aula com essa ordem na trilha selecionada.');
+        if (error.code === 'P2003') throw new BadRequestException('A trilha selecionada não está disponível.');
+        if (error.code === 'P2025') throw new NotFoundException('Aula não encontrada.');
+      }
+      throw error;
+    }
   }
 
   async excluirAula(id: string) {
@@ -152,7 +161,7 @@ export class AprendizagemService {
         conteudo: true,
         ordem: true,
         trilhaId: true,
-        trilha: { select: { id: true, titulo: true } },
+        trilha: { select: { id: true, titulo: true, bloqueada: true } },
       },
     });
   }
@@ -164,18 +173,35 @@ export class AprendizagemService {
       include: { _count: { select: { aulas: true } } },
     });
 
-    const certificacoes = trilhas.some(trilha => trilha.nivel && trilha.nivel !== 'BASICO') ? await loadCertificationProgress(this.prisma, usuarioId) : [];
-    return Promise.all(
-      trilhas.map(async (t: TrilhaListada) => ({
+    if (!trilhas.length) return [];
+    const [progressos, certificacoes] = await Promise.all([
+      this.prisma.progressoAula.findMany({
+        where: { usuarioId, concluida: true, aula: { trilhaId: { in: trilhas.map(trilha => trilha.id) } } },
+        select: { aula: { select: { trilhaId: true } } },
+      }),
+      trilhas.some(trilha => trilha.nivel && trilha.nivel !== 'BASICO') ? loadCertificationProgress(this.prisma, usuarioId) : Promise.resolve([]),
+    ]);
+    const concluidas = new Map<string, number>();
+    for (const progresso of progressos) {
+      const id = progresso.aula.trilhaId;
+      concluidas.set(id, (concluidas.get(id) ?? 0) + 1);
+    }
+    const percentuais = new Map(trilhas.map(trilha => [trilha.id,
+      trilha._count.aulas ? Math.round((concluidas.get(trilha.id) ?? 0) / trilha._count.aulas * 100) : 0]));
+    const bloqueada = (trilha: TrilhaListada) => {
+      if (LEVELS.indexOf(trilha.nivel as typeof LEVELS[number]) > 0 &&
+          !certificacoes.find(item => item.nivel === trilha.nivel)?.desbloqueado) return true;
+      return trilha.bloqueada && trilhas.some(anterior => anterior.ordem < trilha.ordem && (percentuais.get(anterior.id) ?? 0) < 100);
+    };
+    return trilhas.map((t: TrilhaListada) => ({
         id: t.id,
         titulo: t.titulo,
         descricao: t.descricao,
         nivel: t.nivel,
-        bloqueada: await this.estaBloqueada(t, usuarioId, certificacoes),
+        bloqueada: bloqueada(t),
         totalAulas: t._count.aulas,
-        percentual: await this.calcularPercentual(t.id, usuarioId),
-      })),
-    );
+        percentual: percentuais.get(t.id) ?? 0,
+      }));
   }
 
   async detalharTrilha(id: string, usuarioId: string) {
@@ -344,7 +370,7 @@ export class AprendizagemService {
     return Math.round((feitas / total) * 100);
   }
   private async estaBloqueada(
-    trilha: { bloqueada: boolean; ordem: number; nivel?: string },
+    trilha: { id?: string; bloqueada: boolean; ordem: number; nivel?: string },
     usuarioId: string,
     certificacoes?: Awaited<ReturnType<typeof loadCertificationProgress>>,
   ): Promise<boolean> {

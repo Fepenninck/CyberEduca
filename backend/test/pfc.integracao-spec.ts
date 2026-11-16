@@ -27,6 +27,7 @@ import {
 import { AprendizagemService } from '../src/aprendizagem/aprendizagem.service';
 import { PrismaService } from '../src/prisma.service';
 import { AuditoriaService } from '../src/auditoria.service';
+import { AuditoriaContexto } from '../src/auditoria-contexto';
 import { MailService } from '../src/mail/mail.service';
 
 describe('Integração HTTP de trilhas e aulas', () => {
@@ -76,6 +77,7 @@ describe('Integração HTTP de trilhas e aulas', () => {
         AprendizagemService,
         PrismaService,
         AuditoriaService,
+        AuditoriaContexto,
         { provide: MailService, useValue: mailFalso },
       ],
     }).compile();
@@ -137,6 +139,8 @@ describe('Integração HTTP de trilhas e aulas', () => {
   });
   
   async function criarTrilha(ordem = 1) {
+  // Somente os cenários administrativos recebem o papel necessário no banco de teste.
+  await prisma.usuario.update({ where: { id: usuarioId }, data: { papel: 'ADMIN' } });
   const dados = {
     titulo: `Trilha ${randomUUID()}`,
     descricao: 'Introdução à segurança digital',
@@ -182,6 +186,7 @@ describe('Integração HTTP de trilhas e aulas', () => {
   }
 
   it('criarTrilha_comDadosValidos_deveRetornar201EPersistir', async () => {
+    await prisma.usuario.update({ where: { id: usuarioId }, data: { papel: 'ADMIN' } });
     // Arrange: prepara os dados.
     const dados = {
       titulo: `Trilha ${randomUUID()}`,
@@ -219,6 +224,9 @@ describe('Integração HTTP de trilhas e aulas', () => {
 
   it('listarTrilhas_comTrilhaCriada_deveRetornar200ComItemNaLista', async () => {
     const trilha = await criarTrilha();
+    const semAulas = await request(url).get('/trilhas').set('Cookie', cookie).expect(200);
+    expect(semAulas.body.some((item: { id: string }) => item.id === trilha.id)).toBe(false);
+    await criarAula(trilha.id);
 
     const resposta = await request(url)
       .get('/trilhas')
@@ -231,7 +239,7 @@ describe('Integração HTTP de trilhas e aulas', () => {
           id: trilha.id,
           titulo: trilha.titulo,
           descricao: trilha.descricao,
-          totalAulas: 0,
+          totalAulas: 1,
           percentual: 0,
         }),
       ]),

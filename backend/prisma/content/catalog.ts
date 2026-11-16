@@ -7,6 +7,7 @@ import { glossary, basicLessonDiagram } from './learning-levels';
 import { technicalExample } from './technical-examples';
 import { specificDiagram } from './lesson-specific-material';
 import { buildQuizReview } from './quiz-review';
+import { lessonEditorial } from './lesson-editorial';
 
 // Stable UUIDs make imports repeatable without deleting records or attempts.
 export function contentId(key: string): string {
@@ -25,6 +26,8 @@ export function buildCatalog() {
     nivel: course.level,
     aulas: course.lessons.map((lesson, index) => {
       const key = `${course.id}/${lesson.id}`;
+      const editorial = lessonEditorial[lesson.title];
+      if (!editorial) throw new Error(`Revisão editorial ausente: ${lesson.title}`);
       const diagram = course.level === 'BASICO' ? basicLessonDiagram(course.id, index, lesson.title) : specificDiagram(course.id, index, lesson.title);
       return {
         id: contentId(key),
@@ -34,11 +37,12 @@ export function buildCatalog() {
           format: 'cybereduca-lesson-v1',
           level: course.level,
           title: lesson.title,
-          concept: lesson.concept,
-          practice: `Acompanhe o exemplo de “${lesson.title}”. Observe a relação entre ${diagram.nodes[0].toLowerCase()} e ${diagram.nodes[1].toLowerCase()}; depois, escolha uma resposta na atividade desta página. A correção aparece aqui no site.`,
+          concept: `${lesson.concept}\n\n${editorial.explicacao}`,
+          practice: editorial.reflexao,
+          takeaway: editorial.lembrete,
           source: lesson.source,
           sourceTitle: lesson.sourceTitle,
-          caseStudy: lesson.caseStudy,
+          caseStudy: [lesson.caseStudy, editorial.desfecho].filter(Boolean).join('\n\n'),
           objectives: [`Compreender ${lesson.title.charAt(0).toLowerCase() + lesson.title.slice(1)}.`, `Relacionar ${diagram.nodes[0].toLowerCase()}, ${diagram.nodes[1].toLowerCase()} e ${diagram.nodes[2].toLowerCase()} no exemplo apresentado.`],
           // Do not include expected/explanation: some contain the checkpoint answer.
           supplement: course.level === 'BASICO' ? undefined : [
@@ -50,7 +54,7 @@ export function buildCatalog() {
             .map(([term, meaning]) => ({ term, meaning })) : undefined,
           video: lessonVideos[key] ? {
             ...lessonVideos[key],
-            prompt: course.level === 'BASICO' ? 'Observe uma situação do vídeo e pense no cuidado que ajudaria a pessoa. Você responde à atividade nesta página.' : lessonVideos[key].prompt,
+            prompt: course.level === 'BASICO' ? 'Observe uma situação do vídeo e pense no cuidado que ajudaria a pessoa.' : lessonVideos[key].prompt,
           } : undefined,
           diagram,
           readings: course.level === 'BASICO' ? undefined : courseReadings[course.id],

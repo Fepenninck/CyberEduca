@@ -6,7 +6,6 @@ import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { DashboardNavigation } from '@/components/dashboard-navigation'
-import { SimulationAchievement } from '@/components/simulation-achievement'
 import { buscarSimulacao, finalizarSimulacao, verificarStatusSimulacao, type ResultadoTreino, type SimulacaoTreino } from '@/lib/simulacoes-api'
 import { simulationLevels, simulationTheme } from '@/lib/simulation-theme'
 import { SimulationBack } from '@/components/activities/simulation-back'
@@ -63,7 +62,6 @@ export default function IniciarSimulacaoPage() {
       {error && <div className="simulation-training-error" role="alert"><p>{error}</p>{!simulation && !result && <button type="button" onClick={() => setAttempt(value => value + 1)}>Tentar novamente</button>}</div>}
       {loading ? <LoadingScreen label={"Preparando o ambiente de treinamento…"} /> : result ? <>
         <header className="simulation-result-heading"><div><span className="simulation-eyebrow">Simulação concluída</span><h1>{result.titulo || simulation?.titulo || 'Sua simulação'}</h1><p>{result.acertos === result.totalQuestoes ? 'Você tomou as decisões recomendadas. Confira por que elas ajudam a proteger você.' : 'Veja suas escolhas e entenda como agir nas situações que precisam de atenção.'}</p></div><button type="button" className="simulation-training-primary" onClick={startAgain}>Refazer simulação</button></header>
-        <SimulationAchievement earnedOnly />
         <dl className="simulation-result-summary" aria-label="Resumo do resultado">
           <div><dt>Aproveitamento</dt><dd>{Math.round(result.acertos / Math.max(1, result.totalQuestoes) * 100)}<span>%</span></dd></div>
           <div><dt>Decisões corretas</dt><dd>{result.acertos}<span> de {result.totalQuestoes}</span></dd></div>

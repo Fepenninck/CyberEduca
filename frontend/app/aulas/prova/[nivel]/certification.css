@@ -18,7 +18,7 @@ html:has(.certification-detail-page), body:has(.certification-detail-page) { hei
 .certification-intro p { color: var(--student-muted); margin: 12px 0; font-size: 14px; line-height: 1.8; }
 .certification-intro button { margin-top: 12px; }
 .certification-detail-page .prova-opcao { min-width: 0; }
-.certification-result-dialog { position: fixed; inset: 0; box-sizing: border-box; width: min(760px, calc(100% - 40px)); max-width: none; max-height: calc(100dvh - 48px); margin: auto; padding: 32px; overflow-y: auto; overscroll-behavior: contain; border: 0; border-radius: 6px; background: var(--student-card, #101b2b); color: var(--student-text, #f4f7fb); }
+.certification-result-dialog { position: fixed; inset: 0; box-sizing: border-box; width: min(760px, calc(100% - 40px)); max-width: none; max-height: calc(100dvh - 48px); margin: auto; padding: 32px; overflow-y: auto; overscroll-behavior: contain; border: 0; border-radius: 6px; background: #202c3e; color: var(--student-text, #f4f7fb); }
 .certification-result-dialog::backdrop { background: rgb(5 12 22 / 76%); }
 .certification-detail-page .certification-result-dialog .assessment-result { padding: 0; background: transparent; }
 .certification-result-dialog .assessment-result > h2 { padding-right: 32px; margin-top: 0; }
