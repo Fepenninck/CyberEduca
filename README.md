@@ -195,6 +195,9 @@ Fontes e conteúdos externos podem realizar conexões com seus fornecedores. A b
 
 | Documento | Conteúdo |
 |---|---|
+| [Ficha do PFC — UMC](./docs/Ficha_PFC_UMC.docx) | Ficha acadêmica do Projeto Final de Curso |
+| [Monografia](./docs/MONOGRAFIA.docx) | Monografia do CyberEduca+ |
+| [Resumo expandido](./docs/Resumo_Expandido_CyberEduca.docx) | Resumo expandido do projeto |
 | [Backend](./backend/README.md) | Configuração, execução e verificação da API |
 | [Provas por nível](./docs/certificacoes-niveis.md) | Critérios de aprovação, tentativas e desbloqueio dos níveis |
 | [Módulo de aulas](./docs/modulo-aulas.md) | Conteúdos e funcionamento das aulas |
