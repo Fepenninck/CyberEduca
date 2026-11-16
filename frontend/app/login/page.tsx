@@ -104,10 +104,10 @@ export default function LoginPage() {
     }
   }
 
-  return <main className="login-page">
-    <div className="login-shell">
+  return <main className={`login-page${pendingEmail ? ' recovery-page' : ''}`}>
+    <div className={`login-shell${pendingEmail ? ' recovery-shell' : ''}`}>
       <Link href="/" className="login-brand" aria-label="Voltar para o início do CyberEduca+"><img src="/cybereduca-logo.png" alt="CyberEduca+" /></Link>
-      <section className="login-card" aria-labelledby="login-title">
+      <section className={`login-card${pendingEmail ? ' recovery-card' : ''}`} aria-labelledby="login-title">
         {pendingEmail ? <div className="recovery-success login-pending" role="status">
           <h1 id="login-title">Confirme seu acesso</h1>
           <p>Enviamos um link de confirmação para <strong>{pendingEmail}</strong>. Ele vale por 5 minutos e só pode ser usado uma vez.</p>
