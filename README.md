@@ -85,7 +85,11 @@ O projeto foi finalizado como PFC dos cursos de Bacharelado em Engenharia de Sof
 
 ## Arquitetura e tecnologias
 
+![Arquitetura da Plataforma CyberEduca+](./assets/arquitetura.png)
+
 O navegador acessa o frontend em Next.js. As requisições para `/api` são encaminhadas ao backend em NestJS, que aplica autenticação, permissões, validação, correção das atividades e auditoria. O Prisma realiza o acesso ao PostgreSQL.
+
+O Prisma integra o backend como camada de acesso a dados, sem constituir um serviço separado. No laboratório, a consulta ao VirusTotal utiliza apenas o domínio, não uma URL completa. As simulações representam situações do cotidiano em cenários fictícios de treinamento, sem executar ataques reais.
 
 A sessão utiliza um JWT em cookie HttpOnly. Os gabaritos e as regras de desbloqueio são tratados no servidor. Consultas idênticas simultâneas no navegador compartilham uma requisição, sem manter as respostas concluídas em um cache permanente.
 
