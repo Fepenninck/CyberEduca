@@ -1,13 +1,18 @@
-import { Equals, IsBoolean } from 'class-validator';
-import { TERMOS_VERSAO } from '../termos';
+import {
+  Equals,
+  IsBoolean,
+  IsString,
+  MinLength,
+  MaxLength,
+} from 'class-validator';
 
 export class AceitarTermosDto {
   @IsBoolean()
   @Equals(true, { message: 'Aceite os Termos de Uso para continuar.' })
   acceptedTerms: boolean;
 
-  @Equals(TERMOS_VERSAO, {
-    message: 'A versao dos termos mudou. Atualize a pagina e leia os termos.',
-  })
+  @IsString()
+  @MinLength(1)
+  @MaxLength(50)
   termsVersion: string;
 }

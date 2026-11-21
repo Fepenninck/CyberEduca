@@ -1,3 +1,7 @@
+'use client'
+
+import { TermsDocument, TermsIndex, TermsLastUpdated, usePublishedTerms } from '@/components/published-terms'
+import { parseTermsSections } from '@/lib/terms-sections'
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 import { CyberHeader } from '@/components/cyber-header'
@@ -5,20 +9,6 @@ import { DashboardNavigation } from '@/components/dashboard-navigation'
 import { SiteFooter } from '@/components/site-footer'
 import '@/app/politicas/politicas.css'
 import '@/app/footer.css'
-
-const terms = [
-  ['aceitacao', 'Aceitação dos Termos', <>Ao criar uma conta, você aceita estes Termos de Uso. A Política de Privacidade explica como seus dados são utilizados; conhecer essa política não representa um consentimento genérico para qualquer uso dos dados.</>],
-  ['finalidade', 'Finalidade da plataforma', <>O CyberEduca+ oferece aulas, trilhas, quizzes, simulações fictícias de phishing, avaliações e um laboratório de consulta de domínios. As atividades de aprendizagem acontecem dentro da plataforma. O conteúdo é educacional e não autoriza ataques ou testes contra sistemas e pessoas de terceiros.</>],
-  ['conta', 'Cadastro e conta', <><p>O usuário deve fornecer informações verdadeiras, completas e atualizadas, manter suas credenciais em sigilo e comunicar qualquer uso não autorizado. Cada conta é pessoal e não pode ser cedida.</p><p>A plataforma poderá solicitar confirmação de identidade para proteger a conta, atender direitos ou investigar atividades suspeitas.</p></>],
-  ['uso-aceitavel', 'Uso aceitável', <><p>É proibido usar o CyberEduca+ para:</p><ul><li>praticar fraude, phishing real, invasão, assédio ou qualquer atividade ilícita;</li><li>tentar acessar contas, áreas administrativas, sistemas ou dados sem autorização;</li><li>copiar, automatizar, explorar vulnerabilidades ou sobrecarregar o serviço;</li><li>inserir código malicioso ou utilizar o conteúdo para prejudicar terceiros;</li><li>violar direitos autorais, privacidade ou outros direitos de terceiros.</li></ul></>],
-  ['simulacoes', 'Simulações de phishing', <>Os cenários de phishing são fictícios e destinados exclusivamente ao aprendizado. O usuário não deve reproduzi-los contra pessoas ou organizações. Resultados, classificações e explicações são educacionais e podem não representar todas as técnicas existentes.</>],
-  ['conteudo', 'Conteúdo e propriedade intelectual', <>Textos, interfaces, ilustrações, marcas, aulas, quizzes, cenários e demais materiais pertencem ao CyberEduca+ ou a seus respectivos licenciantes. É permitido o uso pessoal e educacional dentro da plataforma. Reprodução, distribuição, adaptação ou exploração comercial dependem de autorização prévia, salvo permissões legais ou licenças expressamente indicadas.</>],
-  ['disponibilidade', 'Disponibilidade e alterações', <>A plataforma poderá receber manutenção, correções e atualizações. Funcionalidades podem ser modificadas, suspensas ou descontinuadas mediante comunicação razoável quando isso afetar significativamente o usuário. Não é garantida disponibilidade ininterrupta, especialmente em casos de falha técnica, manutenção ou evento fora de controle razoável.</>],
-  ['suspensao', 'Encerramento da conta', <>Você pode excluir sua conta em <Link href="/configuracoes">Configurações</Link>. Após clicar em Excluir minha conta, é necessário digitar <strong>excluir</strong> e confirmar. A operação remove o cadastro e o histórico vinculado no banco ativo da plataforma, encerra o acesso e não pode ser desfeita. Progresso, respostas, resultados e conquistas deixam de estar disponíveis. Excluir a conta no CyberEduca+ não exclui sua conta Google nem dados mantidos por outros serviços.</>],
-  ['responsabilidade', 'Responsabilidades', <>O CyberEduca+ adota medidas razoáveis para manter conteúdos corretos e o serviço seguro, mas não responde por decisões tomadas exclusivamente com base no material educacional, por uso indevido da plataforma, por serviços de terceiros ou por danos decorrentes de fato inevitável, respeitados os direitos que não possam ser excluídos pela legislação brasileira.</>],
-  ['lei-foro', 'Lei aplicável e solução de conflitos', <>Estes Termos são regidos pelas leis brasileiras, incluindo o Marco Civil da Internet, a LGPD e, quando aplicável, o Código de Defesa do Consumidor. Fica assegurado ao usuário o acesso aos órgãos de defesa do consumidor e ao foro legalmente competente, sem imposição de foro que restrinja direitos obrigatórios.</>],
-  ['alteracoes-termos', 'Alterações destes Termos', <>Mudanças relevantes serão informadas de forma destacada na plataforma. A versão vigente indicará a data de atualização. Quando uma alteração exigir novo consentimento, ele será solicitado antes da continuidade do tratamento ou uso correspondente.</>],
-]
 
 const privacy = [
   ['controlador', 'Responsável e contato', <>O CyberEduca+ é um projeto acadêmico de educação em cibersegurança. Para dúvidas sobre seus dados ou para exercer seus direitos, entre em contato com a equipe responsável pelo e-mail <a href="mailto:cybereduca.oficial@gmail.com">cybereduca.oficial@gmail.com</a>. O atendimento de pedidos de privacidade é gratuito.</>],
@@ -33,9 +23,8 @@ const privacy = [
   ['menores', 'Crianças e adolescentes', <>O uso por crianças e adolescentes deve observar seu melhor interesse e as exigências legais aplicáveis, inclusive a participação do responsável quando necessária. Não devem ser enviados documentos, dados sensíveis ou informações excessivas nos exercícios ou pelo canal de suporte.</>],
   ['decisoes', 'Notas e progresso', <>Notas, percentuais e conquistas são calculados a partir das atividades realizadas. São resultados educacionais da plataforma. Para pedir esclarecimentos sobre os critérios ou revisão de um resultado, entre em contato com a equipe responsável.</>],
   ['incidentes', 'Comunicação de incidentes', <>Se identificar suspeita de exposição de dados ou acesso indevido, comunique o fato pelo canal de contato, sem enviar senhas. A equipe deverá investigar o ocorrido e cumprir as obrigações de comunicação aplicáveis ao caso.</>],
-  ['alteracoes-privacidade', 'Atualizações desta política', <>Esta política deve acompanhar as funcionalidades e os serviços efetivamente utilizados. Mudanças relevantes serão informadas aos usuários. Última atualização: <strong>14 de novembro de 2026</strong>.</>],
+  ['alteracoes-privacidade', 'Atualizações desta política', <>Esta política deve acompanhar as funcionalidades e os serviços efetivamente utilizados. Mudanças relevantes serão informadas aos usuários. A data da última atualização desta página está indicada no rodapé.</>],
 ]
-const termIndexItems = terms.map(([id, title], index) => [String(id), String(title), index + 1])
 const privacyIndexItems = privacy.map(([id, title], index) => [String(id), String(title), index + 1])
 
 function LegalCards({ items }: { items: (string | ReactNode)[][] }) {
@@ -43,12 +32,13 @@ function LegalCards({ items }: { items: (string | ReactNode)[][] }) {
 }
 
 export function LegalPolicyContent({ loggedIn = false }: { loggedIn?: boolean }) {
+  const { terms, error, retry } = usePublishedTerms()
   const content = <>{loggedIn ? <DashboardNavigation /> : <CyberHeader />}<main className={`legal-page${loggedIn ? ' legal-page-internal' : ''}`}>
-    <aside className="legal-index"><nav><h2>Termos de Uso</h2>{termIndexItems.map(([id, label, number]) => <a href={`#${id}`} key={id}><span>{String(number).padStart(2, '0')}</span>{label}</a>)}<h2>Privacidade e LGPD</h2>{privacyIndexItems.map(([id, label, number]) => <a href={`#${id}`} key={id}><span>{String(number).padStart(2, '0')}</span>{label}</a>)}</nav></aside>
+    <aside className="legal-index"><nav><h2>Termos de Uso</h2>{terms && <TermsIndex sections={parseTermsSections(terms.conteudo)} />}<h2>Privacidade e LGPD</h2>{privacyIndexItems.map(([id, label, number]) => <a href={`#${id}`} key={id}><span>{String(number).padStart(2, '0')}</span>{label}</a>)}</nav></aside>
     <div className="legal-content">
-      <section className="legal-section" id="termos-de-uso"><span className="legal-eyebrow">Termos de Uso</span><h1>Condições claras para uma experiência de aprendizagem segura</h1><p className="legal-lead">Estas regras explicam como utilizar o CyberEduca+ de forma responsável, segura e compatível com sua finalidade educacional.</p><p>Vers?o dos Termos de Uso: <strong>2026-11-21</strong></p><LegalCards items={terms} /></section>
+      <section className="legal-section" id="termos-de-uso"><span className="legal-eyebrow">Termos de Uso</span><h1>Condições claras para uma experiência de aprendizagem segura</h1><p className="legal-lead">Estas regras explicam como utilizar o CyberEduca+ de forma responsável, segura e compatível com sua finalidade educacional.</p>{error ? <div role="alert"><p>Não foi possível carregar os termos publicados.</p><button onClick={retry}>Tentar novamente</button></div> : terms ? <TermsDocument terms={terms} /> : <p role="status">Carregando os Termos de Uso…</p>}</section>
       <section className="legal-section legal-privacy" id="politica-de-privacidade"><span className="legal-eyebrow">Política de Privacidade e LGPD</span><h1>Transparência e controle sobre seus dados pessoais</h1><p className="legal-lead">Esta política descreve quais dados são tratados, por que são necessários, como são protegidos e como você pode exercer seus direitos.</p><LegalCards items={privacy} /></section>
-      <footer className="legal-footer"><span>Última atualização: 14 de novembro de 2026</span></footer>
+      <TermsLastUpdated terms={terms} />
     </div>
   </main>{!loggedIn && <SiteFooter />}</>
   return loggedIn ? <div className="app-shell dashboard-page">{content}</div> : content

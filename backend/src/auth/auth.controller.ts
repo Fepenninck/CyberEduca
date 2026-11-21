@@ -1,5 +1,5 @@
 import { AceitarTermosDto } from './dto/aceitar-termos.dto';
-import { TERMOS_VERSAO, TERMOS_PENDENTES_COOKIE } from './termos';
+import { TERMOS_PENDENTES_COOKIE } from './termos';
 import { UnauthorizedException } from '@nestjs/common';
 import { LoginRateLimitGuard } from './login-rate-limit.guard';
 import {
@@ -7,6 +7,7 @@ import {
   Post,
   Body,
   HttpCode,
+  Header,
   HttpStatus,
   Get,
   Req,
@@ -123,7 +124,8 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(GoogleAuthGuard)
   async googleCallback(@Req() req: any, @Res() res: Response) {
-    if (!req.user.termosAceitosEm || req.user.termosVersao !== TERMOS_VERSAO) {
+    const atuais = await this.authService.termosAtuais();
+    if (!req.user.termosAceitosEm || req.user.termosVersao !== atuais.termsVersion) {
       const token = this.jwtService.sign({ sub: req.user.id, purpose: 'aceite-termos' }, { expiresIn: '10m', audience: 'aceite-termos' });
       res.clearCookie(SESSION_COOKIE, sessionCookieOptions());
       res.cookie(TERMOS_PENDENTES_COOKIE, token, { ...sessionCookieOptions(), maxAge: 10 * 60 * 1000 });
@@ -148,7 +150,8 @@ export class AuthController {
   }
 
   @Get('termos')
-  versaoTermos() { return { termsVersion: TERMOS_VERSAO }; }
+  @Header('Cache-Control', 'no-store')
+  versaoTermos() { return this.authService.termosAtuais(); }
 
   @Post('termos')
   async aceitarTermos(@Body() dto: AceitarTermosDto, @Req() req: Request, @Res({ passthrough: true }) res: Response) {

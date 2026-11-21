@@ -9,6 +9,7 @@ const criarRequest = (extra: Record<string, unknown> = {}) => ({
 
 describe('AuthController', () => {
   const authService = {
+    termosAtuais: jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue({ termsVersion: '2026-11-21' }),
     register: jest.fn<(...args: any[]) => Promise<any>>(),
     login: jest.fn<(...args: any[]) => Promise<any>>(),
     confirmarLogin: jest.fn<(...args: any[]) => Promise<any>>(),

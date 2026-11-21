@@ -1,3 +1,4 @@
+import { TermosService } from '../termos/termos.service';
 import { jest } from '@jest/globals';
 import { BadRequestException, HttpException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -51,6 +52,7 @@ describe('AuthService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
+        { provide: TermosService, useValue: { validarAceite: async () => '2026-11-21', atuais: async () => ({ termsVersion: '2026-11-21' }) } },
         { provide: PrismaService, useValue: prisma },
         { provide: JwtService, useValue: jwtService },
         { provide: AuditoriaService, useValue: auditoria },

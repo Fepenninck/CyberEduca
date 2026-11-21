@@ -7,6 +7,7 @@
 .legal-index nav h2:first-child { margin-top:0; }
 .legal-index nav a { display:flex; gap:9px; padding:8px 0; color:#8e9eb5; font-size:12px; line-height:1.35; text-decoration:none; opacity:.85; transition:color .2s,opacity .2s; }
 .legal-index nav a span { width:18px; flex:none; color:#5e7089; font-size:11px; transition:color .2s; }
+.legal-index nav a { overflow-wrap:anywhere; }
 .legal-index nav a:hover,.legal-index nav a:focus-visible { color:#cee2ff; opacity:1; }
 .legal-index nav a:hover span,.legal-index nav a:focus-visible span { color:inherit; }
 .legal-content { min-width:0; grid-column:2; }
@@ -17,6 +18,11 @@
 .legal-cards { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
 .legal-card { scroll-margin-top:110px; border:0; border-radius:7px; background:#1d2533; padding:28px 30px; }
 .legal-card:first-child,.legal-card:nth-child(3n+1) { grid-column:1/-1; }
+.legal-card:last-child:nth-child(3n+2) { grid-column:1/-1; }
+.legal-card { min-width:0; overflow-wrap:anywhere; }
+.legal-copy pre { max-width:100%; overflow-x:auto; }
+.legal-copy img { max-width:100%; height:auto; }
+.legal-copy table { display:block; max-width:100%; overflow-x:auto; }
 .legal-card h2 { display:flex; align-items:baseline; gap:10px; margin:0 0 18px; font-size:20px; font-weight:500; line-height:1.3; letter-spacing:-.012em; }
 .legal-card h2 span { min-width:29px; color:#dce3ed; font-size:20px; font-weight:500; line-height:1.3; letter-spacing:-.012em; }
 .legal-copy { color:#b3becd; font-size:14.5px; line-height:1.72; }
@@ -29,6 +35,14 @@
 .legal-footer { display:flex; justify-content:flex-end; gap:24px; margin-top:60px; padding-top:24px; color:#74869f; font-size:12px; }
 .legal-footer a { color:#aebbd0; text-decoration:none; }
 .legal-footer a:hover { color:#9fef00; }
+.legal-page.legal-terms-preview { min-height:0; grid-template-columns:180px minmax(0,1fr); gap:24px; padding:28px; }
+.legal-terms-preview .legal-index { width:auto; }
+.legal-terms-preview .legal-section>h1 { color:#f4f7fb; font-size:30px; font-weight:400; line-height:1.08; letter-spacing:-.03em; }
+.legal-terms-preview .legal-lead { margin:22px 0 32px; }
+.legal-terms-preview .legal-card h2 { color:#f4f7fb; font-size:20px; font-weight:500; }
+.legal-terms-preview .legal-cards { grid-template-columns:repeat(2,minmax(0,1fr)); }
+@container terms-preview (max-width:720px) { .legal-terms-preview { display:block; }.legal-terms-preview .legal-index { display:none; }.legal-terms-preview .legal-content { margin-top:0; }.legal-terms-preview .legal-cards { grid-template-columns:1fr; }.legal-terms-preview .legal-card { grid-column:auto; } }
+@media (max-width:760px) { .legal-page.legal-terms-preview { display:block; padding:24px 18px; }.legal-terms-preview .legal-index { display:none; }.legal-terms-preview .legal-content { margin-top:0; } }
 @media (max-width:600px) { .legal-page .legal-index { display:none; } .legal-page .legal-content { margin-top:0; } }
 @media (max-width:1050px) { .legal-page { grid-template-columns:220px minmax(0,1fr); gap:40px; padding-inline:28px; }.legal-index { width:220px; }.legal-cards { grid-template-columns:1fr; }.legal-card,.legal-card:first-child,.legal-card:nth-child(3n+1) { grid-column:auto; } }
 @media (max-width:760px) { .legal-page { display:block; padding:102px 18px 56px; }.legal-index { position:static; width:auto; }.legal-index>p { margin-bottom:10px; }.legal-index nav { display:flex; overflow-x:auto; flex-direction:row; gap:8px; border-left:0; border-bottom:1px solid #2a394e; padding:0 0 16px; scrollbar-width:none; }.legal-index nav::-webkit-scrollbar { display:none; }.legal-index nav a { min-width:max-content; border:1px solid #2b3b51; border-radius:999px; padding:8px 12px; }.legal-index nav a span { display:none; }.legal-content { margin-top:38px; }.legal-section>h1 { font-size:34px; }.legal-lead { margin:20px 0 38px; font-size:16px; }.legal-cards { gap:14px; }.legal-card { padding:26px 22px; }.legal-card h2 { font-size:21px; }.legal-copy { font-size:15px; }.legal-privacy { margin-top:72px; }.legal-footer { align-items:flex-start; flex-direction:column; } }

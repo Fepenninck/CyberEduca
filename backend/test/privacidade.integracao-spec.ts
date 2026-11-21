@@ -1,3 +1,4 @@
+import { TermosService } from '../src/termos/termos.service';
 import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
@@ -48,7 +49,7 @@ describe('Privacidade com PostgreSQL real e HTTP', () => {
         JwtModule.register({ secret: process.env.JWT_SECRET }),
       ],
       controllers: [AuthController, UsuariosController, AdminController],
-      providers: [
+      providers: [TermosService,
         PrismaService,
         AuthService,
         UsuariosService,

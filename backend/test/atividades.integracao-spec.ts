@@ -1,3 +1,4 @@
+import { TermosService } from '../src/termos/termos.service';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from '@jest/globals';
 import { randomUUID } from 'node:crypto';
 import { type INestApplication, ValidationPipe } from '@nestjs/common';
@@ -49,7 +50,7 @@ describe('Integração HTTP de quizzes, simulador de phishing e perfil', () => {
     const modulo = await Test.createTestingModule({
       imports: [PassportModule.register({}), JwtModule.register({ secret: process.env.JWT_SECRET })],
       controllers: [AuthController, QuizzesController, AdminQuizzesController, PhishingController, UsuariosController],
-      providers: [AuthService, JwtStrategy, JwtAuthGuard, QuizzesService, PhishingService, UsuariosService, PrismaService, AuditoriaService, { provide: MailService, useValue: mailFalso }],
+      providers: [TermosService,AuthService, JwtStrategy, JwtAuthGuard, QuizzesService, PhishingService, UsuariosService, PrismaService, AuditoriaService, { provide: MailService, useValue: mailFalso }],
     }).compile();
 
     app = modulo.createNestApplication();

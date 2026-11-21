@@ -1,6 +1,6 @@
 'use client'
 
-import { History, ListChecks, ChevronRight, BookOpen, ClipboardList, FileCheck2, GraduationCap, LayoutDashboard, LogOut, ShieldAlert, Users } from 'lucide-react'
+import { FileText, History, ListChecks, ChevronRight, BookOpen, ClipboardList, FileCheck2, GraduationCap, LayoutDashboard, LogOut, ShieldAlert, Users } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -15,6 +15,7 @@ const links = [
   { href: '/admin/provas', label: 'Provas', icon: FileCheck2 },
   { href: '/admin/resultados', label: 'Resultados', icon: ClipboardList },
   { href: '/admin/usuarios', label: 'Usuários', icon: Users },
+  { href: '/admin/termos', label: 'Termos de Uso', icon: FileText },
   { href: '/admin/historico', label: 'Histórico', icon: History },
 ]
 

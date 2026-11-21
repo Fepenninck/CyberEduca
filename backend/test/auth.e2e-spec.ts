@@ -1,3 +1,4 @@
+import { TermosService } from '../src/termos/termos.service';
 import { jest } from '@jest/globals';
 import { INestApplication } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
@@ -45,7 +46,7 @@ describe('POST /auth/login - integração', () => {
         PassportModule.register({}),
         JwtModule.register({ secret: 'segredo-de-teste' }),
       ],
-      providers: [
+      providers: [TermosService,
         AuthService,
         { provide: PrismaService, useValue: prisma },
         { provide: AuditoriaService, useValue: { registrar: jest.fn() } },

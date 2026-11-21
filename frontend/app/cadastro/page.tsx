@@ -31,7 +31,7 @@ export default function CadastroPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [acceptedTerms, setAcceptedTerms] = useState(false)
   const [termsVersion, setTermsVersion] = useState('')
-  useEffect(() => { apiFetch('/auth/termos').then(r => r.ok ? r.json() : Promise.reject()).then(data => setTermsVersion(data.termsVersion)).catch(() => setApiError('Nao foi possivel carregar os termos. Atualize a pagina.')) }, [])
+  useEffect(() => { apiFetch('/auth/termos', { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise.reject()).then(data => setTermsVersion(data.termsVersion)).catch(() => setApiError('Nao foi possivel carregar os termos. Atualize a pagina.')) }, [])
   const [errors, setErrors] = useState<Errors>({})
   const router = useRouter()
   const [apiError, setApiError] = useState('')
