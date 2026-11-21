@@ -23,6 +23,12 @@ async function main() {
     page.setDefaultTimeout(30000)
     await page.goto('/admin/termos')
     await page.locator('#terms-section-title-0').waitFor()
+    for (const selector of ['.legal-document-tabs button', '.terms-editor-section', '.terms-editor-actions button', '.terms-editor-add']) {
+      assert.equal(await page.locator(selector).first().evaluate(element => getComputedStyle(element).borderRadius), '0px', `${selector} deve ter cantos quadrados`)
+    }
+    assert.equal(await page.locator('form.space-y-5').evaluate(element => getComputedStyle(element).borderRadius), '0px')
+    assert.equal(await page.locator('#terms-version').evaluate(element => getComputedStyle(element).borderRadius), '0px')
+    assert.equal(await page.getByRole('button', { name: 'Publicar nova versão', exact: true }).evaluate(element => getComputedStyle(element).borderRadius), '0px')
     assert.equal(await page.locator('#terms-panel .terms-editor-section').count(), 11)
     const draftTitle = (await page.locator('#terms-section-title-0').inputValue()) + ' teste'
     await page.locator('#terms-section-title-0').fill(draftTitle)

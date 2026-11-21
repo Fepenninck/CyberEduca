@@ -28,10 +28,8 @@ body:has(.app-shell) *::-webkit-scrollbar-button, .consent-document::-webkit-scr
 }
 /* Chromium usa pseudo-elementos para manter as pontas retas da barra. */
 @supports selector(::-webkit-scrollbar) {
-  body:has(.app-shell) *, .consent-document {
-    scrollbar-color: auto !important;
-    scrollbar-width: auto !important;
-  }
+    body:has(.app-shell) * { scrollbar-color: auto !important; scrollbar-width: auto !important; }
+    .consent-document { scrollbar-color: #526780 #101927; scrollbar-width: thin; }
 }
 body:has(.app-shell) .site-scrollbar {
   background: #101927;

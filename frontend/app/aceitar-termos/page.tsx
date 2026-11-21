@@ -45,9 +45,9 @@ export default function AceitarTermosPage() {
         <button id="consent-terms-tab" type="button" role="tab" aria-selected={selectedDocument === 'terms'} aria-controls="consent-document" onClick={() => setDocument('terms')}>Termos de Uso</button>
         <button id="consent-privacy-tab" type="button" role="tab" aria-selected={selectedDocument === 'privacy'} aria-controls="consent-document" onClick={() => setDocument('privacy')}>Privacidade e LGPD</button>
       </div>
-      <div id="consent-document" role="tabpanel" aria-labelledby={selectedDocument === 'terms' ? 'consent-terms-tab' : 'consent-privacy-tab'} className="consent-document">
+      <div className="consent-document-frame"><div id="consent-document" role="tabpanel" aria-labelledby={selectedDocument === 'terms' ? 'consent-terms-tab' : 'consent-privacy-tab'} className="consent-document">
         {activeDocument ? <div aria-label={selectedDocument === 'terms' ? 'Termos de Uso publicados' : 'Política de Privacidade publicada'} tabIndex={0}><TermsDocument terms={activeDocument} compact /></div> : selectedDocument === 'privacy' && privacyError ? <p role="alert">Não foi possível carregar a política. <button type="button" onClick={retryPrivacy}>Tentar novamente</button></p> : !error && <p role="status">Carregando o documento…</p>}
-      </div>
+      </div></div>
       <form className="mt-6 space-y-4" onSubmit={submit}>
         <p><Link className="underline" href="/politicas#termos-de-uso" target="_blank" rel="noopener noreferrer">Ler Termos de Uso</Link> · <Link className="underline" href="/politicas#politica-de-privacidade" target="_blank" rel="noopener noreferrer">Política de Privacidade</Link></p>
         <label className="flex items-center gap-2"><input type="checkbox" checked={accepted} onChange={event => setAccepted(event.target.checked)} disabled={busy || !terms} required /><span>Li e aceito os Termos de Uso.</span></label>
