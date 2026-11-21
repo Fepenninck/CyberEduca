@@ -288,6 +288,37 @@ describe('Publicacao administrativa dos Termos de Uso', () => {
     expect(usuario.termosAceitosEm).toBeInstanceOf(Date);
   });
 
+  it('bloqueia chamadas diretas de cadastro sem aceite e normaliza o nome salvo', async () => {
+    const data = {
+      name: '  Nome Normalizado  ',
+      email: `sem-aceite-${suffix}@example.test`,
+      password: 'Senha123!',
+      termsVersion: version,
+    };
+    await request(app.getHttpServer()).post('/auth/register').send(data).expect(400);
+    await request(app.getHttpServer())
+      .post('/auth/register')
+      .send({ ...data, acceptedTerms: false })
+      .expect(400);
+    expect(await prisma.usuario.findUnique({ where: { email: data.email } })).toBeNull();
+
+    const result = await request(app.getHttpServer())
+      .post('/auth/register')
+      .send({ ...data, acceptedTerms: true })
+      .expect(201);
+    const usuario = await prisma.usuario.findUniqueOrThrow({ where: { id: result.body.user.id } });
+    expect(usuario.nome).toBe('Nome Normalizado');
+    expect(usuario.termosVersao).toBe(version);
+    expect(usuario.termosAceitosEm).toBeInstanceOf(Date);
+  });
+
+  it.each(['', '   ', ' A '])('recusa nome inválido no cadastro pela API: %j', async (name) => {
+    await request(app.getHttpServer())
+      .post('/auth/register')
+      .send({ name, email: `nome-invalido-${suffix}-${Buffer.from(name).toString('hex')}@example.test`, password: 'Senha123!', acceptedTerms: true, termsVersion: version })
+      .expect(400);
+  });
+
   it('aceite Google tambem usa a versao publicada e nao aceita texto obsoleto', async () => {
     const token = jwt.sign(
       { sub: alunoId, purpose: 'aceite-termos' },
