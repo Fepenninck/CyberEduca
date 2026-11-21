@@ -1,3 +1,4 @@
+import { TERMOS_VERSAO } from './termos';
 import {
   Injectable,
   BadRequestException,
@@ -44,6 +45,11 @@ export class AuthService {
       userAgent?: string;
     },
   ) {
+    if (dto.acceptedTerms !== true || dto.termsVersion !== TERMOS_VERSAO) {
+      throw new BadRequestException('Aceite a versao atual dos Termos de Uso.');
+    }
+    const nome = dto.name?.trim();
+    if (!nome || nome.length < 2 || nome.length > 100) throw new BadRequestException('Informe um nome entre 2 e 100 caracteres.');
     const userExists = await this.prisma.usuario.findUnique({
       where: {
         email: dto.email,
@@ -59,7 +65,9 @@ export class AuthService {
     const user = await this.prisma.usuario
       .create({
         data: {
-          nome: dto.name,
+          nome,
+          termosVersao: TERMOS_VERSAO,
+          termosAceitosEm: new Date(),
           email: dto.email,
           senhaHash: hashedPassword,
         },
@@ -92,6 +100,15 @@ export class AuthService {
         email: user.email,
       },
     };
+  }
+
+  async aceitarTermos(usuarioId: string, dto: { acceptedTerms: boolean; termsVersion: string }) {
+    if (dto.acceptedTerms !== true || dto.termsVersion !== TERMOS_VERSAO) throw new BadRequestException('Aceite a versao atual dos Termos de Uso.');
+    return this.prisma.usuario.update({
+      where: { id: usuarioId },
+      data: { termosVersao: TERMOS_VERSAO, termosAceitosEm: new Date() },
+      select: { id: true, email: true, papel: true },
+    });
   }
 
   async login(

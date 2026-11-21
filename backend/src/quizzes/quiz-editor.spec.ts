@@ -4,7 +4,7 @@ import { QuizzesService } from './quizzes.service';
 import { PrismaService } from '../prisma.service';
 
 function preparar() {
-  const fn = () => jest.fn<any>();
+  const fn = () => jest.fn<(...args: any[]) => Promise<any>>();
   const tx = {
     quiz: {
       findUnique: fn().mockResolvedValue({ id: 'quiz', status: 'RASCUNHO' }),
@@ -24,7 +24,7 @@ function preparar() {
   };
   const prisma = {
     $transaction: jest
-      .fn<any>()
+      .fn<(...args: any[]) => Promise<any>>()
       .mockImplementation((callback: (client: unknown) => Promise<unknown>) =>
         callback(tx),
       ),

@@ -1,11 +1,22 @@
 {
   "preset": "ts-jest/presets/default-esm",
-  "moduleFileExtensions": ["js", "json", "ts"],
-  "extensionsToTreatAsEsm": [".ts"],
+  "moduleFileExtensions": [
+    "js",
+    "json",
+    "ts"
+  ],
+  "extensionsToTreatAsEsm": [
+    ".ts"
+  ],
   "rootDir": "..",
   "testEnvironment": "node",
-  "testMatch": ["<rootDir>/test/pfc.integracao-spec.ts"],
-  "setupFiles": ["<rootDir>/test/setup-test-env.ts"],
+  "testMatch": [
+    "<rootDir>/test/pfc.integracao-spec.ts",
+    "<rootDir>/test/privacidade.integracao-spec.ts"
+  ],
+  "setupFiles": [
+    "<rootDir>/test/setup-test-env.ts"
+  ],
   "maxWorkers": 1,
   "testTimeout": 30000,
   "transform": {

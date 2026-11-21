@@ -16,12 +16,12 @@ import {
 import { PrismaService } from '../prisma.service';
 
 function preparar() {
-  const create = jest.fn<any>().mockResolvedValue({ id: 'log' });
+  const create = jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue({ id: 'log' });
   const prisma = {
     logAuditoria: {
       create,
       findMany: jest
-        .fn<any>()
+        .fn<(...args: any[]) => Promise<any>>()
         .mockResolvedValue([
           {
             id: 'log',
@@ -34,10 +34,10 @@ function preparar() {
             },
           },
         ]),
-      count: jest.fn<any>().mockResolvedValue(51),
+      count: jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue(51),
     },
     $transaction: jest
-      .fn<any>()
+      .fn<(...args: any[]) => Promise<any>>()
       .mockImplementation((queries: Promise<unknown>[]) =>
         Promise.all(queries),
       ),

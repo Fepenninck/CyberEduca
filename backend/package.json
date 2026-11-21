@@ -33,7 +33,8 @@
     "db:expand:quizzes": "ts-node --project tsconfig.quizzes.json scripts/expandir-quizzes.ts",
     "db:verify:quizzes": "ts-node --project tsconfig.quizzes.json scripts/verificar-quizzes-ampliados.ts",
     "db:prepare:certificacoes": "ts-node --project tsconfig.quizzes.json scripts/preparar-provas-niveis.ts",
-    "db:verify:certificacoes": "ts-node --project tsconfig.quizzes.json scripts/verificar-certificacoes.ts"
+    "db:verify:certificacoes": "ts-node --project tsconfig.quizzes.json scripts/verificar-certificacoes.ts",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.spec.json --noEmit"
   },
   "dependencies": {
     "@nestjs/common": "^12.0.1",

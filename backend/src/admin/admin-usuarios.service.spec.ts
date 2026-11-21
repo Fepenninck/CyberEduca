@@ -5,6 +5,8 @@ import { AdminUsuariosService } from './admin-usuarios.service';
 
 describe('AdminUsuariosService', () => {
   const prismaMock = {
+    $transaction: jest.fn<(...args: any[]) => Promise<any>>(),
+    logAuditoria: { deleteMany: jest.fn<(...args: any[]) => Promise<any>>() },
     usuario: {
       findMany: jest.fn<(...args: any[]) => Promise<any>>(),
       findUnique: jest.fn<(...args: any[]) => Promise<any>>(),
@@ -16,6 +18,7 @@ describe('AdminUsuariosService', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
+    prismaMock.$transaction.mockImplementation((work: any) => work(prismaMock));
     service = new AdminUsuariosService(prismaMock as unknown as PrismaService);
   });
 
@@ -23,7 +26,7 @@ describe('AdminUsuariosService', () => {
     const usuarios = [{ id: 'u1', nome: 'Ana', email: 'ana@test.dev' }];
     prismaMock.usuario.findMany.mockResolvedValue(usuarios);
 
-    await expect(service.listarUsuarios()).resolves.toEqual(usuarios);
+    await expect(service.listarUsuarios()).resolves.toEqual([{ ...usuarios[0], email: 'an***@test.dev' }]);
     expect(prismaMock.usuario.findMany).toHaveBeenCalled();
     const consulta = prismaMock.usuario.findMany.mock.calls[0][0] as any;
     expect(consulta.select.senhaHash).toBeUndefined();
@@ -56,9 +59,9 @@ describe('AdminUsuariosService', () => {
       expect.objectContaining({ where: { id: 'u1' }, data: { nome: 'Ana Silva' } }),
     );
 
-    await expect(service.excluirUsuario('u1')).resolves.toEqual({
-      id: 'u1', nome: 'Ana Silva',
-    });
+    prismaMock.usuario.findUnique.mockResolvedValue({ email: 'ana@test.dev' });
+    await expect(service.excluirUsuario('u1')).resolves.toEqual({ id: 'u1' });
+    expect(prismaMock.logAuditoria.deleteMany).toHaveBeenCalled();
     expect(prismaMock.usuario.delete).toHaveBeenCalledWith(
       expect.objectContaining({ where: { id: 'u1' } }),
     );
@@ -74,5 +77,13 @@ describe('AdminUsuariosService', () => {
       expect.objectContaining({ where: { email: 'ana@test.dev' } }),
     );
     expect(prismaMock.usuario.update).not.toHaveBeenCalled();
+  });
+
+  it('nao encaminha campos extras para o banco mesmo em chamadas internas', async () => {
+    prismaMock.usuario.update.mockResolvedValue({ id: 'u1' });
+    await service.atualizarUsuario('u1', { nome: 'Ana', papel: 'ADMIN', senhaHash: 'segredo' } as any);
+    expect(prismaMock.usuario.update).toHaveBeenCalledWith(expect.objectContaining({
+      data: { nome: 'Ana', email: undefined },
+    }));
   });
 });

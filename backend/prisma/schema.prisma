@@ -11,6 +11,8 @@ model Usuario {
   id                       String              @id @default(uuid())
   nome                     String
   email                    String              @unique
+  termosVersao             String?
+  termosAceitosEm          DateTime?
   senhaHash                String?
   googleId                 String?             @unique
   foto                     String?

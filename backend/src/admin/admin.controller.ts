@@ -1,3 +1,4 @@
+import { AtualizarUsuarioAdminDto } from './dto/atualizar-usuario-admin.dto';
 import {
   Body,
   Controller,
@@ -78,7 +79,7 @@ export class AdminController {
   @Patch('usuarios/:id')
   atualizarUsuario(
     @Param('id') id: string,
-    @Body() dados: { nome?: string; email?: string },
+    @Body() dados: AtualizarUsuarioAdminDto,
   ) {
     return this.usuariosService.atualizarUsuario(id, dados);
   }

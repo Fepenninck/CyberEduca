@@ -21,3 +21,9 @@ export function clearRememberedCelebrations() {
     }
   } catch { /* Browsers can block local storage. */ }
 }
+
+export function saveCookiePreferences(allowPersonalization: boolean) {
+  document.cookie = `${CONSENT_COOKIE}=${allowPersonalization ? 'v2-personalization' : 'v2-essential'}; Max-Age=${CONSENT_MAX_AGE}; Path=/; SameSite=Lax${window.location.protocol === 'https:' ? '; Secure' : ''}`
+  if (!allowPersonalization) clearRememberedCelebrations()
+  return readCookiePreferences(document.cookie)?.personalization === allowPersonalization
+}

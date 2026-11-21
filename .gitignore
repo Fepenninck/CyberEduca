@@ -7,3 +7,10 @@ build/
 *.tsbuildinfo
 .local/backups/
 .DS_Store
+
+.test-postgres/
+.test-tools/
+backend/.env.test.local
+
+frontend/.next-privacy-test/
+backend/.privacy-test-build/

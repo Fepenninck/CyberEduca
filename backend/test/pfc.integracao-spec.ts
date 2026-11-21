@@ -106,6 +106,7 @@ describe('Integração HTTP de trilhas e aulas', () => {
         name: 'Aluno de integração',
         email,
         password: 'Senha123!',
+        acceptedTerms: true, termsVersion: '2026-11-21',
       })
       .expect(201);
 

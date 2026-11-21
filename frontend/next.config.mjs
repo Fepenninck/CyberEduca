@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  distDir: process.env.CYBEREDUCA_TEST_DIST_DIR || '.next',
   allowedDevOrigins: ['192.168.0.19'],
   devIndicators: false,
   agentRules: false,

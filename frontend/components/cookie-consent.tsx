@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
-import { clearRememberedCelebrations, CONSENT_COOKIE, CONSENT_MAX_AGE, readCookiePreferences } from '@/lib/cookie-preferences'
+import { clearRememberedCelebrations, readCookiePreferences, saveCookiePreferences } from '@/lib/cookie-preferences'
 
 export function CookieConsent() {
   const [visible, setVisible] = useState(false)
@@ -24,9 +24,7 @@ export function CookieConsent() {
   }, [pathname, isAdminRoute])
 
   const saveChoice = (allowPersonalization: boolean) => {
-    document.cookie = `${CONSENT_COOKIE}=${allowPersonalization ? 'v2-personalization' : 'v2-essential'}; Max-Age=${CONSENT_MAX_AGE}; Path=/; SameSite=Lax${window.location.protocol === 'https:' ? '; Secure' : ''}`
-    if (!allowPersonalization) clearRememberedCelebrations()
-    if (readCookiePreferences(document.cookie)?.personalization !== allowPersonalization) {
+    if (!saveCookiePreferences(allowPersonalization)) {
       setError('Seu navegador bloqueou o armazenamento da preferência. O aviso poderá aparecer novamente.')
       return
     }
