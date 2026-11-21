@@ -416,3 +416,10 @@ model TermosUso {
   conteudo String
   publicadoEm DateTime @default(now())
 }
+
+model PoliticaPrivacidade {
+  id Int @id @default(autoincrement())
+  versao String @unique
+  conteudo String
+  publicadoEm DateTime @default(now())
+}

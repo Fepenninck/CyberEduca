@@ -20,13 +20,13 @@ export function TermsIndex({ sections }: { sections: TermsSection[] }) {
   return <>{sections.map((section, index) => <a href={`#${section.id}`} key={section.id}><span>{String(index + 1).padStart(2, '0')}</span>{section.titulo}</a>)}</>
 }
 
-export function TermsDocument({ terms, compact = false }: { terms: PublishedTermsData; compact?: boolean }) {
+export function TermsDocument({ terms, compact = false, kind = 'terms' }: { terms: PublishedTermsData; compact?: boolean; kind?: 'terms' | 'privacy' }) {
   if (compact) return <div>
     <div className="space-y-4 [&_h2]:mt-6 [&_h2]:text-xl [&_h2]:font-semibold [&_ul]:list-disc [&_ul]:pl-6 [&_a]:underline">
       <ReactMarkdown skipHtml>{terms.conteudo}</ReactMarkdown>
     </div>
   </div>
-  const sections = parseTermsSections(terms.conteudo)
+  const sections = parseTermsSections(terms.conteudo, kind)
   return <>
     <div className="legal-cards">{sections.map((section, index) => <article className="legal-card" id={section.id} key={section.id}>
       <h2><span>{String(index + 1).padStart(2, '0')}</span>{section.titulo}</h2>
@@ -42,18 +42,21 @@ export function TermsPagePreview({ terms }: { terms: PublishedTermsData }) {
   </div>
 }
 
-export function usePublishedTerms() {
+function usePublishedDocument(endpoint: string) {
   const [terms, setTerms] = useState<PublishedTermsData | null>(null)
   const [error, setError] = useState(false)
   const [attempt, setAttempt] = useState(0)
   useEffect(() => {
     let active = true
     setError(false)
-    apiFetch('/auth/termos', { cache: 'no-store' }).then(async response => {
+    apiFetch(endpoint, { cache: 'no-store' }).then(async response => {
       if (!response.ok) throw new Error()
       return response.json()
-    }).then(data => { if (active) setTerms(data) }).catch(() => { if (active) setError(true) })
+    }).then(data => { if (active) setTerms({ ...data, termsVersion: data.termsVersion || data.version }) }).catch(() => { if (active) setError(true) })
     return () => { active = false }
-  }, [attempt])
+  }, [attempt, endpoint])
   return { terms, error, retry: () => setAttempt(value => value + 1) }
 }
+
+export function usePublishedTerms() { return usePublishedDocument('/auth/termos') }
+export function usePublishedPrivacy() { return usePublishedDocument('/politicas/privacidade') }

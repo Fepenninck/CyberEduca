@@ -19,7 +19,7 @@ export class PublicarTermosDto {
   @Trim()
   @IsString()
   @MinLength(20, {
-    message: 'O texto dos termos deve ter pelo menos 20 caracteres.',
+    message: 'O texto do documento deve ter pelo menos 20 caracteres.',
   })
   @MaxLength(100_000)
   conteudo: string;

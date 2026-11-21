@@ -4,17 +4,18 @@ import { useEffect, useRef, useState } from 'react'
 import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react'
 import { parseTermsSections, serializeTermsSections, type TermsSection } from '@/lib/terms-sections'
 
-export function TermsEditor({ content, onChange, disabled }: { content: string; onChange: (value: string) => void; disabled: boolean }) {
+export function TermsEditor({ content, onChange, disabled, kind = 'terms' }: { content: string; onChange: (value: string) => void; disabled: boolean; kind?: 'terms' | 'privacy' }) {
+  const prefix = kind === 'privacy' ? 'privacy' : 'terms'
   const [removed, setRemoved] = useState<{ section: TermsSection; index: number } | null>(null)
   const [expanded, setExpanded] = useState<number[]>([0])
-  const [sections, setSections] = useState(() => parseTermsSections(content))
+  const [sections, setSections] = useState(() => parseTermsSections(content, kind))
   const emitted = useRef(content)
   useEffect(() => {
     if (content !== emitted.current) {
       emitted.current = content
-      setSections(parseTermsSections(content))
+      setSections(parseTermsSections(content, kind))
     }
-  }, [content])
+  }, [content, kind])
   const commit = (next: TermsSection[]) => {
     setSections(next)
     emitted.current = serializeTermsSections(next)
@@ -29,12 +30,12 @@ export function TermsEditor({ content, onChange, disabled }: { content: string; 
     commit(next)
   }
   return <div className="terms-editor">
-    <div className="terms-editor-heading"><div><h2>Conteúdo dos termos</h2><p>Cada seção mantém seu card numerado e seu lugar no índice da página.</p></div><span>{sections.length} seções</span></div>
+    <div className="terms-editor-heading"><div><h2>{kind === 'privacy' ? 'Seções de Privacidade e LGPD' : 'Seções dos Termos de Uso'}</h2><p>Cada seção mantém seu card numerado e seu lugar no índice da página.</p></div><span>{sections.length} seções</span></div>
       <div className="terms-editor-sections">{sections.map((section, index) => <details className="terms-editor-section" key={index} open={expanded.includes(index)} onToggle={event => { const open = event.currentTarget.open; setExpanded(previous => open ? previous.includes(index) ? previous : [...previous, index] : previous.filter(item => item !== index)) }}>
         <summary><span>{String(index + 1).padStart(2, '0')}</span>{section.titulo || 'Seção sem título'}</summary>
         <div className="terms-editor-fields">
-          <div><label htmlFor={`terms-section-title-${index}`}>Título da seção {index + 1}</label><input id={`terms-section-title-${index}`} value={section.titulo} onChange={event => update(index, 'titulo', event.target.value)} required maxLength={160} disabled={disabled} /></div>
-          <div><label htmlFor={`terms-section-content-${index}`}>Texto da seção {index + 1}</label><textarea id={`terms-section-content-${index}`} value={section.conteudo} onChange={event => update(index, 'conteudo', event.target.value)} rows={7} required disabled={disabled} /></div>
+          <div><label htmlFor={`${prefix}-section-title-${index}`}>Título da seção {index + 1}</label><input id={`${prefix}-section-title-${index}`} value={section.titulo} onChange={event => update(index, 'titulo', event.target.value)} required maxLength={160} disabled={disabled} /></div>
+          <div><label htmlFor={`${prefix}-section-content-${index}`}>Texto da seção {index + 1}</label><textarea id={`${prefix}-section-content-${index}`} value={section.conteudo} onChange={event => update(index, 'conteudo', event.target.value)} rows={7} required disabled={disabled} /></div>
           <p className="terms-editor-help">Separe parágrafos com uma linha em branco. Use - para listas e **texto** para negrito.</p>
           <div className="terms-editor-actions">
             <button type="button" aria-label={`Subir seção ${index + 1}`} onClick={() => move(index, -1)} disabled={disabled || index === 0}><ArrowUp size={16} />Subir</button>

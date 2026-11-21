@@ -78,6 +78,9 @@ describe('Publicacao administrativa dos Termos de Uso', () => {
   afterAll(async () => {
     // Restore only records created by this suite so other integration suites are independent.
     if (prisma) {
+      await prisma.politicaPrivacidade.deleteMany({
+        where: { versao: { startsWith: prefix } },
+      });
       await prisma.termosUso.deleteMany({
         where: { versao: { startsWith: prefix } },
       });
@@ -87,6 +90,80 @@ describe('Publicacao administrativa dos Termos de Uso', () => {
     }
     await app?.close();
     await prisma?.$disconnect();
+  });
+
+  it('separa a politica de privacidade dos termos, protegendo a edicao e preservando aceites', async () => {
+    const server = app.getHttpServer();
+    const politica = await request(server)
+      .get('/politicas/privacidade')
+      .expect(200);
+    expect(politica.headers['cache-control']).toBe('no-store');
+    expect(politica.body.conteudo.match(/^## /gm)).toHaveLength(13);
+    await request(server).get('/admin/privacidade').expect(401);
+    await request(server).post('/admin/privacidade').send({}).expect(401);
+    await request(server)
+      .get('/admin/privacidade')
+      .set('Cookie', alunoCookie)
+      .expect(403);
+    const data = {
+      versao: version,
+      conteudo:
+        '## Privacidade atualizada\n\nTexto para teste da politica independente.',
+      versaoAnterior: politica.body.version,
+    };
+    await request(server)
+      .post('/admin/privacidade')
+      .set('Cookie', alunoCookie)
+      .send(data)
+      .expect(403);
+    await request(server)
+      .post('/admin/privacidade')
+      .set('Cookie', adminCookie)
+      .send({ ...data, versao: ' ' })
+      .expect(400);
+    const termosAntes = await prisma.termosUso.findFirstOrThrow({
+      orderBy: { id: 'desc' },
+    });
+    const usuarioAntes = await prisma.usuario.findUniqueOrThrow({
+      where: { id: alunoId },
+    });
+    await request(server)
+      .post('/admin/privacidade')
+      .set('Cookie', adminCookie)
+      .send(data)
+      .expect(201);
+    const publicada = await request(server)
+      .get('/politicas/privacidade')
+      .expect(200);
+    expect(publicada.body).toMatchObject({ version, conteudo: data.conteudo });
+    expect(
+      await prisma.termosUso.findFirst({ orderBy: { id: 'desc' } }),
+    ).toEqual(termosAntes);
+    expect(
+      (await prisma.usuario.findUniqueOrThrow({ where: { id: alunoId } }))
+        .termosAceitosEm,
+    ).toEqual(usuarioAntes.termosAceitosEm);
+    expect(
+      (await prisma.usuario.findUniqueOrThrow({ where: { id: alunoId } }))
+        .termosVersao,
+    ).toBe(usuarioAntes.termosVersao);
+    await request(server)
+      .post('/admin/privacidade')
+      .set('Cookie', adminCookie)
+      .send({ ...data, versaoAnterior: version })
+      .expect(409);
+    expect(
+      (
+        await prisma.politicaPrivacidade.findUniqueOrThrow({
+          where: { versao: politica.body.version },
+        })
+      ).conteudo,
+    ).toBe(politica.body.conteudo);
+    const historico = await request(server)
+      .get('/admin/privacidade')
+      .set('Cookie', adminCookie)
+      .expect(200);
+    expect(historico.body.historico[0].versao).toBe(version);
   });
 
   it('publica somente leitura sem cache para visitantes e bloqueia escrita sem permissao', async () => {

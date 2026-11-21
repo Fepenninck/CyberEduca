@@ -72,7 +72,7 @@ export class TermosService {
             );
           }
           await tx.termosUso.create({
-            data: { versao: dados.versao, conteudo: dados.conteudo },
+            data: { versao: dados.versao, conteudo: dados.conteudo, publicadoEm: new Date() },
           });
         },
         { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },

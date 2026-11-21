@@ -33,7 +33,7 @@ async function main() {
     await page.goto('/admin/termos')
     await page.locator('#terms-section-title-0').waitFor()
     const previous = await prisma.termosUso.findFirstOrThrow({ orderBy: { id: 'desc' } })
-    const previousCount = await page.locator('.terms-editor-section').count()
+    const previousCount = await page.locator('#terms-panel .terms-editor-section').count()
     assert.equal(await page.getByRole('button', { name: 'Texto completo', exact: true }).count(), 0)
     assert.ok(previous.conteudo.includes(await page.locator('#terms-section-content-0').inputValue()))
     assert.equal(await page.getByRole('button', { name: 'Publicar nova versão', exact: true }).isDisabled(), true)

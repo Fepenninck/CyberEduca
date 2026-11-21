@@ -14,7 +14,23 @@ const originalAnchors: Record<string, string> = {
   'alteracoes-destes-termos': 'alteracoes-termos',
 }
 
-export function parseTermsSections(content: string): TermsSection[] {
+const privacyAnchors: Record<string, string> = {
+  'responsavel-e-contato': 'controlador',
+  'dados-utilizados-pelo-site': 'dados-coletados',
+  'por-que-esses-dados-sao-necessarios': 'finalidades-dados',
+  'uso-necessario-e-escolhas-opcionais': 'bases-legais',
+  'cookies-e-armazenamento-no-navegador': 'cookies',
+  'servicos-utilizados-e-conteudo-externo': 'compartilhamento',
+  'exclusao-e-conservacao': 'retencao',
+  'protecao-da-conta': 'seguranca',
+  'seus-direitos-e-como-exerce-los': 'direitos',
+  'criancas-e-adolescentes': 'menores',
+  'notas-e-progresso': 'decisoes',
+  'comunicacao-de-incidentes': 'incidentes',
+  'atualizacoes-desta-politica': 'alteracoes-privacidade',
+}
+
+export function parseTermsSections(content: string, kind: 'terms' | 'privacy' = 'terms'): TermsSection[] {
   const sections: { titulo: string; lines: string[] }[] = []
   let current: typeof sections[number] | null = null
   let fence = ''
@@ -30,14 +46,14 @@ export function parseTermsSections(content: string): TermsSection[] {
       sections.push(current)
     } else if (current) current.lines.push(line)
     else if (line.trim()) {
-      current = { titulo: 'Termos de Uso', lines: [line] }
+      current = { titulo: kind === 'privacy' ? 'Privacidade e LGPD' : 'Termos de Uso', lines: [line] }
       sections.push(current)
     }
   }
   const counts = new Map<string, number>()
   return sections.map(section => {
     const slug = section.titulo.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'secao'
-    const anchor = originalAnchors[slug] || `termos-${slug}`
+    const anchor = (kind === 'privacy' ? privacyAnchors : originalAnchors)[slug] || `${kind === 'privacy' ? 'privacidade' : 'termos'}-${slug}`
     const count = (counts.get(anchor) || 0) + 1
     counts.set(anchor, count)
     return { id: count === 1 ? anchor : `${anchor}-${count}`, titulo: section.titulo, conteudo: section.lines.join('\n').trim() }

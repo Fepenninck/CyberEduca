@@ -15,7 +15,7 @@ const links = [
   { href: '/admin/provas', label: 'Provas', icon: FileCheck2 },
   { href: '/admin/resultados', label: 'Resultados', icon: ClipboardList },
   { href: '/admin/usuarios', label: 'Usuários', icon: Users },
-  { href: '/admin/termos', label: 'Termos de Uso', icon: FileText },
+  { href: '/admin/termos', label: 'Termos e Privacidade', icon: FileText },
   { href: '/admin/historico', label: 'Histórico', icon: History },
 ]
 

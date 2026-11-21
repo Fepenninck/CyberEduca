@@ -61,7 +61,7 @@ async function main() {
     const page = await context.newPage()
     await page.goto('/admin/termos')
     await page.locator('#terms-section-title-0').waitFor()
-    assert.equal(await page.locator('.terms-editor-section').count(), expected.length)
+    assert.equal(await page.locator('#terms-panel .terms-editor-section').count(), expected.length)
     assert.equal(await page.locator('#terms-section-title-0').inputValue(), expected[0].title)
     assert.equal(await page.getByRole('button', { name: 'Texto completo', exact: true }).count(), 0)
     assert.equal(await page.getByRole('button', { name: 'Pré-visualizar', exact: true }).count(), 0)
