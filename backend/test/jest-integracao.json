@@ -11,9 +11,7 @@
   "rootDir": "..",
   "testEnvironment": "node",
   "testMatch": [
-    "<rootDir>/test/pfc.integracao-spec.ts",
-    "<rootDir>/test/privacidade.integracao-spec.ts",
-    "<rootDir>/test/termos.integracao-spec.ts"
+    "<rootDir>/test/**/*.integracao-spec.ts"
   ],
   "setupFiles": [
     "<rootDir>/test/setup-test-env.ts"
