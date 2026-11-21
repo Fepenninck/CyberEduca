@@ -1,32 +1,34 @@
-body:has(.app-shell) * {
+body:has(.app-shell) *, .consent-document {
   scrollbar-color: #526780 #101927;
   scrollbar-width: thin;
 }
-body:has(.app-shell) *::-webkit-scrollbar {
+body:has(.app-shell) *::-webkit-scrollbar, .consent-document::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 body:has(.app-shell) *::-webkit-scrollbar-track,
-body:has(.app-shell) *::-webkit-scrollbar-corner {
+body:has(.app-shell) *::-webkit-scrollbar-corner,
+.consent-document::-webkit-scrollbar-track,
+.consent-document::-webkit-scrollbar-corner {
   background: #101927;
   border-radius: 0;
 }
-body:has(.app-shell) *::-webkit-scrollbar-thumb {
+body:has(.app-shell) *::-webkit-scrollbar-thumb, .consent-document::-webkit-scrollbar-thumb {
   background: #526780;
   border: 0;
   border-radius: 0;
 }
-body:has(.app-shell) *::-webkit-scrollbar-thumb:hover {
+body:has(.app-shell) *::-webkit-scrollbar-thumb:hover, .consent-document::-webkit-scrollbar-thumb:hover {
   background: #7187a1;
 }
-body:has(.app-shell) *::-webkit-scrollbar-button {
+body:has(.app-shell) *::-webkit-scrollbar-button, .consent-document::-webkit-scrollbar-button {
   display: none;
   width: 0;
   height: 0;
 }
 /* Chromium usa pseudo-elementos para manter as pontas retas da barra. */
 @supports selector(::-webkit-scrollbar) {
-  body:has(.app-shell) * {
+  body:has(.app-shell) *, .consent-document {
     scrollbar-color: auto !important;
     scrollbar-width: auto !important;
   }

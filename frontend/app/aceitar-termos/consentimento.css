@@ -1,13 +1,11 @@
 .consent-document-tabs { display:flex; gap:16px; margin-top:20px; border-bottom:1px solid #334155; }
-.consent-document-tabs button { min-height:40px; padding:8px 0; border-bottom:2px solid transparent; background:none; color:#aab8cb; font-size:14px; cursor:pointer; }
-.consent-document-tabs button[aria-selected='true'] { border-bottom-color:#9fef00; color:#f4f4f4; }
+.consent-document-tabs button { min-height:40px; padding:8px 0; background:none; color:#aab8cb; font-size:14px; cursor:pointer; }
+.consent-document-tabs button[aria-selected='true'] { color:#f4f4f4; font-weight:600; }
 .consent-document { max-height:160px; overflow-y:auto; overscroll-behavior:contain; scrollbar-gutter:stable; margin-top:12px; border:1px solid #475569; border-radius:8px; padding:14px; overflow-wrap:anywhere; }
 .consent-document h2 { margin-top:16px; font-size:16px; line-height:1.4; }
 .consent-document h2:first-child { margin-top:0; }
 .consent-document p, .consent-document li { font-size:14px; line-height:1.55; }
 .consent-document pre { max-width:100%; overflow-x:auto; }
-.consent-data-summary { margin-top:14px; color:#aab8cb; font-size:14px; line-height:1.5; }
-.consent-data-summary strong { color:#e5edf7; }
-.consent-data-summary button, .consent-document a, .consent-document button { text-decoration:underline; text-underline-offset:3px; }
-.consent-document-tabs button:focus-visible, .consent-data-summary button:focus-visible { outline:2px solid #9fef00; outline-offset:3px; }
+.consent-document a, .consent-document button { text-decoration:underline; text-underline-offset:3px; }
+.consent-document-tabs button:focus-visible { outline:2px solid #9fef00; outline-offset:3px; }
 @media (max-width:560px) { .consent-document { max-height:144px; } }
