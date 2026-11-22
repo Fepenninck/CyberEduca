@@ -20,6 +20,7 @@ import { UsuariosService } from '../src/usuarios/usuarios.service';
 import { PrismaService } from '../src/prisma.service';
 import { AuditoriaService } from '../src/auditoria.service';
 import { MailService } from '../src/mail/mail.service';
+import { AuditoriaContexto } from '../src/auditoria-contexto';
 
 describe('Integração HTTP de quizzes, simulador de phishing e perfil', () => {
   let app: INestApplication;
@@ -50,7 +51,7 @@ describe('Integração HTTP de quizzes, simulador de phishing e perfil', () => {
     const modulo = await Test.createTestingModule({
       imports: [PassportModule.register({}), JwtModule.register({ secret: process.env.JWT_SECRET })],
       controllers: [AuthController, QuizzesController, AdminQuizzesController, PhishingController, UsuariosController],
-      providers: [TermosService,AuthService, JwtStrategy, JwtAuthGuard, QuizzesService, PhishingService, UsuariosService, PrismaService, AuditoriaService, { provide: MailService, useValue: mailFalso }],
+      providers: [TermosService,AuthService, JwtStrategy, JwtAuthGuard, QuizzesService, PhishingService, UsuariosService, PrismaService, AuditoriaService, AuditoriaContexto, { provide: MailService, useValue: mailFalso }],
     }).compile();
 
     app = modulo.createNestApplication();
@@ -114,7 +115,7 @@ describe('Integração HTTP de quizzes, simulador de phishing e perfil', () => {
 
   beforeEach(async () => {
     const email = `${randomUUID()}@cybereduca.test`;
-    await request(url).post('/auth/register').send({ name: 'Aluno de integração', email, password: 'Senha123!' }).expect(201);
+    await request(url).post('/auth/register').send({ name: 'Aluno de integração', email, password: 'Senha123!', acceptedTerms: true, termsVersion: '2026-11-21' }).expect(201);
     await request(url).post('/auth/login').send({ email, password: 'Senha123!' }).expect(200);
     const token = new URL(ultimoLink).searchParams.get('token');
     const confirmacao = await request(url).post('/auth/login/confirmar').send({ token }).expect(200);
