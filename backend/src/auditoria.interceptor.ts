@@ -36,6 +36,9 @@ export class AuditoriaInterceptor implements NestInterceptor {
     };
     const registrar = async (sucesso: boolean, value?: unknown) => {
       if (estado.registrados) return;
+      // The account and its audit records were removed in the same transaction.
+      if (sucesso && req.method === 'DELETE' && req.path === '/usuarios/me') return;
+      const contaExcluida = sucesso && req.method === 'DELETE' && /^\/admin\/usuarios\/[^/]+$/.test(req.path);
       const partes = req.path.split('/').filter(Boolean);
       const entidade = partes[0] === 'admin' ? partes[1] : partes[0];
       const dados = value as { id?: unknown } | undefined;
@@ -52,7 +55,7 @@ export class AuditoriaInterceptor implements NestInterceptor {
                 ? AcaoAuditoria.CRIAR
                 : AcaoAuditoria.ATUALIZAR,
           entidade: entidade || 'Operação',
-          entidadeId: typeof id === 'string' ? id : undefined,
+          entidadeId: !contaExcluida && typeof id === 'string' ? id : undefined,
           sucesso,
           detalhes: {
             metodo: req.method,

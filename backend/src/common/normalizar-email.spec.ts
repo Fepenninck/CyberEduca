@@ -1,10 +1,23 @@
 import { describe, expect, it } from '@jest/globals';
 import { plainToInstance } from 'class-transformer';
+import { validateSync } from 'class-validator';
 import { LoginDto } from '../auth/dto/login.dto';
 import { RegisterDto } from '../auth/dto/register.dto';
 import { UpdateProfileDto } from '../usuarios/dto/update-profile.dto';
 
 describe('NormalizarEmail', () => {
+  it('normaliza o nome e rejeita nomes vazios, sÃ³ com espaÃ§os ou menores que dois caracteres', () => {
+    const valido = plainToInstance(RegisterDto, { name: '  Ana Silva  ', email: 'ana@test.dev', password: 'x' });
+    expect(valido.name).toBe('Ana Silva');
+    expect(validateSync(valido).map(error => error.property)).not.toContain('name');
+
+    for (const name of ['', '   ', ' A ']) {
+      const cadastro = plainToInstance(RegisterDto, { name, email: 'ana@test.dev', password: 'x' });
+      expect(cadastro.name).toBe(name.trim());
+      expect(validateSync(cadastro).map(error => error.property)).toContain('name');
+    }
+  });
+
   it('remove espaços e converte o e-mail do login para minúsculas', () => {
     const dto = plainToInstance(LoginDto, { email: '  Thiago@X.com ', password: 'x' });
 

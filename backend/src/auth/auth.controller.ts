@@ -1,9 +1,13 @@
+import { AceitarTermosDto } from './dto/aceitar-termos.dto';
+import { TERMOS_PENDENTES_COOKIE } from './termos';
+import { UnauthorizedException } from '@nestjs/common';
 import { LoginRateLimitGuard } from './login-rate-limit.guard';
 import {
   Controller,
   Post,
   Body,
   HttpCode,
+  Header,
   HttpStatus,
   Get,
   Req,
@@ -120,6 +124,13 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(GoogleAuthGuard)
   async googleCallback(@Req() req: any, @Res() res: Response) {
+    const atuais = await this.authService.termosAtuais();
+    if (!req.user.termosAceitosEm || req.user.termosVersao !== atuais.termsVersion) {
+      const token = this.jwtService.sign({ sub: req.user.id, purpose: 'aceite-termos' }, { expiresIn: '10m', audience: 'aceite-termos' });
+      res.clearCookie(SESSION_COOKIE, sessionCookieOptions());
+      res.cookie(TERMOS_PENDENTES_COOKIE, token, { ...sessionCookieOptions(), maxAge: 10 * 60 * 1000 });
+      return res.redirect(`${process.env.FRONTEND_URL}/aceitar-termos`);
+    }
     const payload = { sub: req.user.id, email: req.user.email };
     const token = this.jwtService.sign(payload);
     this.setSessionCookie(res, token);
@@ -136,6 +147,24 @@ export class AuthController {
       sucesso: true,
     });
     res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
+  }
+
+  @Get('termos')
+  @Header('Cache-Control', 'no-store')
+  versaoTermos() { return this.authService.termosAtuais(); }
+
+  @Post('termos')
+  async aceitarTermos(@Body() dto: AceitarTermosDto, @Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    const token = req.headers.cookie?.split(';').map(item => item.trim()).find(item => item.startsWith(`${TERMOS_PENDENTES_COOKIE}=`))?.slice(TERMOS_PENDENTES_COOKIE.length + 1);
+    let payload: { sub: string; purpose: string };
+    try {
+      payload = this.jwtService.verify(token || '', { audience: 'aceite-termos' });
+      if (payload.purpose !== 'aceite-termos' || !payload.sub) throw new Error();
+    } catch { throw new UnauthorizedException('Entre com Google novamente para aceitar os termos.'); }
+    const usuario = await this.authService.aceitarTermos(payload.sub, dto);
+    this.setSessionCookie(res, this.jwtService.sign({ sub: usuario.id, email: usuario.email }));
+    res.clearCookie(TERMOS_PENDENTES_COOKIE, sessionCookieOptions());
+    return { message: 'Termos aceitos.', papel: usuario.papel };
   }
 
   private setSessionCookie(response: Response, token: string) {

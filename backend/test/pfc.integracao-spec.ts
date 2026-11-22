@@ -1,3 +1,4 @@
+import { TermosService } from '../src/termos/termos.service';
 import {
   afterAll,
   beforeAll,
@@ -70,7 +71,7 @@ describe('Integração HTTP de trilhas e aulas', () => {
         TrilhasController,
         AulasController,
       ],
-      providers: [
+      providers: [TermosService,
         AuthService,
         JwtStrategy,
         JwtAuthGuard,
@@ -106,6 +107,7 @@ describe('Integração HTTP de trilhas e aulas', () => {
         name: 'Aluno de integração',
         email,
         password: 'Senha123!',
+        acceptedTerms: true, termsVersion: '2026-11-21',
       })
       .expect(201);
 

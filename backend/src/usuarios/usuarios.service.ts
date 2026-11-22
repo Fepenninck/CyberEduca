@@ -1,3 +1,4 @@
+import { excluirDadosConta } from './excluir-dados-conta';
 import {
     BadRequestException,
     ConflictException,
@@ -21,16 +22,7 @@ export class UsuariosService {
 
     async excluirConta(usuarioId: string, confirmacao: string) {
         if (confirmacao !== 'excluir') throw new BadRequestException('Digite excluir para confirmar a exclusão da conta.');
-        await this.prisma.$transaction(async tx => {
-            const usuario = await tx.usuario.findUnique({ where: { id: usuarioId }, select: { email: true } });
-            if (!usuario) throw new NotFoundException('Conta não encontrada.');
-            await tx.logAuditoria.deleteMany({ where: { OR: [
-                { atorId: usuarioId }, { entidadeId: usuarioId },
-                { entidade: 'Usuario', acao: 'LOGIN_FALHOU', detalhes: { path: ['emailInformado'], equals: usuario.email } },
-            ] } });
-            // Foreign-key cascades remove progress, attempts, answers, results and lab history.
-            await tx.usuario.delete({ where: { id: usuarioId } });
-        });
+        await excluirDadosConta(this.prisma, usuarioId);
         return { message: 'Sua conta e seu histórico foram excluídos.' };
     }
 

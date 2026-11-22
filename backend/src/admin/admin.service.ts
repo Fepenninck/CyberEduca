@@ -1,3 +1,4 @@
+import { mascararEmailUsuario } from '../common/privacidade';
 import { Injectable } from '@nestjs/common';
 import { AdminDashboardService } from './admin-dashboard.service';
 import { AdminUsuariosService } from './admin-usuarios.service';
@@ -34,19 +35,20 @@ export class AdminService {
     return resultados.map(item => {
       const certificacao = isCertificationExam(item.provaId);
       const valida = item.totalQuestoes > 0 && item.acertos >= 0 && item.acertos <= item.totalQuestoes;
-      return { ...item, aprovado: certificacao && valida ? passed({ totalAcertos: item.acertos, totalQuestoes: item.totalQuestoes }) : null,
+      return { ...item, usuario: mascararEmailUsuario(item.usuario), aprovado: certificacao && valida ? passed({ totalAcertos: item.acertos, totalQuestoes: item.totalQuestoes }) : null,
         notaMinima: certificacao ? PASS_MARK : null };
     }).sort((a, b) => b.criadoEm.getTime() - a.criadoEm.getTime() || a.id.localeCompare(b.id));
   }
 
-  listarResultadosSimulacoes() {
-    return this.prisma.resultadoSimulacao.findMany({
+  async listarResultadosSimulacoes() {
+    const resultados = await this.prisma.resultadoSimulacao.findMany({
       orderBy: { criadoEm: 'desc' },
       include: {
         usuario: { select: { id: true, nome: true, email: true } },
         simulacao: { select: { id: true, titulo: true } },
       },
     });
+    return resultados.map(item => ({ ...item, usuario: mascararEmailUsuario(item.usuario) }));
   }
 
   async obterEstatisticasDificuldade() {

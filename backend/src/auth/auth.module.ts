@@ -1,3 +1,4 @@
+import { TermosModule } from '../termos/termos.module';
 import { LoginRateLimitGuard } from './login-rate-limit.guard';
 import { Module, Provider } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -27,6 +28,7 @@ const googleStrategyProvider: Provider = {
 
 @Module({
   imports: [
+    TermosModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: process.env.JWT_SECRET!,

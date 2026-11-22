@@ -9,6 +9,7 @@ const criarRequest = (extra: Record<string, unknown> = {}) => ({
 
 describe('AuthController', () => {
   const authService = {
+    termosAtuais: jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue({ termsVersion: '2026-11-21' }),
     register: jest.fn<(...args: any[]) => Promise<any>>(),
     login: jest.fn<(...args: any[]) => Promise<any>>(),
     confirmarLogin: jest.fn<(...args: any[]) => Promise<any>>(),
@@ -89,7 +90,7 @@ describe('AuthController', () => {
     const response = { cookie: jest.fn(), redirect: jest.fn() };
 
     await expect(controller.google()).resolves.toBeUndefined();
-    await controller.googleCallback(criarRequest({ user: { id: 'u1', email: 'ana@teste.com' } }) as any, response as any);
+    await controller.googleCallback(criarRequest({ user: { id: 'u1', email: 'ana@teste.com', termosVersao: '2026-11-21', termosAceitosEm: new Date() } }) as any, response as any);
 
     expect(jwtService.sign).toHaveBeenCalledWith({ sub: 'u1', email: 'ana@teste.com' });
     expect(response.cookie).toHaveBeenCalledWith('cybereduca_session', 'token-google', expect.any(Object));

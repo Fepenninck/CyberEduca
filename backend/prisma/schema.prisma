@@ -11,6 +11,8 @@ model Usuario {
   id                       String              @id @default(uuid())
   nome                     String
   email                    String              @unique
+  termosVersao             String?
+  termosAceitosEm          DateTime?
   senhaHash                String?
   googleId                 String?             @unique
   foto                     String?
@@ -406,4 +408,18 @@ model RespostaProva {
   acertou       Boolean          @default(false)
 
   @@unique([tentativaId, questaoId])
+}
+
+model TermosUso {
+  id Int @id @default(autoincrement())
+  versao String @unique
+  conteudo String
+  publicadoEm DateTime @default(now())
+}
+
+model PoliticaPrivacidade {
+  id Int @id @default(autoincrement())
+  versao String @unique
+  conteudo String
+  publicadoEm DateTime @default(now())
 }

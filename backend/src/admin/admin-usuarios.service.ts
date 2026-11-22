@@ -1,3 +1,5 @@
+import { mascararEmailUsuario } from '../common/privacidade';
+import { excluirDadosConta } from '../usuarios/excluir-dados-conta';
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
@@ -6,8 +8,8 @@ import { PrismaService } from '../prisma.service';
 export class AdminUsuariosService {
   constructor(private readonly prisma: PrismaService) {}
 
-  listarUsuarios() {
-    return this.prisma.usuario.findMany({
+  async listarUsuarios() {
+    const usuarios = await this.prisma.usuario.findMany({
       select: {
         id: true,
         nome: true,
@@ -19,6 +21,7 @@ export class AdminUsuariosService {
       },
       orderBy: { criadoEm: 'desc' },
     });
+    return usuarios.map(mascararEmailUsuario);
   }
 
   async buscarUsuario(id: string) {
@@ -59,7 +62,7 @@ export class AdminUsuariosService {
     try {
       return await this.prisma.usuario.update({
         where: { id },
-        data: dados,
+        data: { nome: dados.nome, email: dados.email },
         select: {
           id: true,
           nome: true,
@@ -79,9 +82,7 @@ export class AdminUsuariosService {
   }
 
   async excluirUsuario(id: string) {
-    return this.prisma.usuario.delete({
-      where: { id },
-      select: { id: true, nome: true, email: true },
-    });
+    await excluirDadosConta(this.prisma, id);
+    return { id };
   }
 }

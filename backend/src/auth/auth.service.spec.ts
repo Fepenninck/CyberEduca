@@ -1,3 +1,4 @@
+import { TermosService } from '../termos/termos.service';
 import { jest } from '@jest/globals';
 import { BadRequestException, HttpException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -51,6 +52,7 @@ describe('AuthService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
+        { provide: TermosService, useValue: { validarAceite: async () => '2026-11-21', atuais: async () => ({ termsVersion: '2026-11-21' }) } },
         { provide: PrismaService, useValue: prisma },
         { provide: JwtService, useValue: jwtService },
         { provide: AuditoriaService, useValue: auditoria },
@@ -210,7 +212,7 @@ describe('AuthService', () => {
       prisma.usuario.findUnique.mockResolvedValue({ id: 'usuario-existente' });
 
       await expect(
-        service.register({ name: 'Aluno', email: 'aluno@exemplo.com', password: 'Senha123!' }, {}),
+        service.register({ acceptedTerms: true, termsVersion: '2026-11-21', name: 'Aluno', email: 'aluno@exemplo.com', password: 'Senha123!' }, {}),
       ).rejects.toThrow(BadRequestException);
 
       expect(prisma.usuario.create).not.toHaveBeenCalled();
@@ -228,7 +230,7 @@ describe('AuthService', () => {
       );
 
       await expect(
-        service.register({ name: 'Aluno', email: 'aluno@exemplo.com', password: 'Senha123!' }, {}),
+        service.register({ acceptedTerms: true, termsVersion: '2026-11-21', name: 'Aluno', email: 'aluno@exemplo.com', password: 'Senha123!' }, {}),
       ).rejects.toThrow('Este e-mail já está em uso.');
       expect(auditoria.registrar).not.toHaveBeenCalled();
     });

@@ -1,3 +1,4 @@
+import { mascararEmailUsuario } from '../common/privacidade';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
@@ -75,6 +76,7 @@ export class AdminHistoricoService {
             : {};
         return {
           ...registro,
+          ...(registro.ator ? { ator: mascararEmailUsuario(registro.ator) } : {}),
           metodo: typeof info.metodo === 'string' ? info.metodo : null,
           rota: typeof info.rota === 'string' ? info.rota : null,
         };

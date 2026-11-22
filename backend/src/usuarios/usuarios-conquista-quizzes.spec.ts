@@ -1,3 +1,4 @@
+import type { JwtService } from '@nestjs/jwt';
 import { describe, expect, it, jest } from '@jest/globals';
 import { UsuariosService } from './usuarios.service';
 import { UsuariosController } from './usuarios.controller';
@@ -43,7 +44,7 @@ describe('Insígnia de todos os quizzes', () => {
   });
   it('usa o usuário autenticado do controller', () => {
     const conquistaQuizzes = jest.fn().mockReturnValue({ conquistada: false });
-    expect(new UsuariosController({ conquistaQuizzes } as unknown as UsuariosService).minhaConquistaQuizzes({ user: { id: 'aluno' } })).toEqual({ conquistada: false });
+    expect(new UsuariosController({ conquistaQuizzes } as unknown as UsuariosService, {} as JwtService).minhaConquistaQuizzes({ user: { id: 'aluno' } })).toEqual({ conquistada: false });
     expect(conquistaQuizzes).toHaveBeenCalledWith('aluno');
   });
 });

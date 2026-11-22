@@ -1,8 +1,13 @@
-import { IsEmail, IsString, Matches, MinLength } from 'class-validator';
+import { NormalizarNome } from '../../common/normalizar-nome';
+import { AceitarTermosDto } from './aceitar-termos.dto';
+import { IsEmail, IsString, Matches, MinLength, MaxLength } from 'class-validator';
 import { NormalizarEmail } from '../../common/normalizar-email';
 
-export class RegisterDto {
+export class RegisterDto extends AceitarTermosDto {
   @IsString({ message: 'O nome deve ser um texto válido.' })
+  @NormalizarNome()
+  @MinLength(2)
+  @MaxLength(100)
   name: string;
 
   @NormalizarEmail()

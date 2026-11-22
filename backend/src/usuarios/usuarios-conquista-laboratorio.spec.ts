@@ -1,3 +1,4 @@
+import type { JwtService } from '@nestjs/jwt';
 import { describe, expect, it, jest } from '@jest/globals';
 import { GUARDS_METADATA } from '@nestjs/common/constants';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -25,7 +26,7 @@ describe('Insígnia do primeiro teste no laboratório', () => {
     });
     it('exige autenticação e usa a identidade da sessão', () => {
         const conquistaLaboratorio = jest.fn().mockReturnValue({ conquistada: false, conquistadaEm: null });
-        const controller = new UsuariosController({ conquistaLaboratorio } as unknown as UsuariosService);
+        const controller = new UsuariosController({ conquistaLaboratorio } as unknown as UsuariosService, {} as JwtService);
         expect(controller.minhaConquistaLaboratorio({ user: { id: 'aluno' } })).toEqual({ conquistada: false, conquistadaEm: null });
         expect(conquistaLaboratorio).toHaveBeenCalledWith('aluno');
         expect(Reflect.getMetadata(GUARDS_METADATA, UsuariosController.prototype.minhaConquistaLaboratorio)).toContain(JwtAuthGuard);

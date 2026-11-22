@@ -47,6 +47,7 @@ describe('AdminService', () => {
     expect(resultados.map(item => item.id)).toEqual(['depois', 'antes']);
     expect(resultados.map(item => item.aprovado)).toEqual([true, false]);
     expect(resultados.every(item => item.notaMinima === 6)).toBe(true);
+    expect(resultados.every(item => item.usuario.email === 'an***@example.invalid')).toBe(true);
     expect(prismaMock.tentativaProva.findMany).toHaveBeenCalledWith(expect.objectContaining({where: {concluidoEm: {not: null}}}));
   });
 

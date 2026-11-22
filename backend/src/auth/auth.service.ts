@@ -1,3 +1,4 @@
+import { TermosService } from '../termos/termos.service';
 import {
   Injectable,
   BadRequestException,
@@ -35,6 +36,7 @@ export class AuthService {
     private jwtService: JwtService,
     private readonly auditoria: AuditoriaService,
     private readonly mail: MailService,
+    private readonly termos: TermosService,
   ) {}
 
   async register(
@@ -44,6 +46,9 @@ export class AuthService {
       userAgent?: string;
     },
   ) {
+    const termosVersao = await this.termos.validarAceite(dto);
+    const nome = dto.name?.trim();
+    if (!nome || nome.length < 2 || nome.length > 100) throw new BadRequestException('Informe um nome entre 2 e 100 caracteres.');
     const userExists = await this.prisma.usuario.findUnique({
       where: {
         email: dto.email,
@@ -59,7 +64,9 @@ export class AuthService {
     const user = await this.prisma.usuario
       .create({
         data: {
-          nome: dto.name,
+          nome,
+          termosVersao,
+          termosAceitosEm: new Date(),
           email: dto.email,
           senhaHash: hashedPassword,
         },
@@ -92,6 +99,17 @@ export class AuthService {
         email: user.email,
       },
     };
+  }
+
+  termosAtuais() { return this.termos.atuais(); }
+
+  async aceitarTermos(usuarioId: string, dto: { acceptedTerms: boolean; termsVersion: string }) {
+    const termosVersao = await this.termos.validarAceite(dto);
+    return this.prisma.usuario.update({
+      where: { id: usuarioId },
+      data: { termosVersao, termosAceitosEm: new Date() },
+      select: { id: true, email: true, papel: true },
+    });
   }
 
   async login(

@@ -1,6 +1,6 @@
 'use client'
 
-import { FormEvent, useState } from 'react'
+import { FormEvent, useState, useEffect } from 'react'
 import Link from 'next/link'
 import { AlertCircle } from 'lucide-react'
 import '../login/login.css'
@@ -30,13 +30,15 @@ export default function CadastroPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [acceptedTerms, setAcceptedTerms] = useState(false)
+  const [termsVersion, setTermsVersion] = useState('')
+  useEffect(() => { apiFetch('/auth/termos', { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise.reject()).then(data => setTermsVersion(data.termsVersion)).catch(() => setApiError('Nao foi possivel carregar os termos. Atualize a pagina.')) }, [])
   const [errors, setErrors] = useState<Errors>({})
   const router = useRouter()
   const [apiError, setApiError] = useState('')
   const [loading, setLoading] = useState(false)
 
   const emailIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-  const formIsValid = name.trim().length >= 2 && emailIsValid && passwordIsValid(password) && password === confirmPassword && acceptedTerms
+  const formIsValid = name.trim().length >= 2 && emailIsValid && passwordIsValid(password) && password === confirmPassword && acceptedTerms && Boolean(termsVersion)
 
   const clearError = (field: keyof Errors) => setErrors((current) => ({ ...current, [field]: undefined }))
 
@@ -51,7 +53,8 @@ export default function CadastroPage() {
   else if (!passwordIsValid(password)) nextErrors.password = 'A senha não atende a todos os requisitos.'
   if (!confirmPassword) nextErrors.confirmPassword = 'Confirme sua senha.'
   else if (password !== confirmPassword) nextErrors.confirmPassword = 'As senhas não coincidem.'
-  if (!acceptedTerms) nextErrors.terms = 'Você precisa aceitar os termos para continuar.'
+  if (!termsVersion) nextErrors.terms = 'Aguarde o carregamento dos termos ou atualize a pagina.'
+  else if (!acceptedTerms) nextErrors.terms = 'Você precisa aceitar os termos para continuar.'
   setErrors(nextErrors)
   if (Object.keys(nextErrors).length > 0) return
 
@@ -62,7 +65,7 @@ export default function CadastroPage() {
     const resposta = await apiFetch('/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify({ name: name.trim(), email, password, acceptedTerms, termsVersion }),
     })
 
     const dados = await resposta.json()
@@ -101,7 +104,7 @@ export default function CadastroPage() {
         </form>
 
         <div className="login-divider"><span>ou</span></div>
-        <div className="social-login"><button type="button"><svg className="google-icon" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7A19.9 19.9 0 0 0 24 4 20 20 0 1 0 44 24c0-1.4-.1-2.7-.4-4Z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8A12 12 0 0 1 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7A19.9 19.9 0 0 0 24 4 20 20 0 0 0 6.3 14.7Z"/><path fill="#4CAF50" d="M24 44c5.2 0 10-2 13.5-5.2l-6.2-5.2A11.9 11.9 0 0 1 12.9 28l-6.5 5A20 20 0 0 0 24 44Z"/><path fill="#1976D2" d="M43.6 20H42V20H24v8h11.3a12 12 0 0 1-4 5.6l6.2 5.2C37.1 39.2 44 34 44 24c0-1.4-.1-2.7-.4-4Z"/></svg>Criar conta com Google</button></div>
+        <div className="social-login"><button type="button" onClick={() => { window.location.href = '/api/auth/google' }}><svg className="google-icon" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7A19.9 19.9 0 0 0 24 4 20 20 0 1 0 44 24c0-1.4-.1-2.7-.4-4Z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8A12 12 0 0 1 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7A19.9 19.9 0 0 0 24 4 20 20 0 0 0 6.3 14.7Z"/><path fill="#4CAF50" d="M24 44c5.2 0 10-2 13.5-5.2l-6.2-5.2A11.9 11.9 0 0 1 12.9 28l-6.5 5A20 20 0 0 0 24 44Z"/><path fill="#1976D2" d="M43.6 20H42V20H24v8h11.3a12 12 0 0 1-4 5.6l6.2 5.2C37.1 39.2 44 34 44 24c0-1.4-.1-2.7-.4-4Z"/></svg>Criar conta com Google</button></div>
         <p className="login-signup">Já possui uma conta?<Link href="/login"><span className="login-link-label">Entrar</span></Link></p>
       </section>
     </div>

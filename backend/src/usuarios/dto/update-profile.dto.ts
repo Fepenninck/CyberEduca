@@ -1,4 +1,5 @@
-import { IsEmail, IsIn, IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
+import { NormalizarNome } from '../../common/normalizar-nome';
+import { IsEmail, IsIn, IsOptional, ValidateIf, IsString, Matches, MaxLength, MinLength } from 'class-validator';
 import { NormalizarEmail } from '../../common/normalizar-email';
 
 export const AVATARES_DISPONIVEIS = [
@@ -13,10 +14,11 @@ export const AVATARES_DISPONIVEIS = [
 ] as const;
 
 export class UpdateProfileDto {
-  @IsOptional()
+  @ValidateIf((_object, value) => value !== undefined)
   @IsString()
   @MinLength(2, { message: 'O nome deve ter pelo menos 2 caracteres.' })
   @MaxLength(100, { message: 'O nome deve ter no máximo 100 caracteres.' })
+  @NormalizarNome()
   nome?: string;
 
   @IsOptional()
