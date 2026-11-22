@@ -1,0 +1,2 @@
+docs/video-completo-cybereduca.mp4 filter=lfs diff=lfs merge=lfs -text
+*.pdf binary

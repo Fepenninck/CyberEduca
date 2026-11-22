@@ -1,76 +1,35 @@
-# Módulo: aulas e conteúdos
+# Módulo de aulas e conteúdos
 
-Esta estrutura permite entrar em uma aula, exibir seu conteúdo, navegar na
-trilha e salvar a conclusão. O conteúdo começa vazio por escolha: é você quem
-vai preencher cada aula.
+O módulo de aprendizagem oferece trilhas nos níveis básico, intermediário e avançado, aulas com conteúdo em Markdown, navegação sequencial e persistência do progresso. Os conteúdos são mantidos pelo administrador; o catálogo versionado também inclui materiais de aprendizagem.
 
-## Banco de dados
+## Implementação
 
-As tabelas estão no arquivo `backend/prisma/schema.prisma`:
+- Backend: `backend/src/aprendizagem/aprendizagem.controller.ts` e `aprendizagem.service.ts`.
+- Frontend: `frontend/app/aulas/`, com renderização por React Markdown.
+- Persistência: modelos `Usuario`, `Trilha`, `Aula` e `ProgressoAula` em `backend/prisma/schema.prisma`.
 
-| Tabela | Responsabilidade |
-| --- | --- |
-| `Usuario` | identifica quem estudou |
-| `Trilha` | agrupa aulas em uma sequência |
-| `Aula` | guarda título, conteúdo Markdown e ordem |
-| `ProgressoAula` | registra a conclusão de uma aula por usuário |
+O índice único de usuário e aula impede registros duplicados de progresso. A conclusão utiliza `upsert` e registra a operação na auditoria.
 
-O índice único `@@unique([usuarioId, aulaId])` impede dois registros de
-conclusão para a mesma pessoa e aula. Por isso o endpoint usa `upsert`: clicar
-mais de uma vez continua seguro.
+## API e autenticação
 
-## Conteúdo em Markdown
+As rotas exigem sessão válida, verificada por `JwtAuthGuard`; a identidade vem de `req.user.id`.
 
-No campo `conteudo`, use um formato como este quando quiser escrever uma aula:
+| Operação no backend | Resultado |
+|---|---|
+| `GET /trilhas` | Trilhas e progresso do aluno autenticado |
+| `GET /trilhas/:id` | Detalhes da trilha e suas aulas |
+| `GET /aulas/:id` | Conteúdo, situação de conclusão e aulas anterior e próxima |
+| `POST /aulas/:id/concluir` | Conclusão persistida e percentual atualizado da trilha |
+| `GET /progresso` | Progresso geral do aluno |
+| `POST /trilhas` e `PATCH /trilhas/:id` | Criação e edição de trilhas, restritas à administração |
+| `POST /aulas` e `PATCH /aulas/:id` | Criação e edição de aulas, restritas à administração |
 
-```md
-# Título complementar
+No navegador, essas chamadas recebem o prefixo `/api`, encaminhado pelo proxy do Next.js. O identificador de aula é o ID retornado pela API, inclusive nas páginas cujo segmento se chama `[slug]`.
 
-Escreva o primeiro parágrafo aqui.
+O servidor verifica o desbloqueio ao consultar ou concluir uma aula. A navegação anterior/próxima considera a ordem dentro da mesma trilha. Concluir aulas atualiza o progresso; a insígnia do nível e a liberação do nível seguinte dependem também da aprovação na [prova por nível](./certificacoes-niveis.md), com pelo menos 60% de acertos.
 
-## Outro tópico
+## Conteúdo e execução local
 
-![Descrição acessível da imagem](/imagens/minha-imagem.png)
+O campo `conteudo` armazena Markdown, renderizado na interface com React Markdown. A apresentação pode incluir mídias conforme o conteúdo da aula. A gestão dos materiais fica na área administrativa.
 
-- Item um
-- Item dois
-```
-
-O frontend ainda precisa de um renderizador de Markdown para transformar esse
-texto em HTML. Ao chegar nessa etapa, use uma biblioteca que sanitize o HTML;
-nunca use `dangerouslySetInnerHTML` com conteúdo vindo do banco.
-
-## API disponível
-
-`GET /aulas/:id` retorna a aula, o status `concluida`, e os objetos
-`anterior` e `proxima`. A navegação considera somente a ordem dentro da mesma
-trilha.
-
-`POST /aulas/:id/concluir` cria (ou preserva) o registro de conclusão e retorna
-o percentual atualizado da trilha.
-
-Enquanto a autenticação não estiver pronta, a API utiliza um usuário demo.
-Troque `USUARIO_DEMO_ID` por `req.user.id` depois de adicionar JWT.
-
-## Tela da aula
-
-`frontend/app/aulas/[slug]/lesson-study.tsx` faz o GET da aula, mostra um
-estado de carregamento, apresenta uma mensagem quando o conteúdo estiver vazio
-e envia o POST ao concluir. Apesar do nome legado `[slug]`, a rota agora espera
-o **id UUID** retornado pela API. Anterior e Próxima vêm da API, por isso a
-sequência não é recalculada no navegador.
-
-Copie `frontend/.env.local.example` para `frontend/.env.local`. O frontend
-inicia em `http://localhost:3001` e a API em `http://localhost:3000`; assim não
-há conflito de portas e o CORS da API já aceita o frontend.
-
-## Criar o banco local
-
-1. Copie `backend/.env.example` para `backend/.env` e coloque sua senha.
-2. Crie um banco PostgreSQL chamado `cybereduca`.
-3. Na pasta `backend`, execute `npx prisma migrate dev`.
-4. Execute `npm run db:seed` para inserir uma trilha e aula vazias.
-5. Para inspecionar os dados, execute `npm run db:studio`.
-
-O seed apaga apenas as trilhas e aulas locais antes de recriá-las; use-o só no
-ambiente de desenvolvimento.
+Siga o [README principal](../README.md#executar-localmente) para configurar o ambiente: frontend na porta 3001 e API na porta 3002 por padrão. Aplique as migrações com `npx prisma migrate deploy`, na pasta `backend`. Seeds são ferramentas de importação e manutenção que podem atualizar conteúdos; consulte o [README do backend](../backend/README.md) antes de utilizá-los em um banco existente.
