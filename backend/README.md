@@ -2,9 +2,11 @@
 
 Backend em NestJS, com Prisma e PostgreSQL. Fornece autenticação, trilhas, aulas, avaliações, simulações, conquistas e administração da plataforma.
 
+O backend representa a camada de aplicação da arquitetura cliente-servidor em três camadas. É uma aplicação NestJS modular, com controllers, services, DTOs e guards; o Prisma realiza o acesso à camada de dados PostgreSQL. Consulte o [diagrama de arquitetura](../assets/arquitetura-sistema.png).
+
 ## Executar localmente
 
-Requisitos: Node.js, npm e PostgreSQL.
+Requisitos: Node.js 24 (conforme `../.nvmrc`), npm e PostgreSQL.
 
 Na pasta backend:
 
@@ -15,7 +17,7 @@ npx prisma migrate deploy
 npm run start:dev
 ```
 
-Antes da primeira execução, crie .env a partir de .env.example e configure DATABASE_URL e JWT_SECRET. O banco indicado deve existir antes da aplicação das migrações. As variáveis de Google, envio de e-mail e VirusTotal habilitam as respectivas integrações; consulte .env.example.
+Antes da primeira execução, crie `.env` a partir de `.env.example` e configure `DATABASE_URL`, `JWT_SECRET`, `FRONTEND_URL` e o envio de e-mails por Brevo (API HTTP) ou SMTP. O login com senha exige a confirmação pelo link enviado por e-mail. O banco indicado deve existir antes da aplicação das migrações. Google OAuth e VirusTotal exigem suas próprias credenciais; consulte `.env.example`.
 
 A API usa a porta 3002 por padrão, configurável por PORT. O frontend local acessa a API pelo proxy /api, com BACKEND_URL apontando para o backend.
 

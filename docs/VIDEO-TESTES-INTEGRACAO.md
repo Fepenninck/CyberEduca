@@ -1,7 +1,8 @@
 # Apresentação dos testes de integração — CyberEduca+
 
-Vídeo explicativo da atividade, com apresentação da configuração, dos cenários
-implementados e da execução dos 13 testes de integração.
+Registro de uma entrega anterior, com apresentação da configuração e da execução dos 13 testes de integração demonstrados naquela ocasião. Esse número descreve a gravação e não o total atual da suíte.
+
+A demonstração completa atualizada está em [Vídeo completo do CyberEduca+](./video-completo-cybereduca.mp4), armazenado com Git LFS. Os slides estão na [apresentação em PDF](./apresentacao_cybereduca.pdf).
 
 [Assistir ao vídeo no YouTube](https://youtu.be/QyyDFVo36RQ)
 

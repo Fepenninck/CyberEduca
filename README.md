@@ -23,7 +23,6 @@
 - [Arquitetura e tecnologias](#arquitetura-e-tecnologias)
 - [Executar localmente](#executar-localmente)
 - [Verificação](#verificação)
-- [Relatório de acompanhamento](#relatório-de-acompanhamento)
 - [Instruções e evidências de execução](#instruções-e-evidências-de-execução)
 - [Segurança e privacidade](#segurança-e-privacidade)
 - [Organização do repositório](#organização-do-repositório)
@@ -89,7 +88,19 @@ O projeto foi finalizado como PFC dos cursos de Bacharelado em Engenharia de Sof
 
 ### Visão geral
 
-O CyberEduca+ utiliza uma arquitetura com frontend, API REST e banco de dados. As integrações externas são acessadas pelo backend, que centraliza as regras de negócio e o controle de acesso.
+O CyberEduca+ adota uma **arquitetura cliente-servidor organizada em três camadas**: apresentação, aplicação (regras de negócio) e dados. Essas classificações se complementam: cliente-servidor descreve a comunicação entre o navegador e os serviços; três camadas descreve a divisão de responsabilidades.
+
+![Arquitetura do sistema CyberEduca+: usuários, frontend na Vercel, backend no Render, PostgreSQL no Neon e serviços externos](./assets/arquitetura-sistema.png)
+
+| Camada | Responsabilidade | Implementação |
+|---|---|---|
+| Apresentação | Interface pública, área do aluno e administração | Next.js e React, publicados na Vercel |
+| Aplicação | API REST, autenticação, autorização e regras de negócio | Backend NestJS, publicado no Render |
+| Dados | Persistência de conteúdos, usuários, progresso, resultados e auditoria | PostgreSQL, hospedado no Neon |
+
+O backend é um **monólito modular**: os módulos de negócio compõem uma única aplicação NestJS. Internamente, controllers recebem requisições, DTOs validam entradas, guards controlam o acesso e services aplicam as regras de negócio. O Prisma integra a aplicação como camada de acesso ao PostgreSQL.
+
+O navegador acessa a interface, e as chamadas REST em JSON passam pelo proxy `/api` do Next.js até o backend. O banco não é acessado diretamente pelo navegador. Google OAuth, envio de e-mails e VirusTotal são integrados pelo backend; esses serviços externos complementam as três camadas.
 
 ### Frontend — Vercel
 
@@ -118,7 +129,7 @@ O CyberEduca+ utiliza uma arquitetura com frontend, API REST e banco de dados. A
 | Serviço | Responsabilidade |
 |---|---|
 | Google OAuth | Autenticação com a conta Google |
-| Brevo ou SMTP | Envio dos links de confirmação de login e recuperação de senha |
+| Brevo (API HTTP) ou SMTP | Envio dos links de confirmação de login e recuperação de senha; produção configurada com Brevo |
 | VirusTotal | Consulta de relatórios de segurança de domínios; não recebe URLs completas nesse fluxo |
 
 ### Fluxo de uma requisição
@@ -206,36 +217,6 @@ node scripts/test-admin-lesson-editor.cjs
 
 As verificações do frontend cobrem requisições, carregamento, navegação mobile, cálculos do dashboard e edição de aulas. Outros scripts de verificação estão em `frontend/scripts` e `backend/scripts`.
 
-## Relatório de acompanhamento
-
-Registro do acompanhamento de **16/11/2026**, com base na comparação entre a referência `origin/entrega0911` (commit `1b0a539`) e a versão da `main` consultada para este relatório (commit `f403f9c`). A branch de entrega anterior contém alterações até 10/11; essa comparação registra a evolução entre as versões, sem atribuir às mudanças uma validação retroativa do prazo de 09/11.
-
-### Evolução desde a entrega anterior
-
-Os itens marcados abaixo representam implementações presentes na versão atual. Os commits e arquivos vinculados permitem consultar as alterações e seus testes.
-
-- [x] Integrar as provas ao percurso de aprendizagem, com aprovação mínima de 60%, insígnias por nível e liberação do próximo nível. Referência: commit `5b3e5f3`; [regras das provas](./docs/certificacoes-niveis.md) e [testes de certificações](./backend/src/certificacoes/certificacoes.spec.ts).
-- [x] Aprimorar conteúdos das aulas, percurso de trilhas, conquistas e configurações da conta. Referência: commit `3479ac7`; [módulo de aulas](./docs/modulo-aulas.md) e [testes de aprendizagem](./backend/src/aprendizagem/aprendizagem.service.spec.ts).
-- [x] Aprimorar as simulações interativas, novas tentativas e carregamento da interface. Referência: commit `11380a5`; [testes de simulações](./backend/src/simulacoes/simulacoes.service.spec.ts).
-- [x] Ampliar o painel administrativo, a gestão de conteúdos, a auditoria e o acompanhamento do progresso dos alunos. Referência: commit `061ff4e`; [testes do dashboard administrativo](./backend/src/admin/admin-dashboard.service.spec.ts) e [testes de histórico](./backend/src/admin/admin-historico.spec.ts).
-- [x] Reforçar a proteção de rotas e do login e unificar o tratamento dos status das provas. Referência: commit `e0d74c2`; [testes de autenticação](./backend/src/auth/auth.service.spec.ts) e [testes do limite de tentativas](./backend/src/auth/login-rate-limit.guard.spec.ts).
-- [x] Aprimorar os fluxos de e-mail e recuperação de senha e configurar envio pela API da Brevo. Referências: commits `c6954c4` e `a519d07`; [testes de e-mail](./backend/src/mail/mail.service.spec.ts).
-- [x] Ajustar as preferências de cookies e compartilhar requisições simultâneas idênticas no navegador. Referências: commits `b19418c` e `05d6a06`; [verificação de requisições](./frontend/scripts/test-inflight-requests.cjs).
-- [x] Alinhar os testes de integração com os registros de auditoria e as permissões da conta administradora única. Referência: commit `ea3440e`; [testes de integração HTTP](./backend/test/pfc.integracao-spec.ts).
-- [x] Incluir a monografia atualizada, o resumo expandido e a ficha acadêmica no repositório. Referências: commits `a4352b8` e `e0885de`; documentos em [Documentação complementar](#documentação-complementar).
-
-### Correções realizadas
-
-| Item ajustado | Resultado implementado | Referência |
-|---|---|---|
-| Proteção de rotas, login e status das provas | Controles no backend e tratamento unificado dos status | `e0d74c2` |
-| Carregamento e consultas repetidas | Compartilhamento de consultas simultâneas e ajustes no carregamento | `285f30f`, `05d6a06` |
-| Preferências de cookies | Decisão de cookies aplicada por navegador | `b19418c` |
-| Compatibilidade dos testes com as regras atuais | Testes ajustados à auditoria e ao administrador único | `ea3440e` |
-| Navegação e apresentação em celulares | Ajustes de menus, percurso das trilhas e cards de simulações | `dcd0e0c`, `8fadf36`, `712b562` |
-
-Essas correções foram identificadas no histórico técnico. Sua associação a apontamentos específicos do professor deve ser registrada no acompanhamento da equipe.
-
 ## Instruções e evidências de execução
 
 ### Preparação da demonstração
@@ -268,6 +249,7 @@ Os cenários que dependem de progresso prévio podem ser apresentados com contas
 
 | Evidência | Conteúdo |
 |---|---|
+| [Vídeo completo do CyberEduca+](./docs/video-completo-cybereduca.mp4) | Demonstração do projeto no arquivo atualizado fornecido pela equipe |
 | [Vídeo dos testes de integração](./docs/VIDEO-TESTES-INTEGRACAO.md) | Link para a apresentação em vídeo, arquivos demonstrados e instrução de execução |
 | [Integração de autenticação e aprendizagem](./backend/test/pfc.integracao-spec.ts) | Cenários HTTP de acesso, trilhas, aulas, persistência do progresso e auditoria |
 | [Integração de quizzes, phishing e perfil](./backend/test/atividades.integracao-spec.ts) | Correção, persistência de tentativas, validações, autorização e indicadores de desempenho |
@@ -316,12 +298,19 @@ Fontes e conteúdos externos podem realizar conexões com seus fornecedores. A b
 
 | Documento | Conteúdo |
 |---|---|
-| [Ficha do PFC — UMC](./docs/Ficha_PFC_UMC.docx) | Ficha acadêmica do Projeto Final de Curso |
+| [Apresentação em PDF](./docs/apresentacao_cybereduca.pdf) | Slides atualizados de apresentação do projeto |
+| [Vídeo completo](./docs/video-completo-cybereduca.mp4) | Demonstração em MP4; arquivo versionado com Git LFS |
+| [Arquitetura do sistema](./assets/arquitetura-sistema.png) | Diagrama atualizado utilizado neste README |
+| [Ficha do PFC — UMC](./docs/Ficha_PFC.docx) | Ficha acadêmica do Projeto Final de Curso |
 | [Monografia](./docs/MONOGRAFIA.docx) | Monografia do CyberEduca+ |
 | [Resumo expandido](./docs/Resumo_Expandido_CyberEduca.docx) | Resumo expandido do projeto |
 | [Backend](./backend/README.md) | Configuração, execução e verificação da API |
 | [Provas por nível](./docs/certificacoes-niveis.md) | Critérios de aprovação, tentativas e desbloqueio dos níveis |
 | [Módulo de aulas](./docs/modulo-aulas.md) | Conteúdos e funcionamento das aulas |
+| [Processo BPMN](./docs/BPMN_CyberEduca.svg) | Modelagem do processo; [fonte editável XML](./docs/BPMN_CyberEduca.xml) |
+| [Avatares](./docs/avatar-generation.md) | Registro de criação dos recursos visuais |
+
+O vídeo completo é armazenado via Git LFS devido ao tamanho. Para obter o MP4 após clonar o repositório, instale o Git LFS e execute `git lfs install` e `git lfs pull`. Os documentos acadêmicos acima substituem as versões anteriores; o vídeo de testes de integração é um registro específico de uma entrega anterior, separado da demonstração completa.
 
 ## Metodologia
 
@@ -331,4 +320,4 @@ O desenvolvimento utilizou Scrum, com gestão de tarefas via Monday e comunicaç
 
 Projeto desenvolvido para a Universidade de Mogi das Cruzes — UMC, em Mogi das Cruzes — SP, 2026. Bibliotecas, APIs, imagens e demais recursos de terceiros permanecem sujeitos às respectivas licenças e condições de uso.
 
-Atualizado em 16 de novembro de 2026.
+Atualizado em 22 de novembro de 2026.
