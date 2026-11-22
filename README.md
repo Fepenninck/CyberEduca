@@ -309,6 +309,7 @@ Fontes e conteúdos externos podem realizar conexões com seus fornecedores. A b
 | [Módulo de aulas](./docs/modulo-aulas.md) | Conteúdos e funcionamento das aulas |
 | [Processo BPMN](./docs/BPMN_CyberEduca.svg) | Modelagem do processo; [fonte editável XML](./docs/BPMN_CyberEduca.xml) |
 | [Avatares](./docs/avatar-generation.md) | Registro de criação dos recursos visuais |
+| [Dados de demonstração do TCC](./docs/dados-demonstracao.md) | Carga sintética de pelo menos 1.000 alunos em produção, com datas distribuídas e execução sem duplicações |
 
 O vídeo completo é armazenado via Git LFS devido ao tamanho. Para obter o MP4 após clonar o repositório, instale o Git LFS e execute `git lfs install` e `git lfs pull`. Os documentos acadêmicos acima substituem as versões anteriores; o vídeo de testes de integração é um registro específico de uma entrega anterior, separado da demonstração completa.
 
