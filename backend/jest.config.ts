@@ -1,13 +1,4 @@
 import type { Config } from 'jest';
-import { pathsToModuleNameMapper } from 'ts-jest';
-import ts from 'typescript';
-
-const { config: tsconfig } = ts.readConfigFile(
-  './tsconfig.json',
-  ts.sys.readFile,
-);
-
-const paths = tsconfig?.compilerOptions?.paths ?? {};
 
 const config: Config = {
   preset: 'ts-jest/presets/default-esm',
@@ -20,6 +11,11 @@ const config: Config = {
 
   testRegex: '.*\\.spec\\.ts$',
 
+  moduleNameMapper: {
+    // Resolve NodeNext-style relative .js specifiers to their TypeScript source.
+    '^(\\.{1,2}/.*)\\.js$': '$1',
+  },
+
   transform: {
     '^.+\\.ts$': [
       'ts-jest',
@@ -28,14 +24,6 @@ const config: Config = {
         tsconfig: '<rootDir>/tsconfig.spec.json',
       },
     ],
-  },
-
-  moduleNameMapper: {
-    ...pathsToModuleNameMapper(paths, {
-      prefix: '<rootDir>/',
-      useESM: true,
-    }),
-    '^(\\.{1,2}/.*)\\.js$': '$1',
   },
 
   collectCoverageFrom: [
