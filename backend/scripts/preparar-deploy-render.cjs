@@ -1,5 +1,6 @@
 const { renderTarget, main: recoverLogin } = require('./reparar-migracao-login.cjs');
 const { main: deployMigrations } = require('./migrate-deploy.cjs');
+const { main: seedDemo } = require('./seed-demonstracao-producao.cjs');
 
 async function main() {
   if (!renderTarget(process.env)) {
@@ -10,6 +11,9 @@ async function main() {
   // Executa antes do comando antigo do Render, com conexão direta e repetição limitada.
   // O migrate deploy seguinte encontra o banco atualizado e não reaplica conteúdo.
   await deployMigrations();
+  // Carga sintética autorizada para a apresentação do TCC, somente neste destino.
+  // Ao atingir a meta, os deploys seguintes não criam registros adicionais.
+  await seedDemo({ apply: true });
 }
 
 main().catch(() => {

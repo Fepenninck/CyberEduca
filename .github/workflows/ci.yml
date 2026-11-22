@@ -38,7 +38,9 @@ jobs:
         run: npx prisma generate
 
       - name: Testes unitários
-        run: npm test
+        run: |
+          npm test
+          npm run test:demo
 
   testes-integracao:
     name: Testes de integração

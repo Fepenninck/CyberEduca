@@ -33,6 +33,8 @@ Os testes de integração usam um banco separado. Configure .env.test.local conf
 
 ## Banco e publicação
 
+O `postinstall` no Render de produção executa as migrações e completa uma população de demonstração até pelo menos 1.000 alunos, usando a conexão existente no deploy. As contas têm nome `[DEMO]`, e-mails `.invalid`, nenhuma senha e atividades sintéticas distribuídas em datas. O script preserva as contas existentes, não se aplica ao ambiente local e não duplica registros nos deploys seguintes. Consulte [Dados de demonstração do TCC](../docs/dados-demonstracao.md) para execução, limitações e verificações.
+
 npm run deploy aplica as migrações pendentes. Migrações já aplicadas devem permanecer intactas; novas alterações recebem uma nova migração.
 
 Os comandos db:seed importam conteúdos específicos. O seed geral também atualiza textos e estrutura das trilhas; não deve ser usado como substituto das migrações em um banco com conteúdo editado.
